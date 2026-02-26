@@ -133,9 +133,47 @@
             d.getMinutes().toString().padStart(2, '0');
     }
 
-    document.getElementById('bookingForm').addEventListener('submit', function (e) {
+    const form = document.getElementById('bookingForm');
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    form.addEventListener('submit', async function (e) {
         e.preventDefault();
-        alert('Reservation Request Sent! We will confirm your sanctuary spot via email shortly.');
+
+        // UI: Loading State
+        const originalBtnText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending Request...';
+
+        const formData = new FormData(form);
+        const payload = Object.fromEntries(formData.entries());
+
+        try {
+            const response = await fetch('/api/bookings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                form.innerHTML = `
+                    <div style="text-align: center; padding: 2rem;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
+                        <h3 style="color: var(--primary);">Reservation Requested!</h3>
+                        <p style="color: var(--secondary); margin-bottom: 2rem;">Cheers, ${payload.name}! We've received your request for ${payload.date} at ${payload.time}. We will confirm your sanctuary spot via email shortly.</p>
+                        <button onclick="window.location.reload()" class="btn">Make Another Booking</button>
+                    </div>
+                `;
+            } else {
+                throw new Error(result.error || 'Failed to send request');
+            }
+        } catch (error) {
+            console.error('Booking Error:', error);
+            alert('Sorry, there was a problem sending your request: ' + error.message + '. Please try calling us directly at {{ site.contact.nap.phone }}.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
+        }
     });
     });
 </script>

@@ -80,21 +80,91 @@
 </section>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', async function () {
+        const dashboardContent = document.getElementById('dashboard-content');
+        const loginOverlay = document.createElement('div');
+        loginOverlay.id = 'admin-login';
+        loginOverlay.innerHTML = `
+            <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--primary); z-index: 2000; display: flex; align-items: center; justify-content: center; color: white; padding: 2rem; box-sizing: border-box;">
+                <div style="max-width: 400px; width: 100%; text-align: center;">
+                    <h2 style="margin-bottom: 2rem;">Admin Sanctuary Access</h2>
+                    <input type="password" id="admin-pass" placeholder="Enter Master Key" style="width: 100%; padding: 1rem; border-radius: 4px; border: none; margin-bottom: 1rem; font-size: 1rem; text-align: center;">
+                    <button id="login-btn" class="btn" style="width: 100%; border: none; cursor: pointer;">Unlock Dashboard</button>
+                    <p id="login-error" style="color: var(--accent); margin-top: 1rem; font-size: 0.8rem; display: none;">Invalid Key. Access Denied.</p>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(loginOverlay);
+
+        const passInput = document.getElementById('admin-pass');
+        const loginBtn = document.getElementById('login-btn');
+        const errorMsg = document.getElementById('login-error');
+
+        let adminKey = localStorage.getItem('dandy_admin_key');
+        if (adminKey) {
+            checkAccess(adminKey);
+        }
+
+        loginBtn.addEventListener('click', () => checkAccess(passInput.value));
+        passInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAccess(passInput.value); });
+
+        async function checkAccess(key) {
+            try {
+                const res = await fetch('/api/admin/bookings', {
+                    headers: { 'Authorization': `Bearer ${key}` }
+                });
+                if (res.ok) {
+                    localStorage.setItem('dandy_admin_key', key);
+                    adminKey = key;
+                    loginOverlay.style.display = 'none';
+                    loadBookings();
+                } else {
+                    throw new Error();
+                }
+            } catch (e) {
+                errorMsg.style.display = 'block';
+                localStorage.removeItem('dandy_admin_key');
+            }
+        }
+
+        let bookings = [];
+
+        async function loadBookings() {
+            try {
+                const res = await fetch('/api/admin/bookings', {
+                    headers: { 'Authorization': `Bearer ${adminKey}` }
+                });
+                const data = await res.json();
+                bookings = data.bookings || [];
+                renderList();
+            } catch (e) {
+                console.error("Load Failed:", e);
+            }
+        }
+
+        async function updateStatus(id, action) {
+            if (!confirm(`Confirm ${action} for this reservation?`)) return;
+            try {
+                const res = await fetch('/api/admin/bookings', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${adminKey}`
+                    },
+                    body: JSON.stringify({ id, action })
+                });
+                if (res.ok) loadBookings();
+            } catch (e) {
+                alert("Operation failed");
+            }
+        }
+
+        // --- View Logic ---
         const listView = document.getElementById('list-view');
         const calView = document.getElementById('calendar-view');
         const listBtn = document.getElementById('view-list-btn');
         const calBtn = document.getElementById('view-cal-btn');
 
-        // Mock Data for Table Management
-        const mockBookings = [
-            { id: '1', name: 'James Hobart', email: 'james@example.com', date: '2026-02-28', time: '10:15', size: 4, status: 'Confirmed', source: 'web' },
-            { id: '2', name: 'Lily Chen', email: 'lily@domain.au', date: '2026-03-01', time: '09:30', size: 8, status: 'Manual_Review', source: 'chatbot' },
-            { id: '3', name: 'Tom Walker', email: 'tom.w@hobart.local', date: '2026-03-05', time: '12:00', size: 2, status: 'Confirmed', source: 'web' },
-            { id: '4', name: 'Anna Green', email: 'anna@green.com', date: '2026-03-05', time: '12:30', size: 10, status: 'Manual_Review', source: 'chatbot' }
-        ];
-
-        // Toggle Views
         listBtn.addEventListener('click', () => {
             listView.style.display = 'block';
             calView.style.display = 'none';
@@ -116,53 +186,58 @@
 
         function renderList() {
             const body = document.getElementById('bookings-list-body');
-            body.innerHTML = mockBookings.map(b => `
+            if (bookings.length === 0) {
+                body.innerHTML = '<tr><td colspan="5" style="padding: 3rem; text-align: center; color: var(--secondary);">No active reservations found. All clear!</td></tr>';
+                return;
+            }
+            body.innerHTML = bookings.map(b => `
             <tr style="border-bottom: 1px solid #f0f0f0;">
                 <td style="padding: 1.2rem;">
                     <span style="padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700; ${getStatusStyle(b.status)}">
-                        ${b.status.replace('_', ' ')}
+                        ${(b.status || 'Pending').replace('_', ' ')}
                     </span>
                 </td>
                 <td style="padding: 1.2rem;">
                     <strong>${b.name}</strong><br>
-                    <span style="font-size: 0.8rem; color: #7f8c8d;">${b.email}</span>
+                    <span style="font-size: 0.8rem; color: #7f8c8d;">${b.contact || b.email || 'No Contact'}</span>
                 </td>
                 <td style="padding: 1.2rem;">
                     ${b.date}<br>
                     <span style="font-size: 0.8rem; font-weight: 600;">${b.time}</span>
                 </td>
-                <td style="padding: 1.2rem;">${b.size} People</td>
+                <td style="padding: 1.2rem;">${b.group_size || b.size || '?'} People</td>
                 <td style="padding: 1.2rem;">
-                    <button style="background: #34495e; color: white; border: none; padding: 0.5rem; border-radius: 4px; font-size: 0.7rem; cursor: pointer;">Manage</button>
-                    ${b.status === 'Manual_Review' ? `<button style="background: #27ae60; color: white; border: none; padding: 0.5rem; border-radius: 4px; font-size: 0.7rem; cursor: pointer; margin-left: 0.2rem;">Approve</button>` : ''}
+                    <button onclick="updateStatus('${b.id}', 'archive')" style="background: #34495e; color: white; border: none; padding: 0.5rem; border-radius: 4px; font-size: 0.7rem; cursor: pointer;">Archive</button>
+                    ${(b.status || '').includes('Review') ? `<button onclick="updateStatus('${b.id}', 'approve')" style="background: #27ae60; color: white; border: none; padding: 0.5rem; border-radius: 4px; font-size: 0.7rem; cursor: pointer; margin-left: 0.2rem;">Approve</button>` : ''}
                 </td>
             </tr>
         `).join('');
+
+            // Expose updateStatus to window for onclick
+            window.updateStatus = updateStatus;
         }
 
         function getStatusStyle(status) {
             if (status === 'Confirmed') return 'background: #e6f7ee; color: #27ae60;';
-            if (status === 'Manual_Review') return 'background: #fff8e1; color: #f39c12;';
+            if (status?.includes('Review')) return 'background: #fff8e1; color: #f39c12;';
             return 'background: #fdf2f2; color: #e74c3c;';
         }
 
         function renderCalendar() {
-            // Simplified calendar cell generation
             const grid = document.getElementById('calendar-days-grid');
             grid.innerHTML = '';
             for (let i = 1; i <= 31; i++) {
-                const hasBooking = mockBookings.some(b => b.date.endsWith(i.toString().padStart(2, '0')));
+                const dayStr = i.toString().padStart(2, '0');
+                const dayBookings = bookings.filter(b => b.date && b.date.endsWith(dayStr));
                 const div = document.createElement('div');
                 div.style.cssText = `background: white; min-height: 100px; padding: 0.8rem; border-bottom: 1px solid #eee; border-left: 1px solid #eee; position: relative; cursor: pointer;`;
                 div.innerHTML = `
                 <div style="font-size: 0.8rem; color: #bdc3c7;">${i}</div>
-                ${hasBooking ? `<div style="margin-top: 0.5rem; background: var(--accent); height: 4px; border-radius: 2px;"></div>
-                <div style="font-size: 0.65rem; color: var(--accent); font-weight: 700; margin-top: 0.3rem;">Reserved</div>` : ''}
+                ${dayBookings.length > 0 ? `<div style="margin-top: 0.5rem; background: var(--accent); height: 4px; border-radius: 2px;"></div>
+                <div style="font-size: 0.65rem; color: var(--accent); font-weight: 700; margin-top: 0.3rem;">${dayBookings.length} Booked</div>` : ''}
             `;
                 grid.appendChild(div);
             }
         }
-
-        renderList();
     });
 </script>
