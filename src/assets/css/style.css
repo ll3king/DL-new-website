@@ -1,0 +1,221 @@
+:root {
+    --primary-color: #E07A5F;
+    /* Soft Coral/Terracotta */
+    --primary-hover: #D0654B;
+    --background-color: #F4F1DE;
+    /* Soft Cream/Beige */
+    --card-bg: #FFFFFF;
+    --text-primary: #3D405B;
+    /* Dark Blue-Grey */
+    --text-secondary: #81B29A;
+    /* Soft Green for accents */
+    --border-color: #E9EDC9;
+    /* Light Sage */
+    --success-color: #81B29A;
+    --warning-color: #F2CC8F;
+}
+
+* {
+    box_sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+.view-toggle {
+    display: flex;
+    background: #EAE6D6;
+    border-radius: 2rem;
+    padding: 0.25rem;
+}
+
+.view-toggle button {
+    background: transparent;
+    border: none;
+    padding: 0.5rem 1.25rem;
+    border-radius: 1.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    color: #6C757D;
+    transition: all 0.2s ease;
+}
+
+.view-toggle button.active {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 2px 4px rgba(224, 122, 95, 0.3);
+}
+
+.view-section {
+    display: none;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.view-section.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Card List Styles (Replacing Table for more 'warm' feel) */
+.booking-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.booking-card {
+    background: var(--card-bg);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.02);
+    transition: transform 0.2s;
+}
+
+.booking-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+.booking-info h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.booking-meta {
+    font-size: 0.9rem;
+    color: #6C757D;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.booking-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.btn-process {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.btn-process:hover {
+    background-color: var(--primary-hover);
+}
+
+.btn-process:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Calendar Styles */
+.calendar-container {
+    background: var(--card-bg);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.calendar-header button {
+    background: var(--background-color);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-weight: bold;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1rem;
+}
+
+.calendar-day {
+    padding: 0.5rem;
+    min-height: 100px;
+    border-radius: 0.75rem;
+    background: #FAFAFA;
+    border: 1px solid #eee;
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.status-new {
+    background-color: #FCE7F3;
+    /* Soft Pink */
+    color: #BE185D;
+}
+
+.status-confirmed {
+    background-color: #D1FAE5;
+    /* Soft Mint */
+    color: #047857;
+}

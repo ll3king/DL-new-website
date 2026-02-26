@@ -8,6 +8,22 @@ const DATA_PATH = path.join(__dirname, '../data/site.yaml');
 const LAYOUTS_DIR = path.join(__dirname, '../src/layouts');
 const BLOCKS_DIR = path.join(__dirname, '../src/blocks');
 const PUBLIC_DIR = path.join(__dirname, '../public');
+const SRC_ASSETS_DIR = path.join(__dirname, '../src/assets');
+
+// Asset Pipeline: Copy src/assets -> public/assets during build
+function copyAssets(src, dest) {
+    if (!fs.existsSync(src)) return;
+    if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
+    fs.readdirSync(src).forEach(item => {
+        const srcPath = path.join(src, item);
+        const destPath = path.join(dest, item);
+        if (fs.statSync(srcPath).isDirectory()) {
+            copyAssets(srcPath, destPath);
+        } else {
+            fs.copyFileSync(srcPath, destPath);
+        }
+    });
+}
 
 // Configure Nunjucks to read from layouts and blocks
 const env = nunjucks.configure([LAYOUTS_DIR, BLOCKS_DIR], { autoescape: true });
@@ -22,6 +38,11 @@ function render() {
     console.log("[L3] Starting Site Generation (Nunjucks Engine)...");
 
     try {
+        // 0. Asset Pipeline: Sync media files -> public/
+        if (!fs.existsSync(PUBLIC_DIR)) fs.mkdirSync(PUBLIC_DIR, { recursive: true });
+        console.log("[L3] Copying assets from src/assets -> public/assets...");
+        copyAssets(SRC_ASSETS_DIR, path.join(PUBLIC_DIR, 'assets'));
+
         // 1. Load All Data (L0)
         const siteData = yaml.load(fs.readFileSync(DATA_PATH, 'utf8'));
         const menuData = yaml.load(fs.readFileSync(path.join(__dirname, '../data/menu.yaml'), 'utf8'));
