@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }} | {{ site.identity.name }}</title>
+    <meta name="description" content="{{ page_description or site.identity.description }}">
+    <link rel="canonical" href="{{ site.seo.site_url }}/{{ current_page_id }}.html">
+
+    <!-- AEO: Enhanced JSON-LD Entity Representation -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Restaurant",
+      "name": "{{ site.identity.name }}",
+      "url": "{{ site.seo.site_url }}",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "{{ site.contact.nap.address }}"
+      },
+      "telephone": "{{ site.contact.nap.phone }}",
+      "servesCuisine": "{{ site.seo.schema.cuisine }}",
+      "priceRange": "{{ site.seo.schema.price_range }}",
+      "hasMenu": "{{ site.seo.schema.has_menu_url }}",
+      "acceptsReservations": {{ site.seo.schema.accepts_reservations }},
+      "potentialAction": {
+        "@type": "ReserveAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "{{ site.seo.site_url }}/booking.html",
+          "inLanguage": "en-US",
+          "actionPlatform": [
+            "http://schema.org/DesktopWebPlatform",
+            "http://schema.org/MobileWebPlatform"
+          ]
+        },
+        "result": {
+          "@type": "FoodEstablishmentReservation",
+          "name": "Reserve a Table"
+        }
+      },
+      "openingHours": [
+        {% for hours in site.operations.opening_hours %}
+        "{{ hours.days }} {{ hours.open }}-{{ hours.close }}"{% if not loop.last %},{% endif %}
+        {% endfor %}
+      ]
+    }
+    </script>
+
+    {% if current_page_id == 'stories' and story %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [{
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "{{ site.seo.site_url }}/index.html"
+      },{
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Stories",
+        "item": "{{ site.seo.site_url }}/stories.html"
+      },{
+        "@type": "ListItem",
+        "position": 3,
+        "name": "{{ story.title }}",
+        "item": "{{ site.seo.site_url }}/stories-{{ story.slug }}.html"
+      }]
+    }
+    </script>
+    {% endif %}
+
+    <style>
+        :root {
+            --primary: #1a1a1a;
+            --secondary: #636e72;
+            --accent: #d63031;
+            --bg: #ffffff;
+            --text: #2d3436;
+            --overlay: rgba(0, 0, 0, 0.4);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            margin: 0;
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: inherit;
+            justify-content: inherit;
+            align-items: inherit;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        header {
+            background: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            letter-spacing: -0.02em;
+            text-transform: uppercase;
+            font-weight: 800;
+            z-index: 1001;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 700;
+            margin-left: 2rem;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        nav a.highlight {
+            background: var(--accent);
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 2px;
+        }
+
+        /* Hamburger Menu */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            z-index: 1001;
+            padding: 5px;
+        }
+
+        .menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 992px) {
+            .menu-toggle {
+                display: flex;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                height: 100vh;
+                width: 70%;
+                background: white;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transition: right 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+                box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+                z-index: 1000;
+            }
+
+            .nav-links.active {
+                right: 0;
+            }
+
+            nav a {
+                margin: 1.5rem 0;
+                font-size: 1.1rem;
+            }
+
+            .menu-toggle.active span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 6px);
+            }
+
+            .menu-toggle.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .menu-toggle.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(5px, -6px);
+            }
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            line-height: 1.1;
+            margin-top: 0;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #b71c1c;
+        }
+
+        footer {
+            background: var(--primary);
+            color: white;
+            padding: 5rem 0 2rem;
+            margin-top: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo"><strong>{{ site.identity.name }}</strong></div>
+
+                <div class="menu-toggle" id="mobile-menu-btn">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <div class="nav-links" id="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="menu.html">Menu</a>
+                    <a href="stories.html">Stories</a>
+                    <a href="faq.html">FAQ</a>
+                    <a href="location.html">Location</a>
+                    <a href="booking.html" class="highlight">Book Now</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <script>
+        // Mobile Menu Toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', function () {
+            this.classList.toggle('active');
+            document.getElementById('nav-links').classList.toggle('active');
+            document.body.style.overflow = document.getElementById('nav-links').classList.contains('active') ? 'hidden' : 'auto';
+        });
+
+        // Close menu when clicking a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('mobile-menu-btn').classList.remove('active');
+                document.getElementById('nav-links').classList.remove('active');
+                document.body.style.overflow = 'auto';
+            });
+        });
+    </script>
+
+
+    <main>
+        {{ content | safe }}
+    </main>
+
+    {% if current_page_id != 'admin' %}
+    {% include "chatbot-widget.html" %}
+    {% endif %}
+
+    <footer>
+        <div class="container">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;">
+                <div>
+                    <h4>{{ site.identity.name }}</h4>
+                    <p>{{ site.identity.core_purpose }}</p>
+                </div>
+                <div>
+                    <h4>Visit Us</h4>
+                    <p>{{ site.contact.nap.address }}</p>
+                    <p>{{ site.contact.nap.phone }}</p>
+                </div>
+                <div>
+                    <h4>Hours</h4>
+                    {% for hours in site.operations.opening_hours %}
+                    <p>{{ hours.days }}: {{ hours.open }} - {{ hours.close }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+            <div
+                style="margin-top: 2rem; border-top: 1px solid #444; padding-top: 1rem; font-size: 0.8rem; opacity: 0.7;">
+                &copy; {{ current_year }} {{ site.identity.legal_name }}. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,30 @@
+<section class="menu-grid" style="padding: 4rem 0; background: #fff;">
+    <div class="container">
+        <h2 style="text-align: center; margin-bottom: 3rem;">Our Menu</h2>
+        {% for category in menu.categories %}
+        <div class="menu-category" style="margin-bottom: 3rem;">
+            <h3 style="border-bottom: 2px solid var(--accent); padding-bottom: 0.5rem; display: inline-block;">{{
+                category.name }}</h3>
+            <div class="menu-items"
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+                {% for item in category.items %}
+                <div class="menu-item" style="padding-bottom: 1.5rem; border-bottom: 1px solid #f0f0f0;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
+                        <h4 style="margin: 0; font-size: 1.1rem; font-weight: 700;">{{ item.name }}</h4>
+                    </div>
+                    {% if item.description %}
+                    <p style="margin: 0; font-size: 0.9rem; color: var(--secondary); line-height: 1.4;">{{
+                        item.description }}</p>
+                    {% endif %}
+                    {% if item.is_signature %}
+                    <span
+                        style="font-size: 0.7rem; background: var(--accent); color: white; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">Signature</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Board - Management</title>
+    <!-- FullCalendar CSS -->
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #81B29A;
+            --bg-color: #F4F1DE;
+            --text-color: #3D405B;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .view-toggle {
+            background: #fff;
+            padding: 4px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .view-toggle button {
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 600;
+        }
+
+        .view-toggle button.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* List View Styles */
+        .editable-cell input {
+            width: 100%;
+            border: 1px solid transparent;
+            padding: 4px;
+            background: transparent;
+            font-family: inherit;
+            color: inherit;
+        }
+
+        .editable-cell input:focus {
+            border-bottom: 1px solid var(--primary-color);
+            background: #fff;
+            outline: none;
+        }
+
+        .btn-update {
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .btn-update:hover {
+            opacity: 0.9;
+        }
+
+        .delete-link:hover {
+            opacity: 0.8;
+        }
+
+        /* Calendar View Styles */
+        #calendar-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            display: none;
+        }
+
+        .fc-event {
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Status-based row highlighting */
+        tr.status-cancelled {
+            background-color: #fde8e8 !important;
+        }
+
+        tr.status-cancelled td {
+            color: #9b2c2c;
+        }
+
+        tr.status-full {
+            background-color: #fef3cd !important;
+        }
+
+        tr.status-manual_review {
+            background-color: #fff3cd !important;
+        }
+
+        tr.status-manual_review td {
+            color: #856404;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-confirmed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-full {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-manual_review {
+            background: #fff3cd;
+            color: #856404;
+            box-shadow: 0 2px 4px rgba(133, 100, 4, 0.1);
+        }
+
+        /* [V4.3] Full Warning specific */
+        .status-full {
+            border-left: 4px solid #E07A5F !important;
+        }
+
+        .status-manual_review {
+            border-left: 4px solid #F2CC8F !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <div>
+                <h1 style="margin:0;">Booking Board</h1>
+                <p style="color: #666; font-size: 0.9rem; margin: 4px 0 0 0;">Management System v4.3 (AI Driven)</p>
+            </div>
+            <div class="view-toggle">
+                <button id="btn-list" class="active" onclick="switchView('list')">List View</button>
+                <button id="btn-calendar" onclick="switchView('calendar')">Calendar View</button>
+            </div>
+        </header>
+
+        <!-- [V4.3] AI REAL-TIME DASHBOARD -->
+        <div class="dashboard-summary-bar"
+            style="display: flex; justify-content: space-between; background: #fff; padding: 1.2rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid {% if ai_status.is_open %}#81B29A{% else %}#E07A5F{% endif %};">
+            <div class="gbp-status">
+                <span style="font-weight: bold; font-size: 1.1rem;">
+                    {% if ai_status.is_open %}
+                    🟢 Open
+                    {% else %}
+                    🔴 Closed {% if ai_status.is_holiday %}(Holiday Mode){% endif %}
+                    {% endif %}
+                </span>
+                <div style="color: #666; font-size: 0.85rem; margin-top: 4px;">Today: {{ ai_status.hours }}</div>
+            </div>
+            <div class="ai-summary" style="text-align: right;">
+                <span class="badge"
+                    style="background: #EAE6D6; padding: 4px 12px; border-radius: 20px; font-size: 0.9rem; color: #3D405B; margin-left: 10px;">
+                    Today's Pax: <strong>{{ summary.total_pax }}</strong>
+                </span>
+                {% if summary.manual > 0 %}
+                <span class="badge"
+                    style="background: #F2CC8F; padding: 4px 12px; border-radius: 20px; font-size: 0.9rem; color: #856404; margin-left: 10px;">
+                    ⚠️ {{ summary.manual }} Manual Review
+                </span>
+                {% endif %}
+                {% if summary.full > 0 %}
+                <span class="badge"
+                    style="background: #E07A5F; padding: 4px 12px; border-radius: 20px; font-size: 0.9rem; color: #fff; margin-left: 10px;">
+                    🚨 {{ summary.full }} Full Warning
+                </span>
+                {% endif %}
+            </div>
+        </div>
+
+        <main>
+            <!-- LIST VIEW -->
+            <div id="list-view">
+                {% if bookings %}
+                <div class="table-container">
+                    <table
+                        style="width: 100%; border-collapse: collapse; background: white; border-radius: 1rem; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                        <thead style="background: #EAE6D6;">
+                            <tr>
+                                <th style="padding: 1rem; text-align: left; width: 120px;">Name</th>
+                                <th style="padding: 1rem; text-align: left; width: 110px;">Date</th>
+                                <th style="padding: 1rem; text-align: left; width: 80px;">Time</th>
+                                <th style="padding: 1rem; text-align: left; width: 60px;">Size</th>
+                                <th style="padding: 1rem; text-align: left;">Contact</th>
+                                <th style="padding: 1rem; text-align: left; width: 180px;">Status</th>
+                                <th style="padding: 1rem; text-align: left; width: 100px;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for b in bookings %}
+                            <tr id="row-{{ b.row_index }}"
+                                class="{% if b.status == 'FULL' %}status-full{% elif b.status == 'Manual_Review' %}status-manual_review{% endif %}"
+                                style="border-bottom: 1px solid #eee;">
+                                <td class="editable-cell" style="padding: 0.8rem;"><input type="text"
+                                        value="{{ b.name }}" data-key="name"></td>
+                                <td class="editable-cell" style="padding: 0.8rem;"><input type="text"
+                                        value="{{ b.date }}" data-key="date"></td>
+                                <td class="editable-cell" style="padding: 0.8rem;"><input type="text"
+                                        value="{{ b.time }}" data-key="time"></td>
+                                <td class="editable-cell" style="padding: 0.8rem;"><input type="number"
+                                        value="{{ b.group_size }}" data-key="group_size" style="width: 50px;"></td>
+                                <td class="editable-cell" style="padding: 0.8rem;">
+                                    {% if is_phone(b.contact) %}
+                                    <a href="tel:{{ b.contact }}"
+                                        style="color: var(--primary-color); text-decoration: none; font-weight: 500;">{{
+                                        b.contact }}</a>
+                                    {% else %}
+                                    {{ b.contact }}
+                                    {% endif %}
+                                    <input type="hidden" data-key="contact" value="{{ b.contact }}">
+                                </td>
+                                <td style="padding: 0.8rem;">
+                                    <select data-key="status" onchange="updateRowColor(this)"
+                                        style="padding: 4px; border-radius: 4px; border: 1px solid #ddd; font-weight: 600; width: 100%;">
+                                        <option value="Confirmed" {% if b.status=='Confirmed' %}selected{% endif %}>
+                                            Confirmed</option>
+                                        <option value="Pending" {% if b.status=='Pending' %}selected{% endif %}>Pending
+                                        </option>
+                                        <option value="Cancelled" {% if b.status=='Cancelled' %}selected{% endif %}>
+                                            Cancelled (Archive)</option>
+                                        <option value="Manual_Review" {% if b.status=='Manual_Review' %}selected{% endif
+                                            %}>
+                                            Manual Review</option>
+                                        <option value="FULL" {% if b.status=='FULL' %}selected{% endif %}>FULL</option>
+                                    </select>
+                                    <input type="hidden" data-key="needs_manual_review"
+                                        value="{{ b.needs_manual_review }}">
+                                </td>
+                                <td style="padding: 1rem; white-space: nowrap;">
+                                    <button class="btn-update" onclick="updateBooking({{ b.row_index }})"
+                                        style="width: 100%;">Update</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div style="text-align:center; padding: 4rem; background: white; border-radius: 1rem; color: #888;">
+                    <p style="font-size: 1.2rem;">Currently no bookings.</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- CALENDAR VIEW -->
+            <div id="calendar-container">
+                <div id="calendar"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- FullCalendar JS -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+    <script>
+        let calendar;
+
+        function switchView(view) {
+            const listEl = document.getElementById('list-view');
+            const calEl = document.getElementById('calendar-container');
+            const btnList = document.getElementById('btn-list');
+            const btnCal = document.getElementById('btn-calendar');
+
+            if (view === 'list') {
+                listEl.classList.remove('hidden');
+                calEl.style.display = 'none';
+                btnList.classList.add('active');
+                btnCal.classList.remove('active');
+            } else {
+                listEl.classList.add('hidden');
+                calEl.style.display = 'block';
+                btnList.classList.remove('active');
+                btnCal.classList.add('active');
+
+                if (!calendar) {
+                    initCalendar();
+                } else {
+                    calendar.render();
+                    calendar.refetchEvents();
+                }
+            }
+        }
+
+        function initCalendar() {
+            var calendarEl = document.getElementById('calendar');
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: '/api/calendar/events',
+                eventClick: function (info) {
+                    alert(`Booking: ${info.event.title}\nStatus: ${info.event.extendedProps.status}\nContact: ${info.event.extendedProps.contact}`);
+                }
+            });
+            calendar.render();
+        }
+
+        function updateBooking(rowIndex) {
+            const row = document.getElementById(`row-${rowIndex}`);
+            const btn = row.querySelector('.btn-update');
+            const data = { row_index: rowIndex };
+
+            row.querySelectorAll('[data-key]').forEach(el => {
+                data[el.getAttribute('data-key')] = el.value;
+            });
+
+            btn.textContent = 'Saving...';
+            btn.disabled = true;
+
+            fetch('/api/bookings/update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+                .then(res => res.json())
+                .then(res => {
+                    if (res.status === 'success') {
+                        btn.textContent = 'Updated!';
+                        btn.style.background = '#81B29A';
+                        setTimeout(() => {
+                            btn.textContent = 'Update';
+                            btn.style.background = '';
+                            btn.disabled = false;
+                        }, 2000);
+                        if (calendar) calendar.refetchEvents();
+                    } else {
+                        alert('Update failed: ' + res.message);
+                        btn.textContent = 'Update';
+                        btn.disabled = false;
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Connection error');
+                    btn.textContent = 'Update';
+                    btn.disabled = false;
+                });
+        }
+
+        function updateRowColor(selectEl) {
+            const row = selectEl.closest('tr');
+            row.className = row.className.replace(/status-\S+/g, '').trim();
+            const val = selectEl.value;
+            if (val === 'Cancelled') row.classList.add('status-cancelled');
+            else if (val === 'FULL') row.classList.add('status-full');
+            else if (val === 'Manual_Review') row.classList.add('status-manual_review');
+        }
+    </script>
+</body>
+
+</html>

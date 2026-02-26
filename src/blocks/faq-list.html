@@ -1,0 +1,13 @@
+<section class="faq-list" style="padding: 4rem 0; background: #fff;">
+    <div class="container">
+        <h2 style="margin-bottom: 2rem;">Common Questions</h2>
+        <div class="faq-container">
+            {% for item in faq.questions %}
+            <div class="faq-item" style="margin-bottom: 2rem; border-bottom: 1px solid #eee; padding-bottom: 1rem;">
+                <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--primary);">{{ item.question }}</h3>
+                <p style="color: var(--secondary);">{{ item.answer }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>

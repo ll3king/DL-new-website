@@ -1,0 +1,24 @@
+<article class="story-detail" style="padding: 6rem 0; background: #fff;">
+    <div class="container" style="max-width: 800px;">
+        <header style="margin-bottom: 4rem; text-align: center;">
+            <div
+                style="font-size: 0.9rem; color: var(--accent); font-weight: 700; margin-bottom: 1rem; text-transform: uppercase;">
+                {{ active_story.date }} | By {{ active_story.author }}
+            </div>
+            <h1 style="font-size: 3.5rem; line-height: 1.1; margin-bottom: 2rem;">{{ active_story.title }}</h1>
+            <div style="height: 480px; border-radius: 12px; overflow: hidden; margin-bottom: 2rem;">
+                <img src="{{ active_story.cover }}" alt="{{ active_story.title }}"
+                    style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+        </header>
+
+        <div style="font-size: 1.25rem; line-height: 1.8; color: var(--text);">
+            {{ active_story.content | safe }}
+        </div>
+
+        <footer style="margin-top: 5rem; padding-top: 3rem; border-top: 1px solid #eee;">
+            <a href="stories.html" style="font-weight: 700; color: var(--primary); text-decoration: none;">&larr; Back
+                to all stories</a>
+        </footer>
+    </div>
+</article>

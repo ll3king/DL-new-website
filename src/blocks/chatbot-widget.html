@@ -1,0 +1,129 @@
+<!-- Chatbot Widget Block -->
+<div id="dandy-chatbot" class="chatbot-container"
+    style="position: fixed; bottom: 30px; right: 30px; z-index: 999; font-family: inherit;">
+    <!-- Chat Toggle Button -->
+    <button id="chat-toggle"
+        style="width: 60px; height: 60px; border-radius: 50%; background: var(--accent); color: white; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; transition: transform 0.3s ease;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+    </button>
+
+    <!-- Chat Window (Initially Hidden) -->
+    <div id="chat-window"
+        style="display: none; position: absolute; bottom: 80px; right: 0; width: 350px; height: 500px; background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #eee; overflow: hidden; flex-direction: column;">
+        <!-- Header -->
+        <div
+            style="background: var(--primary); padding: 1.2rem; color: white; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <strong style="display: block; font-size: 0.9rem;">Dandy Lane Concierge</strong>
+                <span style="font-size: 0.7rem; opacity: 0.8;">Online • Always Crafting</span>
+            </div>
+            <button id="close-chat"
+                style="background: transparent; border: none; color: white; cursor: pointer; font-size: 1.2rem;">&times;</button>
+        </div>
+
+        <!-- Messages Area -->
+        <div id="chat-messages"
+            style="flex: 1; overflow-y: auto; padding: 1rem; background: #f9f9f9; display: flex; flex-direction: column; gap: 0.8rem;">
+            <div class="message bot"
+                style="background: white; padding: 0.8rem; border-radius: 4px 12px 12px 12px; max-width: 85%; align-self: flex-start; box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size: 0.9rem;">
+                {{ site.chatbot.welcome_message }}
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <form id="chat-form"
+            style="padding: 1rem; border-top: 1px solid #eee; display: flex; gap: 0.5rem; background: white;">
+            <input type="text" id="chat-input" placeholder="Ask about coffee or booking..."
+                style="flex: 1; border: 1px solid #ddd; padding: 0.8rem; border-radius: 4px; outline: none; font-size: 0.9rem;">
+            <button type="submit"
+                style="background: var(--accent); color: white; border: none; padding: 0.8rem; border-radius: 4px; cursor: pointer;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const toggle = document.getElementById('chat-toggle');
+        const window = document.getElementById('chat-window');
+        const close = document.getElementById('close-chat');
+        const form = document.getElementById('chat-form');
+        const input = document.getElementById('chat-input');
+        const messages = document.getElementById('chat-messages');
+
+        // Toggle Chat
+        toggle.addEventListener('click', () => {
+            window.style.display = window.style.display === 'none' ? 'flex' : 'none';
+            if (window.style.display === 'flex') input.focus();
+        });
+
+        close.addEventListener('click', () => { window.style.display = 'none'; });
+
+        // Handle Submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = input.value.trim();
+            if (!text) return;
+
+            // Add User Message
+            appendMessage(text, 'user');
+            input.value = '';
+
+            // Session ID for anonymous web users
+            let webUserId = localStorage.getItem('dandy_chat_uid');
+            if (!webUserId) {
+                webUserId = 'web_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('dandy_chat_uid', webUserId);
+            }
+
+            // Add loading indicator
+            const loadingId = 'loading-' + Date.now();
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = loadingId;
+            loadingDiv.className = 'message bot';
+            loadingDiv.style.cssText = 'background: white; padding: 0.8rem; border-radius: 4px 12px 12px 12px; max-width: 85%; align-self: flex-start; box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size: 0.9rem; opacity: 0.6;';
+            loadingDiv.textContent = '...';
+            messages.appendChild(loadingDiv);
+            messages.scrollTop = messages.scrollHeight;
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text, sender_id: webUserId })
+                });
+                const data = await response.json();
+
+                if (messages.contains(loadingDiv)) messages.removeChild(loadingDiv);
+
+                if (data.reply) {
+                    appendMessage(data.reply, 'bot');
+                } else {
+                    throw new Error('No reply');
+                }
+            } catch (error) {
+                if (messages.contains(loadingDiv)) messages.removeChild(loadingDiv);
+                appendMessage("I'm sorry, I'm having trouble connecting to the lane right now. Cheers for your patience.", 'bot');
+            }
+        });
+
+        function appendMessage(text, role) {
+            const div = document.createElement('div');
+            div.className = `message ${role}`;
+            div.style.cssText = role === 'user'
+                ? 'background: var(--accent); color: white; padding: 0.8rem; border-radius: 12px 12px 4px 12px; max-width: 85%; align-self: flex-end; box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size: 0.9rem;'
+                : 'background: white; padding: 0.8rem; border-radius: 4px 12px 12px 12px; max-width: 85%; align-self: flex-start; box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size: 0.9rem;';
+            div.textContent = text;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+    });
+</script>

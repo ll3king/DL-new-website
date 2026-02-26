@@ -1,0 +1,12 @@
+flask
+flask-sqlalchemy
+google-genai
+python-dotenv
+requests
+gspread
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+beautifulsoup4
+html5lib
+apscheduler

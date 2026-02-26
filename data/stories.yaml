@@ -1,0 +1,50 @@
+stories:
+  - slug: "the-art-of-the-wine-infused-hollandaise"
+    title: "The Art of the Wine-Infused Hollandaise"
+    date: "2026-02-15"
+    author: "Head Chef"
+    summary: "Discover why we spend 2 hours every morning perfecting our signature wine-infused sauces."
+    content: "The secret to our Benedict isn't just the eggs; it's the reduction. By infusing premium Tasmanian white and red wines into our daily batch of hollandaise, we achieve a complexity of flavor that standard sauces simply can't match. Each morning, our kitchen team whisks together six distinct variations, from a bright Sauvignon Blanc citrus blend for seafood to a deeper, robust Pinot Noir reduction that pairs perfectly with our smoked bacon."
+    featured: true
+    cover: "assets/media/dish_benny.jpg"
+    tags: ["Signature", "Behind the Scenes"]
+
+  - slug: "creating-a-quiet-workspace-in-hobart-cbd"
+    title: "Creating a Quiet Workspace in Hobart CBD"
+    date: "2026-02-10"
+    author: "Dandy Lane Team"
+    summary: "Why we intentionally designed our lane sanctuary for remote workers and deep thinkers."
+    content: "We believe a cafe should be more than just a place to eat. By choosing a location tucked inside Collins Court, we've created a natural noise buffer from the city traffic. Combined with high-speed WiFi and strategic power outlets, it's the perfect spot for your next deep-work session. We've even calibrated our acoustic playlist to enhance focus, making Dandy Lane a favorite for local freelancers and creative professionals seeking a laptop-friendly sanctuary."
+    featured: false
+    cover: "assets/media/faq_hero.jpg"
+    tags: ["Community", "Workplace"]
+
+  - slug: "sourcing-tasmanian-best-produce"
+    title: "Sourcing Tasmania's Best Produce"
+    date: "2026-02-01"
+    author: "Operations Manager"
+    summary: "Meet the local farmers behind our Potato Parmesan Rosti and Steak Sandwich."
+    content: "Our Scotch steak comes from local Tassie growers who prioritize ethical farming. We believe that shortening the distance from farm to plate is the only way to ensure the consistent quality our regulars expect. From local sourdough bakers to seasonal vegetable producers in the Derwent Valley, our menu is a love letter to Tasmanian agriculture."
+    featured: true
+    cover: "assets/media/dish_steak.jpg"
+    tags: ["Suppliers", "Local"]
+
+  - slug: "the-alchemist-of-acids"
+    title: "The Alchemist of Acids: Coffee in TAS"
+    date: "2026-02-20"
+    author: "Head Barista"
+    summary: "How we balance coffee acidity against the unique Tasmanian climate for the perfect pull."
+    content: "Tasmania's cool climate and variable humidity present a unique challenge for coffee extraction. At Dandy Lane, our baristas approach coffee like alchemists. We adjust our grind size and water temperature multiple times a day as the sea breeze shifts through the lane. By carefully managing the acidity profile of our beans, we ensure that every flat white or espresso delivered has that signature Dandy Lane balance: bright, clean, and consistently smooth regardless of the weather outside."
+    featured: true
+    cover: "assets/media/stories_hero.png"
+    tags: ["Coffee", "Craftsmanship"]
+
+  - slug: "hand-whisked-heritage"
+    title: "Hand-Whisked Heritage"
+    date: "2026-02-22"
+    author: "Kitchen Lead"
+    summary: "A deep dive into the physical craft and labor behind our daily hollandaise ritual."
+    content: "There is no machine in the world that can replicate the texture of a hand-whisked hollandaise. Every morning at 6:30 AM, our kitchen echoes with the rhythm of copper whisks hitting stainless steel. This heritage technique allows us to monitor the precise emulsification of local butter and regional wine reductions. It is a labor-intensive ritual, but it is the cornerstone of our culinary identity. When you see that perfectly silken sauce on your rosti, you're tasting hours of physical craft."
+    featured: true
+    cover: "assets/media/dish_rosti.jpg"
+    tags: ["Culinary", "Traditional Techniques"]

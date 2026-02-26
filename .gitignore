@@ -1,0 +1,26 @@
+# Artifacts and temporary files
+.gemini/
+.agent/
+.agents/
+tmp/
+
+# Environment variables and secrets
+.env
+*.json
+!package.json
+!composer.json
+!deno.json
+!site.yaml
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+venv/
+
+# Build output
+public/
+
+# System files
+.DS_Store
+Thumbs.db

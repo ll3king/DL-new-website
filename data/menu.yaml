@@ -1,0 +1,38 @@
+categories:
+  - name: "Signature Brunch"
+    description: "Our world-class brunch staples, defined by fresh local ingredients and house-made sauces."
+    items:
+      - name: "Wine-Infused Benedicts"
+        price: 22.0
+        description: "Poached eggs, wine-infused hollandaise, artisanal sourdough. Choice of smoked salmon or bacon."
+        is_signature: true
+        dietary: ["GF Option Available"]
+      - name: "Potato Parmesan Rosti"
+        price: 19.5
+        description: "House-made crispy rosti, grilled halloumi, avocado, wilted spinach, poached egg."
+        is_signature: true
+        dietary: ["Vegetarian"]
+      - name: "Scotch Steak Sandwich"
+        price: 24.0
+        description: "Prime Scotch steak, caramelized onion jam, local rocket, swiss cheese, house relish."
+        is_signature: true
+  - name: "Brunch Staples"
+    items:
+      - name: "Avocado & Feta Smashed"
+        price: 17.5
+        description: "Tasmanian sea salt, dukkah, lemon, and crumbled Danish feta on sourdough."
+        dietary: ["Vegetarian", "Vegan Option"]
+      - name: "Chilli Scrambled Eggs"
+        price: 18.0
+        description: "House-made chilli oil, fresh coriander, and fried shallots."
+  - name: "Specialty Coffee"
+    description: "Expertly roasted and brewed precisely for the discerning coffee lover."
+    items:
+      - name: "Flat White / Latte / Cap"
+        price: 4.5
+      - name: "Batch Brew"
+        price: 5.0
+        description: "Rotating single-origin filters."
+      - name: "Cold Brew"
+        price: 5.5
+        description: "Slow-steeped for 12 hours for a clean finish."

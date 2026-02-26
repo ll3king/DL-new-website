@@ -1,0 +1,141 @@
+<section class="booking-section" style="padding: 5rem 0; background: var(--bg);">
+    <div class="container" style="max-width: 800px;">
+        <div class="booking-card"
+            style="background: white; padding: 3rem; border-radius: 4px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); border: 1px solid #eee;">
+            <div class="booking-header"
+                style="margin-bottom: 2.5rem; border-bottom: 1px solid #f0f0f0; padding-bottom: 2rem;">
+                <h2 style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--primary);">{{ site.booking.title }}</h2>
+                <p style="color: var(--secondary);">{{ site.booking.emphasis }}</p>
+                <div class="capacity-alert"
+                    style="margin-top: 1rem; font-size: 0.85rem; padding: 0.8rem 1rem; background: #fffcf0; border-left: 3px solid #f39c12; color: #8a6d3b;">
+                    <strong>Policy:</strong> {{ site.booking.capacity.max_per_hour }} people per hour limit.
+                    Interval: {{ site.booking.capacity.interval_minutes }} min sequences.
+                </div>
+            </div>
+
+            <form id="bookingForm" class="grid-form"
+                style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div class="form-group">
+                    <label
+                        style="display: block; font-weight: 700; margin-bottom: 0.5rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">Full
+                        Name</label>
+                    <input type="text" name="name" required
+                        style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 2px;">
+                </div>
+                <div class="form-group">
+                    <label
+                        style="display: block; font-weight: 700; margin-bottom: 0.5rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">Group
+                        Size</label>
+                    <select name="group_size" required
+                        style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 2px;">
+                        {% for i in range(1, 9) %}<option value="{{ i }}">{{ i }} People</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label
+                        style="display: block; font-weight: 700; margin-bottom: 0.5rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">Date</label>
+                    <input type="date" id="bookingDate" name="date" required
+                        style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 2px;">
+                </div>
+                <div class="form-group">
+                    <label
+                        style="display: block; font-weight: 700; margin-bottom: 0.5rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">Preferred
+                        Time</label>
+                    <select id="bookingTime" name="time" required
+                        style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 2px;">
+                        <option value="">Select Date First</option>
+                    </select>
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label
+                        style="display: block; font-weight: 700; margin-bottom: 0.5rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">Email
+                        Address</label>
+                    <input type="email" name="email" required
+                        style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 2px;">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label
+                        style="display: block; font-weight: 700; margin-bottom: 0.5rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">Mobile
+                        Number</label>
+                    <input type="tel" name="mobile" required
+                        style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 2px;">
+                </div>
+
+                <div style="grid-column: span 2; margin-top: 1rem;">
+                    <button type="submit" class="btn" style="width: 100%; cursor: pointer; border: none;">Request Table
+                        Reservation</button>
+                    <p style="font-size: 0.75rem; color: var(--secondary); margin-top: 1rem; text-align: center;">
+                        By booking, you agree to our terms: {{ site.booking.terms | join(', ') }}
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script>
+    // L4 Logic: Dynamic Time Generation based on L0 Data
+    document.addEventListener('DOMContentLoaded', function () {
+        const openingHours = {{ site.operations.opening_hours | dump | safe
+    }};
+    const interval = {{ site.booking.capacity.interval_minutes }};
+    const dateInput = document.getElementById('bookingDate');
+    const timeSelect = document.getElementById('bookingTime');
+
+    // Set min date to today
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.setAttribute('min', today);
+
+    dateInput.addEventListener('change', function (e) {
+        const selectedDate = new Date(e.target.value);
+        const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
+
+        // Find relevant hours
+        const match = openingHours.find(h => {
+            if (h.days.includes('-')) {
+                const [start, end] = h.days.split(' - ');
+                // Simple range check logic (abbreviated for Dandy Lane specific 07:00-15:00/09:00-14:00)
+                return dayName !== 'Saturday' && dayName !== 'Sunday';
+            }
+            return h.days.includes(dayName);
+        });
+
+        timeSelect.innerHTML = '';
+
+        if (match) {
+            let current = parseTime(match.open);
+            const end = parseTime(match.close);
+
+            while (current < end) {
+                const timeStr = formatTime(current);
+                const opt = document.createElement('option');
+                opt.value = timeStr;
+                opt.textContent = timeStr;
+                timeSelect.appendChild(opt);
+                current.setMinutes(current.getMinutes() + interval);
+            }
+        } else {
+            const opt = document.createElement('option');
+            opt.textContent = "Closed on this day";
+            timeSelect.appendChild(opt);
+        }
+    });
+
+    function parseTime(t) {
+        const [h, m] = t.split(':').map(Number);
+        const d = new Date();
+        d.setHours(h, m, 0, 0);
+        return d;
+    }
+
+    function formatTime(d) {
+        return d.getHours().toString().padStart(2, '0') + ':' +
+            d.getMinutes().toString().padStart(2, '0');
+    }
+
+    document.getElementById('bookingForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        alert('Reservation Request Sent! We will confirm your sanctuary spot via email shortly.');
+    });
+    });
+</script>
