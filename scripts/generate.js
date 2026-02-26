@@ -215,21 +215,7 @@ Allow: /
 Sitemap: ${siteData.seo.site_url}/sitemap.xml`;
         fs.writeFileSync(path.join(PUBLIC_DIR, 'robots.txt'), robots);
 
-        // 6. Export Knowledge for Cloudflare Functions (L0 -> L4 logic)
-        const FUNCTIONS_DATA_DIR = path.join(__dirname, '../functions/api');
-        if (!fs.existsSync(path.join(__dirname, '../functions'))) fs.mkdirSync(path.join(__dirname, '../functions'));
-        if (!fs.existsSync(FUNCTIONS_DATA_DIR)) fs.mkdirSync(FUNCTIONS_DATA_DIR);
-
-        const chatbotConfig = {
-            identity: siteData.identity,
-            operations: siteData.operations,
-            dishes: siteData.signature_dishes,
-            booking_terms: siteData.booking.terms,
-            system_prompt: siteData.chatbot.system_prompt
-        };
-        fs.writeFileSync(path.join(FUNCTIONS_DATA_DIR, 'config.json'), JSON.stringify(chatbotConfig, null, 2));
-
-        console.log("[L3] Build Successful. Files written to /public and /functions/api.");
+        console.log("[L3] Build Successful. Files written to /public.");
 
     } catch (e) {
         console.error("[L3] Build Failed:", e.stack);
