@@ -1,7 +1,12 @@
 /**
  * Cloudflare Pages Function: /api/bookings
- * Handles new reservation requests and writes them to Google Sheets.
+ * Handles reservation requests -> Google Sheets
  */
+
+const HEADERS = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*"
+};
 
 export async function onRequestPost(context) {
     const { request, env } = context;
@@ -10,28 +15,37 @@ export async function onRequestPost(context) {
         const body = await request.json();
         const { name, email, mobile, group_size, date, time } = body;
 
-        // 1. Validation
-        if (!name || !email || !mobile || !date || !time) {
-            return new Response(JSON.stringify({ error: "Missing required fields" }), { status: 400 });
+        if (!name || !email || !date || !time) {
+            return new Response(JSON.stringify({ error: "Missing required fields: name, email, date, time" }), { status: 400, headers: HEADERS });
         }
 
-        // 2. Preparation for Google Sheets
-        // SPREADSHEET_ID and GOOGLE_SERVICE_ACCOUNT_JSON should be in env
+        // Check if Google Sheets is configured
+        if (!env.GOOGLE_SERVICE_ACCOUNT_JSON) {
+            console.error("GOOGLE_SERVICE_ACCOUNT_JSON not configured");
+            return new Response(JSON.stringify({ error: "Booking system not configured" }), { status: 503, headers: HEADERS });
+        }
+
+        let serviceAccount;
+        try {
+            serviceAccount = JSON.parse(env.GOOGLE_SERVICE_ACCOUNT_JSON);
+        } catch (e) {
+            console.error("Failed to parse service account JSON:", e.message);
+            return new Response(JSON.stringify({ error: "Service config error" }), { status: 500, headers: HEADERS });
+        }
+
         const SPREADSHEET_ID = env.SPREADSHEET_ID || '1d-FmRVSMfrUqNOhJjsbNVk2cgeqvkk5ZdDnDtx8QONc';
 
-        // We expect the JSON to be stored as a string in environment variables
-        const serviceAccount = JSON.parse(env.GOOGLE_SERVICE_ACCOUNT_JSON);
-
-        // 3. Get Auth Token (JWT)
+        // Get auth token
         const token = await getGoogleAuthToken(serviceAccount);
 
-        // 4. Append to Sheet
-        const range = 'Sheet1!A:G'; // Adjust sheet name if necessary
-        const url = `https://sheets.googleapis.com/v1/spreadsheets/${SPREADSHEET_ID}/values/${range}:append?valueInputOption=USER_ENTERED`;
+        // Determine status
+        const status = parseInt(group_size) > 6 ? "Manual_Review" : "Confirmed";
 
-        const values = [
-            [name, email, mobile, group_size, date, time, new Date().toISOString()]
-        ];
+        // Append to Sheet
+        const range = 'Sheet1!A:H';
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${range}:append?valueInputOption=USER_ENTERED`;
+
+        const values = [[name, email, mobile || '', group_size || '1', date, time, new Date().toISOString(), status]];
 
         const response = await fetch(url, {
             method: 'POST',
@@ -43,50 +57,48 @@ export async function onRequestPost(context) {
         });
 
         if (!response.ok) {
-            const errData = await response.json();
-            throw new Error(`Sheets API Error: ${errData.error?.message || response.statusText}`);
+            const errData = await response.text();
+            console.error("Sheets API Error:", errData);
+            return new Response(JSON.stringify({ error: "Failed to save booking" }), { status: 502, headers: HEADERS });
         }
 
-        return new Response(JSON.stringify({ status: "success", message: "Booking received" }), {
-            headers: { "Content-Type": "application/json" }
-        });
+        return new Response(JSON.stringify({ status: "success", message: "Booking received", booking_status: status }), { headers: HEADERS });
 
     } catch (error) {
-        console.error("Booking System Error:", error);
-        return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+        console.error("Booking Error:", error.message, error.stack);
+        return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: HEADERS });
     }
 }
 
-/**
- * Generates a Google Auth Token using Service Account credentials
- * Implementation using Web Crypto API (supported by Cloudflare)
- */
+// Handle CORS preflight
+export async function onRequestOptions() {
+    return new Response(null, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type"
+        }
+    });
+}
+
+// --- Google Auth Helpers ---
 async function getGoogleAuthToken(serviceAccount) {
     const { client_email, private_key } = serviceAccount;
 
-    const header = {
-        alg: "RS256",
-        typ: "JWT"
-    };
-
     const now = Math.floor(Date.now() / 1000);
-    const claimSet = {
+    const header = base64url(JSON.stringify({ alg: "RS256", typ: "JWT" }));
+    const claimSet = base64url(JSON.stringify({
         iss: client_email,
         scope: "https://www.googleapis.com/auth/spreadsheets",
         aud: "https://oauth2.googleapis.com/token",
         exp: now + 3600,
         iat: now
-    };
+    }));
 
-    const encodedHeader = btoa(JSON.stringify(header));
-    const encodedClaimSet = btoa(JSON.stringify(claimSet));
-    const signatureInput = `${encodedHeader}.${encodedClaimSet}`;
-
-    // Sign using RSA-SHA256
-    const signature = await signAtEdge(signatureInput, private_key);
+    const signatureInput = `${header}.${claimSet}`;
+    const signature = await signWithRSA(signatureInput, private_key);
     const jwt = `${signatureInput}.${signature}`;
 
-    // Exchange JWT for Access Token
     const res = await fetch("https://oauth2.googleapis.com/token", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -94,42 +106,32 @@ async function getGoogleAuthToken(serviceAccount) {
     });
 
     const data = await res.json();
-    if (!res.ok) throw new Error(`Token Exchange Failed: ${data.error_description || data.error}`);
-
+    if (!res.ok || !data.access_token) {
+        throw new Error(`Token exchange failed: ${data.error_description || data.error || 'Unknown error'}`);
+    }
     return data.access_token;
 }
 
-/**
- * Sign string using RSA-SHA256 with current Cloudflare subtle crypto
- */
-async function signAtEdge(content, pem) {
-    const pemHeader = "-----BEGIN PRIVATE KEY-----";
-    const pemFooter = "-----END PRIVATE KEY-----";
-    const pemContents = pem.replace(pemHeader, "").replace(pemFooter, "").replace(/\s/g, "");
+function base64url(str) {
+    return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
 
-    // Binary conversion
-    const binaryDerString = atob(pemContents);
-    const binaryDer = new Uint8Array(binaryDerString.length);
-    for (let i = 0; i < binaryDerString.length; i++) {
-        binaryDer[i] = binaryDerString.charCodeAt(i);
-    }
+async function signWithRSA(content, pem) {
+    const pemContents = pem
+        .replace(/-----BEGIN PRIVATE KEY-----/g, '')
+        .replace(/-----END PRIVATE KEY-----/g, '')
+        .replace(/\s/g, '');
+
+    const binaryDer = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
 
     const key = await crypto.subtle.importKey(
         "pkcs8",
         binaryDer.buffer,
-        {
-            name: "RSASSA-PKCS1-v1_5",
-            hash: "SHA-256",
-        },
+        { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
         false,
         ["sign"]
     );
 
-    const signature = await crypto.subtle.sign(
-        "RSASSA-PKCS1-v1_5",
-        key,
-        new TextEncoder().encode(content)
-    );
-
-    return btoa(String.fromCharCode(...new Uint8Array(signature)));
+    const sig = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", key, new TextEncoder().encode(content));
+    return base64url(String.fromCharCode(...new Uint8Array(sig)));
 }
