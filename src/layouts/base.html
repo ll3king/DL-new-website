@@ -48,30 +48,34 @@
     }
     </script>
 
-    {% if current_page_id == 'stories' and story %}
+    <!-- Dynamic Page-Specific Schema -->
+    {% if page_specific_schema %}
+    {{ page_specific_schema | safe }}
+    {% endif %}
+
+    <!-- Breadcrumb Schema (AEO) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
-      "itemListElement": [{
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Home",
-        "item": "{{ site.seo.site_url }}/index.html"
-      },{
-        "@type": "ListItem",
-        "position": 2,
-        "name": "Stories",
-        "item": "{{ site.seo.site_url }}/stories.html"
-      },{
-        "@type": "ListItem",
-        "position": 3,
-        "name": "{{ story.title }}",
-        "item": "{{ site.seo.site_url }}/stories-{{ story.slug }}.html"
-      }]
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "{{ site.seo.site_url }}/index.html"
+        }
+        {% if current_page_id != 'index' %}
+        ,{
+          "@type": "ListItem",
+          "position": 2,
+          "name": "{{ page_title }}",
+          "item": "{{ site.seo.site_url }}/{{ slug or (current_page_id + '.html') }}"
+        }
+        {% endif %}
+      ]
     }
     </script>
-    {% endif %}
 
     <style>
         :root {

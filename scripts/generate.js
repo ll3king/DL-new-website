@@ -75,13 +75,63 @@ function render() {
         ];
 
 
+        // 3. Schema Generation Helpers (AEO Logic)
+        function generateFaqSchema(faqs) {
+            return JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                "mainEntity": faqs.questions.map(q => ({
+                    "@type": "Question",
+                    "name": q.question,
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": q.answer
+                    }
+                }))
+            }, null, 2);
+        }
+
+        function generateMenuSchema(menuData, siteData) {
+            const menuItems = [];
+            menuData.categories.forEach(cat => {
+                cat.items.forEach(item => {
+                    menuItems.push({
+                        "@type": "MenuItem",
+                        "name": item.name,
+                        "description": item.description || "",
+                        "offers": {
+                            "@type": "Offer",
+                            "price": item.price,
+                            "priceCurrency": "AUD"
+                        }
+                    });
+                });
+            });
+
+            return JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "Menu",
+                "name": "Dandy Lane Menu",
+                "mainEntityOfPage": siteData.seo.site_url + "/menu.html",
+                "hasMenuItem": menuItems
+            }, null, 2);
+        }
+
         const generatedPages = [];
 
-        // 3. Render Static Pages
+        // 4. Render Static Pages
         pages.forEach(page => {
             console.log(`[L3] Rendering: ${page.slug}`);
             const pageConfig = siteData.pages[page.id] || {};
             generatedPages.push(page.slug);
+
+            // Generate Page-Specific Schema
+            let pageSchema = "";
+            if (page.id === 'faq') {
+                pageSchema = `<script type="application/ld+json">\n${generateFaqSchema(faqData)}\n</script>`;
+            } else if (page.id === 'menu') {
+                pageSchema = `<script type="application/ld+json">\n${generateMenuSchema(menuData, siteData)}\n</script>`;
+            }
 
             let pageBody = "";
             page.blocks.forEach(blockFile => {
@@ -98,6 +148,7 @@ function render() {
                 page_title: pageConfig.title,
                 page_description: pageConfig.emphasis,
                 current_page_id: page.id,
+                page_specific_schema: pageSchema,
                 current_year: new Date().getFullYear()
             });
 
@@ -105,7 +156,7 @@ function render() {
             fs.writeFileSync(path.join(PUBLIC_DIR, page.slug), finalHtml);
         });
 
-        // 4. Render Dynamic Story Detail Pages
+        // 5. Render Dynamic Story Detail Pages
         storiesData.stories.forEach(story => {
             const slug = `stories-${story.slug}.html`;
             generatedPages.push(slug);
@@ -122,6 +173,7 @@ function render() {
                 page_title: story.title,
                 page_description: story.summary,
                 current_page_id: 'stories',
+                slug: slug,
                 story: story,
                 current_year: new Date().getFullYear()
             });
@@ -142,7 +194,21 @@ Allow: /
 Sitemap: ${siteData.seo.site_url}/sitemap.xml`;
         fs.writeFileSync(path.join(PUBLIC_DIR, 'robots.txt'), robots);
 
-        console.log("[L3] Build Successful. Files written to /public.");
+        // 6. Export Knowledge for Cloudflare Functions (L0 -> L4 logic)
+        const FUNCTIONS_DATA_DIR = path.join(__dirname, '../functions/api');
+        if (!fs.existsSync(path.join(__dirname, '../functions'))) fs.mkdirSync(path.join(__dirname, '../functions'));
+        if (!fs.existsSync(FUNCTIONS_DATA_DIR)) fs.mkdirSync(FUNCTIONS_DATA_DIR);
+
+        const chatbotConfig = {
+            identity: siteData.identity,
+            operations: siteData.operations,
+            dishes: siteData.signature_dishes,
+            booking_terms: siteData.booking.terms,
+            system_prompt: siteData.chatbot.system_prompt
+        };
+        fs.writeFileSync(path.join(FUNCTIONS_DATA_DIR, 'config.json'), JSON.stringify(chatbotConfig, null, 2));
+
+        console.log("[L3] Build Successful. Files written to /public and /functions/api.");
 
     } catch (e) {
         console.error("[L3] Build Failed:", e.stack);
