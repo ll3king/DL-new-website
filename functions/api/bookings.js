@@ -117,7 +117,9 @@ function base64url(str) {
 }
 
 async function signWithRSA(content, pem) {
+    // Robust PEM cleaning for environment variables
     const pemContents = pem
+        .replace(/\\n/g, '\n') // Handle escaped newlines
         .replace(/-----BEGIN PRIVATE KEY-----/g, '')
         .replace(/-----END PRIVATE KEY-----/g, '')
         .replace(/\s/g, '');
