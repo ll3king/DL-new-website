@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 const nunjucks = require('nunjucks');
+const sharp = require('sharp');
 
 // Law Check: L3 can read L0-L2
 const DATA_PATH = path.join(__dirname, '../data/site.yaml');
@@ -10,19 +11,54 @@ const BLOCKS_DIR = path.join(__dirname, '../src/blocks');
 const PUBLIC_DIR = path.join(__dirname, '../public');
 const SRC_ASSETS_DIR = path.join(__dirname, '../src/assets');
 
-// Asset Pipeline: Copy src/assets -> public/assets during build
-function copyAssets(src, dest) {
+// Asset Pipeline: Copy and Optimize src/assets -> public/assets
+async function syncAssets(src, dest) {
     if (!fs.existsSync(src)) return;
     if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
-    fs.readdirSync(src).forEach(item => {
+
+    const items = fs.readdirSync(src);
+    for (const item of items) {
         const srcPath = path.join(src, item);
         const destPath = path.join(dest, item);
-        if (fs.statSync(srcPath).isDirectory()) {
-            copyAssets(srcPath, destPath);
+        const stat = fs.statSync(srcPath);
+
+        if (stat.isDirectory()) {
+            await syncAssets(srcPath, destPath);
         } else {
-            fs.copyFileSync(srcPath, destPath);
+            const ext = path.extname(item).toLowerCase();
+            const isImage = ['.jpg', '.jpeg', '.png'].includes(ext);
+
+            if (isImage && src.includes('media')) {
+                // Optimization Pipeline for Media Images
+                const webpPath = destPath.replace(ext, '.webp');
+
+                try {
+                    const image = sharp(srcPath);
+                    const metadata = await image.metadata();
+
+                    // 1. Generate Optimized Original (JPG/PNG)
+                    let originalPipe = sharp(srcPath);
+                    if (metadata.width > 1920) originalPipe = originalPipe.resize(1920);
+
+                    if (ext === '.jpg' || ext === '.jpeg') {
+                        await originalPipe.jpeg({ quality: 80, progressive: true }).toFile(destPath);
+                    } else {
+                        await originalPipe.png({ quality: 80, palette: true }).toFile(destPath);
+                    }
+
+                    // 2. Generate Next-Gen WebP
+                    let webpPipe = sharp(srcPath);
+                    if (metadata.width > 1920) webpPipe = webpPipe.resize(1920);
+                    await webpPipe.webp({ quality: 75 }).toFile(webpPath);
+                } catch (err) {
+                    console.error(`[L3] Error processing ${item}:`, err.message);
+                    fs.copyFileSync(srcPath, destPath);
+                }
+            } else {
+                fs.copyFileSync(srcPath, destPath);
+            }
         }
-    });
+    }
 }
 
 // Configure Nunjucks to read from layouts and blocks
@@ -34,14 +70,14 @@ env.addFilter('endswith', function (str, suffix) {
     return str.endsWith(suffix);
 });
 
-function render() {
+async function render() {
     console.log("[L3] Starting Site Generation (Nunjucks Engine)...");
 
     try {
         // 0. Asset Pipeline: Sync media files -> public/
         if (!fs.existsSync(PUBLIC_DIR)) fs.mkdirSync(PUBLIC_DIR, { recursive: true });
-        console.log("[L3] Copying assets from src/assets -> public/assets...");
-        copyAssets(SRC_ASSETS_DIR, path.join(PUBLIC_DIR, 'assets'));
+        console.log("[L3] Processing and Optimizing assets...");
+        await syncAssets(SRC_ASSETS_DIR, path.join(PUBLIC_DIR, 'assets'));
 
         // 1. Load All Data (L0)
         const siteData = yaml.load(fs.readFileSync(DATA_PATH, 'utf8'));
@@ -214,6 +250,15 @@ ${generatedPages.map(p => `  <url><loc>${siteData.seo.site_url}/${p}</loc></url>
 Allow: /
 Sitemap: ${siteData.seo.site_url}/sitemap.xml`;
         fs.writeFileSync(path.join(PUBLIC_DIR, 'robots.txt'), robots);
+
+        // 6. Generate Cloudflare Headers (Caching)
+        const headers = `/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+`;
+        fs.writeFileSync(path.join(PUBLIC_DIR, '_headers'), headers);
 
         console.log("[L3] Build Successful. Files written to /public.");
 

@@ -120,7 +120,12 @@
             <source src="{{ page_context.media }}" type="video/mp4">
         </video>
         {% else %}
-        <img src="{{ page_context.media }}" alt="{{ page_context.title }}" class="hero-media-tag">
+        <picture>
+            <source
+                srcset="{{ page_context.media | replace('.jpg', '.webp') | replace('.jpeg', '.webp') | replace('.png', '.webp') }}"
+                type="image/webp">
+            <img src="{{ page_context.media }}" alt="{{ page_context.title }}" class="hero-media-tag">
+        </picture>
         {% endif %}
         <div class="identity-hero-overlay"></div>
     </div>
