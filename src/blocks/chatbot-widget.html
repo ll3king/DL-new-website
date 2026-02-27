@@ -112,75 +112,67 @@
 
     /* Mobile Adaptations */
     @media (max-width: 600px) {
-        .chatbot-container {
-            bottom: 20px;
-            right: 20px;
-        }
-
         #chat-window {
             position: fixed;
-            bottom: 0;
-            right: 0;
+            bottom: 20px;
+            right: 20px;
+            left: 20px;
+            width: auto;
+            height: calc(100% - 100px);
+            max-height: 550px;
+            border-radius: 20px;
+            z-index: 1001;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .chat-open-overlay {
+            position: fixed;
+            top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            max-height: 100%;
-            border-radius: 0;
-            z-index: 1001;
-        }
-
-        #chat-toggle {
-            width: 50px;
-            height: 50px;
-        }
-
-        .chat-header {
-            padding: 1rem;
-            border-radius: 0;
-        }
-
-        .chat-footer {
-            padding: 1rem;
-            padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none;
         }
     }
 </style>
 
+<div class="chat-open-overlay" id="chat-overlay"></div>
+
 <div id="dandy-chatbot" class="chatbot-container">
-    <!-- Chat Toggle Button -->
-    <button id="chat-toggle">
+    <button id="chat-toggle" aria-label="Open Chat Concierge">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
         </svg>
     </button>
 
-    <!-- Chat Window -->
     <div id="chat-window">
-        <!-- Header -->
         <div class="chat-header">
             <div>
                 <strong style="display: block; font-size: 0.9rem;">Dandy Lane Concierge</strong>
                 <span style="font-size: 0.7rem; opacity: 0.8;">Online • Always Crafting</span>
             </div>
-            <button id="close-chat"
+            <button id="close-chat" aria-label="Close Chat"
                 style="background: transparent; border: none; color: white; cursor: pointer; font-size: 1.5rem; padding: 0.5rem;">&times;</button>
         </div>
 
-        <!-- Messages Area -->
         <div id="chat-messages" class="chat-messages">
             <div class="message bot">
                 {{ site.chatbot.welcome_message }}
             </div>
         </div>
 
-        <!-- Input Area -->
         <form id="chat-form" class="chat-footer">
-            <input type="text" id="chat-input" placeholder="Ask about coffee or booking..." autocomplete="off">
-            <button type="submit"
+            <input type="text" id="chat-input" placeholder="Ask about coffee or booking..." aria-label="Chat Message"
+                autocomplete="off">
+            <button type="submit" aria-label="Send Message"
                 style="background: var(--accent); color: white; border: none; padding: 0.7rem 1rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    aria-hidden="true">
                     <line x1="22" y1="2" x2="11" y2="13"></line>
                     <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                 </svg>
@@ -194,50 +186,52 @@
         const toggle = document.getElementById('chat-toggle');
         const windowEl = document.getElementById('chat-window');
         const close = document.getElementById('close-chat');
+        const overlay = document.getElementById('chat-overlay');
         const form = document.getElementById('chat-form');
         const input = document.getElementById('chat-input');
         const messages = document.getElementById('chat-messages');
 
-        // Toggle Chat
         toggle.addEventListener('click', () => {
             const isHidden = windowEl.style.display === 'none' || windowEl.style.display === '';
             windowEl.style.display = isHidden ? 'flex' : 'none';
             if (isHidden) {
                 input.focus();
-                // On mobile, hide the toggle when open to clean up space
                 if (window.innerWidth <= 600) {
                     toggle.style.display = 'none';
+                    overlay.style.display = 'block';
                 }
             }
         });
 
-        close.addEventListener('click', (e) => {
-            e.stopPropagation();
+        const closeFunc = () => {
             windowEl.style.display = 'none';
             toggle.style.display = 'flex';
+            overlay.style.display = 'none';
+        };
+
+        close.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeFunc();
         });
+
+        overlay.addEventListener('click', closeFunc);
 
         let chatHistory = [];
 
-        // Handle Submission
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const text = input.value.trim();
             if (!text) return;
 
-            // Add User Message
             appendMessage(text, 'user');
             input.value = '';
 
-            // Session ID for anonymous web users
             let webUserId = localStorage.getItem('dandy_chat_uid');
             if (!webUserId) {
                 webUserId = 'web_' + Math.random().toString(36).substr(2, 9);
                 localStorage.setItem('dandy_chat_uid', webUserId);
             }
 
-            // Add loading indicator
-            const loadingId = 'loading-' + Date.now();
             const loadingDiv = document.createElement('div');
             loadingDiv.className = 'message bot loading';
             loadingDiv.style.opacity = '0.6';
@@ -261,12 +255,8 @@
 
                 if (data.reply) {
                     appendMessage(data.reply, 'bot');
-
-                    // Update History
                     chatHistory.push({ role: 'user', parts: [{ text: text }] });
-                    chatHistory.push({ role: 'bot', parts: [{ text: data.reply }] });
-
-                    // Keep history manageable (last 10 turns)
+                    chatHistory.push({ role: 'model', parts: [{ text: data.reply }] });
                     if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
                 } else {
                     throw new Error('No reply');

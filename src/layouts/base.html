@@ -306,16 +306,16 @@
         <div class="container">
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;">
                 <div>
-                    <h4>{{ site.identity.name }}</h4>
+                    <h3>{{ site.identity.name }}</h3>
                     <p>{{ site.identity.core_purpose }}</p>
                 </div>
                 <div>
-                    <h4>Visit Us</h4>
+                    <h3>Visit Us</h3>
                     <p>{{ site.contact.nap.address }}</p>
                     <p>{{ site.contact.nap.phone }}</p>
                 </div>
                 <div>
-                    <h4>Hours</h4>
+                    <h3>Hours</h3>
                     {% for hours in site.operations.opening_hours %}
                     <p>{{ hours.days }}: {{ hours.open }} - {{ hours.close }}</p>
                     {% endfor %}
