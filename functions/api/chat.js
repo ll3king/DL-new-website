@@ -10,9 +10,9 @@ const SITE_KNOWLEDGE = {
     address: "Unit 10 / 138 Collins Street, Hobart TAS 7000",
     phone: "0498061067",
     dishes: [
-        "Wine-Infused Benedicts ($22) - Daily house-made hollandaise, 6 variations",
-        "Potato Parmesan Rosti ($19.50) - Crispy rosti, grilled halloumi, avocado, poached egg",
-        "Scotch Steak Sandwich ($24) - Prime scotch steak, caramelized onion jam"
+        "Wine-Infused Benedicts - Daily house-made hollandaise, 6 variations",
+        "Potato Parmesan Rosti - Crispy rosti, grilled halloumi, avocado, poached egg",
+        "Scotch Steak Sandwich - Prime scotch steak, caramelized onion jam"
     ],
     features: "Laptop-friendly, free WiFi, quiet workspace areas, pet-friendly outdoor seating",
     booking: "Walk-ins welcome. Groups of 6+ please call. Max 16 people per hour."
@@ -64,8 +64,10 @@ Rules:
 - Only answer about Dandy Lane Cafe.
 - Use casual Australian English ("No worries", "Cheers").
 - If someone says "Hi", just say "Hi, welcome to Dandy Lane. How can I help?"
-- You CAN make bookings. If a user wants to book, ask for their name, email, mobile, group size, date, and time if missing.
+- You CAN make bookings. If a user wants to book, ask for their name, email, mobile, group size, date, and time.
+- NEVER ask the user to confirm the year if they provide a date like "28th Feb" - assume the upcoming occurrence in 2026.
 - When you have all the info, call the 'create_booking' tool.
+- NEVER include prices in your descriptions of dishes.
 - NEVER say "I am an AI assistant".
 
 Knowledge:
@@ -83,14 +85,18 @@ Today is: ${now.toLocaleDateString('en-AU', { weekday: 'long', year: 'numeric', 
 
         const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
-        // Prepare contents for Gemini
-        const contents = [
-            ...history,
-            { role: "user", parts: [{ text: message }] }
-        ];
+        // Build contents from history
+        // Gemini expects role: "user" | "model"
+        const contents = history.map(item => ({
+            role: item.role === 'bot' ? 'model' : 'user',
+            parts: [{ text: item.parts[0].text }]
+        }));
+
+        // Add current message
+        contents.push({ role: "user", parts: [{ text: message }] });
 
         // Initial call to Gemini
-        const response = await fetch(geminiUrl, {
+        let response = await fetch(geminiUrl, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -116,41 +122,41 @@ Today is: ${now.toLocaleDateString('en-AU', { weekday: 'long', year: 'numeric', 
             const args = call.args;
 
             if (functionName === "create_booking") {
-                // Execute Booking Logic
                 const bookingResult = await handleCreateBooking(args, env);
 
-                // Second call to Gemini with Tool Response
+                // Construct the tool sequence for Gemini
+                const toolContents = [
+                    ...contents,
+                    messageOutput, // model's call
+                    {
+                        role: "model", // For function responses in v1beta, it's model role with parts.functionResponse
+                        parts: [{
+                            functionResponse: {
+                                name: functionName,
+                                response: { content: bookingResult }
+                            }
+                        }]
+                    }
+                ];
+
                 const finalResponse = await fetch(geminiUrl, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         system_instruction: { parts: [{ text: systemPrompt }] },
-                        contents: [
-                            ...contents,
-                            messageOutput, // The tool call message
-                            {
-                                role: "function", // Wait, for Google AI it's often role: "model" for call and "function" for response? 
-                                // Actually for Gemini REST API v1beta: role: "function" or parts with functionResponse
-                                parts: [{
-                                    functionResponse: {
-                                        name: functionName,
-                                        response: { content: bookingResult }
-                                    }
-                                }]
-                            }
-                        ],
+                        contents: toolContents,
                         tools: TOOLS
                     })
                 });
 
                 resData = await finalResponse.json();
                 candidate = resData?.candidates?.[0];
-                const finalReply = candidate?.content?.parts?.[0]?.text || "Booking processed! Anything else?";
+                const finalReply = candidate?.content?.parts?.[0]?.text || "No worries, I've got that booking sought out for you. Anything else?";
                 return new Response(JSON.stringify({ reply: finalReply }), { headers });
             }
         }
 
-        const reply = messageOutput?.parts?.[0]?.text || "I'm not sure how to respond. Can you tell me more?";
+        const reply = messageOutput?.parts?.[0]?.text || "Sorry mate, I'm a bit stumped. Can you try that again?";
         return new Response(JSON.stringify({ reply }), { headers });
 
     } catch (error) {
@@ -160,9 +166,6 @@ Today is: ${now.toLocaleDateString('en-AU', { weekday: 'long', year: 'numeric', 
 
 async function handleCreateBooking(args, env) {
     const { name, email, mobile, group_size, date, time } = args;
-
-    // We basically call the same logic as bookings.js but internally
-    // Reusing the Spreadsheet logic
     try {
         const serviceAccount = JSON.parse(env.GOOGLE_SERVICE_ACCOUNT_JSON);
         const spreadsheetId = env.SPREADSHEET_ID || '1d-FmRVSMfrUqNOhJjsbNVk2cgeqvkk5ZdDnDtx8QONc';
@@ -209,14 +212,9 @@ async function handleCreateBooking(args, env) {
     }
 }
 
-// Helpers
 function b64u(s) { return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, ''); }
 async function signRSA(content, pem) {
-    const pemContents = pem
-        .replace(/\\n/g, '\n') // Handle escaped newlines
-        .replace(/-----BEGIN PRIVATE KEY-----/g, '')
-        .replace(/-----END PRIVATE KEY-----/g, '')
-        .replace(/\s/g, '');
+    const pemContents = pem.replace(/\\n/g, '\n').replace(/-----BEGIN PRIVATE KEY-----/g, '').replace(/-----END PRIVATE KEY-----/g, '').replace(/\s/g, '');
     const binaryDer = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
     const key = await crypto.subtle.importKey("pkcs8", binaryDer.buffer, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["sign"]);
     const sig = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", key, new TextEncoder().encode(content));

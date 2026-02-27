@@ -67,6 +67,8 @@
 
         close.addEventListener('click', () => { window.style.display = 'none'; });
 
+        let chatHistory = [];
+
         // Handle Submission
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -98,7 +100,11 @@
                 const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: text, sender_id: webUserId })
+                    body: JSON.stringify({
+                        message: text,
+                        history: chatHistory,
+                        sender_id: webUserId
+                    })
                 });
                 const data = await response.json();
 
@@ -106,6 +112,13 @@
 
                 if (data.reply) {
                     appendMessage(data.reply, 'bot');
+
+                    // Update History
+                    chatHistory.push({ role: 'user', parts: [{ text: text }] });
+                    chatHistory.push({ role: 'bot', parts: [{ text: data.reply }] });
+
+                    // Keep history manageable (last 10 turns)
+                    if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
                 } else {
                     throw new Error('No reply');
                 }
