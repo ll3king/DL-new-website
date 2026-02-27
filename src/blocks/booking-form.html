@@ -14,6 +14,11 @@
         gap: 1.5rem;
     }
 
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
     .form-group label {
         display: block;
         font-weight: 700;
@@ -30,9 +35,21 @@
         padding: 0.9rem 1rem;
         border: 1px solid #e0e0e0;
         border-radius: 6px;
-        font-size: 0.95rem;
+        font-size: 1rem;
         background: #fafafa;
         transition: all 0.2s;
+        box-sizing: border-box;
+        appearance: none;
+        -webkit-appearance: none;
+    }
+
+    /* Standardize height for select to match input */
+    .form-group select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 1rem;
+        padding-right: 2.5rem;
     }
 
     .form-group input:focus,
@@ -40,27 +57,27 @@
         border-color: var(--accent);
         background: white;
         outline: none;
-        box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.1);
+        box-shadow: 0 0 0 4px rgba(214, 48, 49, 0.1);
     }
 
-    /* Mobile Responsive Logic */
-    @media (max-width: 768px) {
+    /* Mobile Responsive Logic - Stacking fields to prevent deformation */
+    @media (max-width: 600px) {
         .booking-card {
-            padding: 2rem 1.5rem;
-            margin: 0 10px;
+            padding: 2rem 1.2rem;
+            margin: 0;
+            border-radius: 0;
+            box-shadow: none;
+            border: none;
         }
 
         .grid-form {
             grid-template-columns: 1fr;
+            /* Stack everything on mobile */
             gap: 1.2rem;
         }
 
-        .form-group.full-width-mobile {
+        .form-group.span-2 {
             grid-column: span 1 !important;
-        }
-
-        .booking-header h2 {
-            font-size: 1.6rem !important;
         }
     }
 </style>
@@ -72,26 +89,27 @@
                 style="margin-bottom: 2.5rem; border-bottom: 1px solid #f0f0f0; padding-bottom: 2rem; text-align: center;">
                 <h2 style="font-size: 2.2rem; margin-bottom: 0.5rem; color: var(--primary); font-weight: 900;">{{
                     site.booking.title }}</h2>
-                <p style="color: var(--secondary); max-width: 500px; margin: 0 auto;">{{ site.booking.emphasis }}</p>
+                <p style="color: var(--secondary); max-width: 500px; margin: 0 auto; line-height: 1.4;">{{
+                    site.booking.emphasis }}</p>
                 <div class="capacity-alert"
                     style="margin: 1.5rem auto 0; font-size: 0.85rem; padding: 1rem; background: #fffcf0; border-radius: 6px; border-left: 4px solid #f39c12; color: #8a6d3b; text-align: left; max-width: 600px;">
                     <strong
                         style="display: block; margin-bottom: 0.2rem; text-transform: uppercase; font-size: 0.7rem;">Sanctuary
                         Policy</strong>
-                    {{ site.booking.capacity.max_per_hour }} people per hour limit. Interval: {{
-                    site.booking.capacity.interval_minutes }} min sequences.
+                    Max {{ site.booking.capacity.max_per_hour }} people/hr. Interval: {{
+                    site.booking.capacity.interval_minutes }} min.
                 </div>
             </div>
 
             <form id="bookingForm" class="grid-form">
                 <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" name="name" placeholder="Who's joining us?" required>
+                    <label>Name</label>
+                    <input type="text" name="name" placeholder="Name" required>
                 </div>
                 <div class="form-group">
                     <label>Group Size</label>
                     <select name="group_size" required>
-                        {% for i in range(1, 9) %}<option value="{{ i }}">{{ i }} People</option>{% endfor %}
+                        {% for i in range(1, 7) %}<option value="{{ i }}">{{ i }}</option>{% endfor %}
                     </select>
                 </div>
                 <div class="form-group">
@@ -99,27 +117,27 @@
                     <input type="date" id="bookingDate" name="date" required>
                 </div>
                 <div class="form-group">
-                    <label>Preferred Time</label>
+                    <label>Time</label>
                     <select id="bookingTime" name="time" required>
-                        <option value="">Select Date First</option>
+                        <option value="">Select Date</option>
                     </select>
                 </div>
-                <div class="form-group" style="grid-column: span 2;">
-                    <label>Email Address</label>
-                    <input type="email" name="email" placeholder="For the confirmation invite" required>
+                <div class="form-group span-2" style="grid-column: span 2;">
+                    <label>Email</label>
+                    <input type="email" name="email" placeholder="Email" required>
                 </div>
-                <div class="form-group" style="grid-column: span 2;">
-                    <label>Mobile Number</label>
-                    <input type="tel" name="mobile" placeholder="To reach you in the lane" required>
+                <div class="form-group span-2" style="grid-column: span 2;">
+                    <label>Mobile</label>
+                    <input type="tel" name="mobile" placeholder="Mobile" required>
                 </div>
 
-                <div style="grid-column: span 2; margin-top: 1rem;">
+                <div style="grid-column: span 2; margin-top: 1rem;" class="span-2">
                     <button type="submit" class="btn"
-                        style="width: 100%; cursor: pointer; border: none; padding: 1.2rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;">Request
-                        Table Reservation</button>
+                        style="width: 100%; cursor: pointer; border: none; padding: 1.2rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; border-radius: 4px;">Request
+                        Reservation</button>
                     <p
-                        style="font-size: 0.75rem; color: var(--secondary); margin-top: 1.2rem; text-align: center; opacity: 0.7;">
-                        By booking, you agree to our terms: {{ site.booking.terms | join(', ') }}
+                        style="font-size: 0.75rem; color: var(--secondary); margin-top: 1.2rem; text-align: center; opacity: 0.7; line-height: 1.4;">
+                        Terms: {{ site.booking.terms | join(', ') }}
                     </p>
                 </div>
             </form>
@@ -135,8 +153,8 @@
     const dateInput = document.getElementById('bookingDate');
     const timeSelect = document.getElementById('bookingTime');
 
-    const today = new Date().toISOString().split('T')[0];
-    dateInput.setAttribute('min', today);
+    const HobartDate = new Date().toLocaleDateString("en-CA", { timeZone: "Australia/Hobart" });
+    dateInput.setAttribute('min', HobartDate);
 
     dateInput.addEventListener('change', function (e) {
         const selectedDate = new Date(e.target.value);
@@ -165,7 +183,7 @@
             }
         } else {
             const opt = document.createElement('option');
-            opt.textContent = "Closed on this day";
+            opt.textContent = "Closed";
             timeSelect.appendChild(opt);
         }
     });
@@ -208,8 +226,8 @@
                         <div style="text-align: center; padding: 2rem;">
                             <div style="font-size: 4rem; margin-bottom: 1.5rem;">✨</div>
                             <h3 style="color: var(--primary); font-size: 1.8rem;">Booking Received!</h3>
-                            <p style="color: var(--secondary); margin-bottom: 2rem; line-height: 1.6;">Cheers, ${payload.name}! We've received your request for ${payload.date} at ${payload.time}. We'll confirm your spot in the lane via email shortly.</p>
-                            <button onclick="window.location.reload()" class="btn" style="padding: 1rem 2rem;">Make Another Booking</button>
+                            <p style="color: var(--secondary); margin-bottom: 2rem; line-height: 1.6;">Cheers, ${payload.name}! We've received your request for ${payload.date} at ${payload.time}. We'll confirm via email shortly.</p>
+                            <button onclick="window.location.reload()" class="btn" style="padding: 1rem 2rem; border-radius: 4px;">Back</button>
                         </div>
                     `;
             } else {
@@ -217,7 +235,7 @@
             }
         } catch (error) {
             console.error('Booking Error:', error);
-            alert('Sorry mate, there was a snag: ' + error.message + '. Try calling us at {{ site.contact.nap.phone }}.');
+            alert('Snag: ' + error.message + '. Call us at {{ site.contact.nap.phone }}.');
             submitBtn.disabled = false;
             submitBtn.textContent = originalBtnText;
         }
