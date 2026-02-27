@@ -91,10 +91,13 @@ class GeminiBrain:
         print(f"TOOL CALL: manage_booking(action={action}, name={name}, contact={contact}, date={date}, time={time}, group_size={group_size})")
         try:
             if action == 'create':
+                if group_size > 6:
+                    return f"FAILED: Group size {group_size} exceeds the strict limit of 6. Please ask the guest to call us directly."
+                
                 data = {
                     'name': name, 'date': date, 'time': time, 'group_size': group_size, 'contact': contact,
-                    'needs_manual_review': group_size > 6,
-                    'status': 'Manual_Review' if group_size > 6 else 'Confirmed'
+                    'needs_manual_review': False,
+                    'status': 'Confirmed'
                 }
                 success = self.sheets_service.sync_to_sheets(data)
                 return "Success: Booking created." if success else "FAILED: Could not write to sheet."

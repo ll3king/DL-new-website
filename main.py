@@ -50,7 +50,7 @@ class InboundMessage:
     platform: str # 'messenger', 'whatsapp', 'web'
     raw_data: dict = None
 
-# --- APScheduler: Background Sync ---
+# --- APScheduler: Background Sync & Housekeeping ---
 def scheduled_sync():
     print("[CRON] Starting GBP Sync...")
     try:
@@ -59,9 +59,20 @@ def scheduled_sync():
     except Exception as e:
         print(f"[CRON] GBP Sync Failed: {e}")
 
+def scheduled_housekeeping():
+    print("[CRON] Starting Booking Archival...")
+    try:
+        from archive_old_data import run_janitor
+        run_janitor()
+        print("[CRON] Booking Archival Completed.")
+    except Exception as e:
+        print(f"[CRON] Booking Archival Failed: {e}")
+
 scheduler = BackgroundScheduler()
-# Run daily at 04:00
+# Run GBP sync daily at 04:00
 scheduler.add_job(func=scheduled_sync, trigger="cron", hour=4, minute=0)
+# Run Housekeeping daily at 04:30
+scheduler.add_job(func=scheduled_housekeeping, trigger="cron", hour=4, minute=30)
 scheduler.start()
 
 @app.route('/api/admin/sync_now')

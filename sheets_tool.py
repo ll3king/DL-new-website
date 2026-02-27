@@ -344,7 +344,10 @@ class SheetsTool:
                 if len(row) < 2:
                     continue
                 row_date = str(row[1]).strip()
-                if row_date and row_date < today_str:
+                row_status = str(row[6]).strip() if len(row) > 6 else ""
+                
+                # Archive if date is old OR status is explicitly 'Archived'
+                if (row_date and row_date < today_str) or (row_status == 'Archived'):
                     rows_to_archive.append(row)
                     row_indices_to_delete.append(i)
             

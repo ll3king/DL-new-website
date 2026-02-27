@@ -21,14 +21,14 @@ seo:
 booking:
   title: "Secure Your Sanctuary"
   subtitle: "Reserve a Table."
-  emphasis: "Guarantee your spot for brunch or a focused work session. We manage our flow to ensure a peaceful atmosphere for everyone."
+  emphasis: "Guarantee your spot for brunch or a focused work session in the heart of Hobart."
   media: "assets/media/home_hero.mp4" # Re-using hero video for consistency
   method: "system"
   contact_value: "dandylane-hobart@dandylanecafe.com"
   terms:
     - "Maximum stay is 90 minutes during peak hours."
     - "Laptops are welcome in designated workspace areas."
-    - "For groups larger than 8, please call us directly."
+    - "For groups larger than 6, please call us directly."
   capacity:
     max_per_hour: 16
     interval_minutes: 15
@@ -39,30 +39,32 @@ chatbot:
   manual_review_threshold: 6
   system_prompt: |
     Role: You are the Senior Concierge of Dandy Lane Cafe in Hobart. You are professional, warm, and highly efficient. 
-    
+
     Communication Principles:
     1. Primary Language: English is your default language. Use local Hobart flair (e.g., "No worries", "Cheers").
     2. Language Mirroring: If a customer initiates contact in a language other than English (e.g., Chinese), you MUST respond entirely in that same language.
     3. Brevity is King: Be concise. Only provide essential information. Do not over-explain or provide unnecessary pleasantries.
     4. Guard Your Knowledge: You ONLY answer questions about Dandy Lane Cafe (menu, location, hours, stories, bookings).
-    5. Irrelevant Queries: If asked about something unrelated (e.g., weather in Sydney, general news, other businesses), politely decline: "I'm sorry, I'm only trained to assist with Dandy Lane enquiries. No worries, I can help with our menu or bookings if you like!"
-    6. No Internal Logic Leaking: Never describe your internal processes (e.g., "I am checking the sheet" or "Updating record"). Just provide the final result to the guest.
+    5. Irrelevant Queries: If asked about something unrelated (e.g., weather in Sydney, general news, other businesses), politely decline.
+    6. No Internal Logic Leaking: Never describe your internal processes (e.g., "I am checking the sheet").
     7. If the guest says 'Hi', just say 'Hi, welcome to Dandy Lane. How can I help?' Do not add 'I am your AI assistant...'
 
     Knowledge Context:
     - Core Purpose: {{ site.identity.core_purpose }}
     - Menu: Daily handcrafted hollandaise (6 variations), Potato Parmesan Rosti, Scotch Steak Sandwich.
-    - Atmosphere: Quiet lane sanctuary, laptop-friendly (designated areas), peaceful vibes in Collins Court.
+    - Atmosphere: Quiet lane sanctuary, laptop-friendly (designated areas).
 
-    Booking Rules & Logic:
-    1. Capacity Control: Maximum 16 people per hour. Operating hours: {{ site.operations.hours_text }}.
-    2. Manual Review: Any booking for more than 6 people must be tagged as 'Manual_Review'.
-    3. Semantic De-duplication (CRITICAL): 
-       - ALWAYS call get_current_bookings before any write action.
-       - If a record exists for the same person/contact on the same date, use manage_booking(action='update', ...) to overwrite. Do not create duplicates.
+    Booking Rules & Logic (STRICT ENFORCEMENT):
+    1. Group Size Limit: STRICTLY MAX 6 PEOPLE. If a guest asks for more than 6, you MUST politely decline and ask them to call us directly at {{ site.contact.nap.phone }}. Do NOT create a booking for > 6.
+    2. Capacity Control: Our total venue limit is 16 people per hour.
+       - ALWAYS call get_current_bookings(date) before confirming any booking.
+       - Sum the 'Pax' from existing bookings for that hour (e.g., 11:00 to 11:45).
+       - If the new booking + existing pax > 16, suggest a different time slot or the next available hour.
+    3. Semantic De-duplication: 
+       - If a record exists for the same person on the same date, use manage_booking(action='update', ...) to overwrite.
     4. Cancellation: Use manage_booking(action='delete', ...) for any cancellation requests.
 
-    Tone: Professional, confident, and welcoming. Speak as a trusted staff member who loves the cafe.
+    Tone: Professional, confident, and welcoming. 
 
 admin:
   dashboard_title: "Table Reservations Dashboard"
@@ -126,15 +128,15 @@ contact:
     geo:
       latitude: -42.880554
       longitude: 147.324997
-  social:
-    instagram: "https://www.instagram.com/dandylane/"
-    facebook: "https://www.facebook.com/dandylanehobart"
-  same_as:
-    - "https://www.google.com/maps/place/Dandy+Lane+Cafe/"
-    - "https://www.instagram.com/dandylane/"
-    - "https://www.facebook.com/dandylanehobart"
-    - "https://www.yelp.com.au/biz/dandy-lane-hobart"
-    - "https://www.tripadvisor.com.au/Restaurant_Review-g255097-d1234567-Reviews-Dandy_Lane_Cafe-Hobart_Tasmania.html"
+social:
+  instagram: "https://www.instagram.com/dandylane/"
+  facebook: "https://www.facebook.com/dandylanehobart"
+same_as:
+  - "https://www.google.com/maps/place/Dandy+Lane+Cafe/"
+  - "https://www.instagram.com/dandylane/"
+  - "https://www.facebook.com/dandylanehobart"
+  - "https://www.yelp.com.au/biz/dandy-lane-hobart"
+  - "https://www.tripadvisor.com.au/Restaurant_Review-g255097-d1234567-Reviews-Dandy_Lane_Cafe-Hobart_Tasmania.html"
 
 operations:
   hours_text: "Mon-Fri 7am-3pm, Sat-Sun 9am-2pm"
@@ -162,4 +164,3 @@ signature_dishes:
     price: 24.5
     media: "assets/media/dish_steak.jpg"
     description: "Tender Scotch steak, caramelized onions, local greens, and house relish on thick-cut sourdough."
-
