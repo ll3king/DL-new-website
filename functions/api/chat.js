@@ -1,6 +1,6 @@
 /**
  * Cloudflare Pages Function: /api/chat
- * AI Concierge powered by Gemini with Tool Calling support
+ * AI Concierge for Dandy Lane Cafe - Humanized Version
  */
 
 const SITE_KNOWLEDGE = {
@@ -15,27 +15,39 @@ const SITE_KNOWLEDGE = {
         "Scotch Steak Sandwich - Prime scotch steak, caramelized onion jam"
     ],
     features: "Laptop-friendly, free WiFi, quiet workspace areas, pet-friendly outdoor seating",
-    booking: "Walk-ins welcome. Groups of 6+ please call. Max 16 people per hour."
+    booking: "Groups of 6+ please call. Max 16 people per hour. Must book for tomorrow onwards."
 };
 
-// Tool definition for Booking
 const TOOLS = [
     {
         function_declarations: [
             {
                 name: "create_booking",
-                description: "Create a new table reservation for Dandy Lane Cafe. Call this when the user provides details like name, date, time, and group size.",
+                description: "Create a new table reservation. Call this ONLY for dates starting from tomorrow. If date is today, suggest walk-in instead.",
                 parameters: {
                     type: "object",
                     properties: {
-                        name: { type: "string", description: "Customer's full name" },
-                        email: { type: "string", description: "Customer's email address" },
-                        mobile: { type: "string", description: "Customer's mobile number" },
-                        group_size: { type: "string", description: "Number of people in the group" },
-                        date: { type: "string", description: "Date of reservation (YYYY-MM-DD)" },
-                        time: { type: "string", description: "Time of reservation (HH:MM)" }
+                        name: { type: "string" },
+                        email: { type: "string" },
+                        mobile: { type: "string" },
+                        group_size: { type: "string" },
+                        date: { type: "string", description: "Format: YYYY-MM-DD. Must be after today." },
+                        time: { type: "string" }
                     },
                     required: ["name", "email", "group_size", "date", "time"]
+                }
+            },
+            {
+                name: "notify_management",
+                description: "Notify management when a customer has a complex request, complaint, or question outside menu/hours.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        customer_name: { type: "string" },
+                        contact: { type: "string" },
+                        details: { type: "string", description: "The specific question or issue that needs human review." }
+                    },
+                    required: ["details"]
                 }
             }
         ]
@@ -50,52 +62,49 @@ export async function onRequestPost(context) {
         const body = await request.json();
         const { message, history = [] } = body;
 
-        if (!message) return new Response(JSON.stringify({ error: "Message is required" }), { status: 400, headers });
+        if (!message) return new Response(JSON.stringify({ error: "Missing message" }), { status: 400, headers });
 
         const apiKey = env.GEMINI_API_KEY;
-        if (!apiKey) return new Response(JSON.stringify({ error: "AI service not configured" }), { status: 503, headers });
-
-        // Dynamic System Prompt with Current Date
         const now = new Date();
-        const currentDateTime = now.toLocaleString('en-AU', { timeZone: 'Australia/Hobart' });
+        const hobartTime = new Intl.DateTimeFormat('en-AU', {
+            timeZone: 'Australia/Hobart',
+            year: 'numeric', month: '2-digit', day: '2-digit',
+            hour: '2-digit', minute: '2-digit', weekday: 'long'
+        }).format(now);
 
-        const systemPrompt = `You are the Senior Concierge of Dandy Lane Cafe in Hobart. Be professional, warm, and concise.
-Rules:
-- Only answer about Dandy Lane Cafe.
-- Use casual Australian English ("No worries", "Cheers").
-- If someone says "Hi", just say "Hi, welcome to Dandy Lane. How can I help?"
-- You CAN make bookings. If a user wants to book, ask for their name, email, mobile, group size, date, and time.
-- NEVER ask the user to confirm the year if they provide a date like "28th Feb" - assume the upcoming occurrence in 2026.
-- When you have all the info, call the 'create_booking' tool.
-- NEVER include prices in your descriptions of dishes.
-- NEVER say "I am an AI assistant".
+        const systemPrompt = `You are a Senior Staff Member at Dandy Lane Cafe. You are NOT an AI. You are a real person helping customers.
+
+CORE RULES:
+1. **NEVER** mention prices.
+2. **NEVER** say "I am an AI", "I am a language model", or "I cannot remember info".
+3. **MEMORY**: Use the provided conversation history to recognize the customer. If they told you their name or email earlier, USE IT.
+4. **DATE LOGIC**: 
+   - Today is: ${hobartTime}.
+   - Reservations are for **TOMORROW onwards** only.
+   - If a user asks for TODAY: Say "We only take online bookings for tomorrow onwards. For today, just walk in! We'll do our absolute best to find a seat for you."
+   - If past date: Politely say that's in the past.
+   - For dates like "28th Feb", assume 2026 (the upcoming occurrence). No need to verify the year.
+5. **CAPACITY**: Max 6 people per booking. Over 6 must call ${SITE_KNOWLEDGE.phone}. Hourly cap is 16.
+6. **SILENT HANDOFF**: For questions about supply chains, events, caterings, complaints, or anything complex, use 'notify_management'. Tell the user: "I'll check that with our manager and we'll get back to you shortly."
+7. **LANGUAGE MIRRORING**: English is your primary language, but you must mirror the guest's language. If a guest speaks to you in a language other than English (like Chinese), reply in that language to provide a premium, multilingual service while keeping the professional Hobart staff persona.
 
 Knowledge:
-- Name: ${SITE_KNOWLEDGE.name}
-- Address: ${SITE_KNOWLEDGE.address}
-- Phone: ${SITE_KNOWLEDGE.phone}
+- Location: ${SITE_KNOWLEDGE.address}
 - Hours: ${SITE_KNOWLEDGE.hours}
-- Signature Dishes: ${SITE_KNOWLEDGE.dishes.join('; ')}
-- Features: ${SITE_KNOWLEDGE.features}
-- Booking Policy: ${SITE_KNOWLEDGE.booking}
+- Dishes: ${SITE_KNOWLEDGE.dishes.join('; ')}
+- Phone: ${SITE_KNOWLEDGE.phone}
 
-IMPORTANT:
-Current Time (Hobart): ${currentDateTime}
-Today is: ${now.toLocaleDateString('en-AU', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Australia/Hobart' })}`;
+Tone: Professional, warm, Hobart local vibe. Keep answers to 1-2 short sentences.`;
 
         const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
-        // Build contents from history
-        // Gemini expects role: "user" | "model"
-        const contents = history.map(item => ({
-            role: item.role === 'bot' ? 'model' : 'user',
-            parts: [{ text: item.parts[0].text }]
+        // Prepare History for Gemini
+        const contents = history.map(h => ({
+            role: h.role === 'bot' ? 'model' : 'user',
+            parts: [{ text: h.parts?.[0]?.text || h.text || "" }]
         }));
-
-        // Add current message
         contents.push({ role: "user", parts: [{ text: message }] });
 
-        // Initial call to Gemini
         let response = await fetch(geminiUrl, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -106,127 +115,99 @@ Today is: ${now.toLocaleDateString('en-AU', { weekday: 'long', year: 'numeric', 
             })
         });
 
-        if (!response.ok) {
-            const err = await response.text();
-            return new Response(JSON.stringify({ error: "Gemini Error", details: err }), { status: 502, headers });
-        }
-
-        let resData = await response.json();
+        const resData = await response.json();
         let candidate = resData?.candidates?.[0];
         let messageOutput = candidate?.content;
 
-        // Check for Tool Calls
+        // Handle Tool Calling
         if (messageOutput?.parts?.[0]?.functionCall) {
             const call = messageOutput.parts[0].functionCall;
             const functionName = call.name;
             const args = call.args;
 
+            let resultData;
             if (functionName === "create_booking") {
-                const bookingResult = await handleCreateBooking(args, env);
-
-                // Construct the tool sequence for Gemini
-                const toolContents = [
-                    ...contents,
-                    messageOutput, // model's call
-                    {
-                        role: "model", // For function responses in v1beta, it's model role with parts.functionResponse
-                        parts: [{
-                            functionResponse: {
-                                name: functionName,
-                                response: { content: bookingResult }
-                            }
-                        }]
-                    }
-                ];
-
-                const finalResponse = await fetch(geminiUrl, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        system_instruction: { parts: [{ text: systemPrompt }] },
-                        contents: toolContents,
-                        tools: TOOLS
-                    })
-                });
-
-                resData = await finalResponse.json();
-                candidate = resData?.candidates?.[0];
-                const finalReply = candidate?.content?.parts?.[0]?.text || "No worries, I've got that booking sought out for you. Anything else?";
-                return new Response(JSON.stringify({ reply: finalReply }), { headers });
+                resultData = await handleBooking(args, env);
+            } else if (functionName === "notify_management") {
+                resultData = await handleNotify(args, env);
             }
+
+            // Call 2: Final response with tool result
+            const finalRes = await fetch(geminiUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    system_instruction: { parts: [{ text: systemPrompt }] },
+                    contents: [
+                        ...contents,
+                        messageOutput,
+                        {
+                            role: "model",
+                            parts: [{ functionResponse: { name: functionName, response: { content: resultData } } }]
+                        }
+                    ],
+                    tools: TOOLS
+                })
+            });
+
+            const finalData = await finalRes.json();
+            const finalReply = finalData?.candidates?.[0]?.content?.parts?.[0]?.text || "No worries, I've noted that down for you.";
+            return new Response(JSON.stringify({ reply: finalReply }), { headers });
         }
 
-        const reply = messageOutput?.parts?.[0]?.text || "Sorry mate, I'm a bit stumped. Can you try that again?";
+        const reply = messageOutput?.parts?.[0]?.text || "Sorry mate, could you say that again?";
         return new Response(JSON.stringify({ reply }), { headers });
 
-    } catch (error) {
-        return new Response(JSON.stringify({ error: "Internal error", details: error.message }), { status: 500, headers });
+    } catch (e) {
+        return new Response(JSON.stringify({ error: e.message }), { status: 500, headers });
     }
 }
 
-async function handleCreateBooking(args, env) {
-    const { name, email, mobile, group_size, date, time } = args;
+async function handleBooking(args, env) {
     try {
-        const serviceAccount = JSON.parse(env.GOOGLE_SERVICE_ACCOUNT_JSON);
-        const spreadsheetId = env.SPREADSHEET_ID || '1d-FmRVSMfrUqNOhJjsbNVk2cgeqvkk5ZdDnDtx8QONc';
+        const val = [args.name, args.email, args.mobile, args.group_size, args.date, args.time, new Date().toISOString(), "AI_Confirmed"];
+        return await writeToSheet(val, env);
+    } catch (e) { return "Error: " + e.message; }
+}
 
-        const now = Math.floor(Date.now() / 1000);
-        const header = b64u(JSON.stringify({ alg: "RS256", typ: "JWT" }));
-        const claimSet = b64u(JSON.stringify({
-            iss: serviceAccount.client_email,
-            scope: "https://www.googleapis.com/auth/spreadsheets",
-            aud: "https://oauth2.googleapis.com/token",
-            exp: now + 3600,
-            iat: now
-        }));
+async function handleNotify(args, env) {
+    try {
+        const val = [args.customer_name || 'Guest', 'N/A', args.contact || 'N/A', '0', 'N/A', 'N/A', new Date().toISOString(), `Manager_Review: ${args.details}`];
+        return await writeToSheet(val, env);
+    } catch (e) { return "Error: " + e.message; }
+}
 
-        const signatureInput = `${header}.${claimSet}`;
-        const signature = await signRSA(signatureInput, serviceAccount.private_key);
-        const jwt = `${signatureInput}.${signature}`;
+async function writeToSheet(values, env) {
+    const sAccount = JSON.parse(env.GOOGLE_SERVICE_ACCOUNT_JSON);
+    const spreadsheetId = env.SPREADSHEET_ID;
 
-        const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`
-        });
-        const tokenData = await tokenRes.json();
-        const token = tokenData.access_token;
+    // Auth
+    const now = Math.floor(Date.now() / 1000);
+    const header = b64u(JSON.stringify({ alg: "RS256", typ: "JWT" }));
+    const claimSet = b64u(JSON.stringify({ iss: sAccount.client_email, scope: "https://www.googleapis.com/auth/spreadsheets", aud: "https://oauth2.googleapis.com/token", exp: now + 3600, iat: now }));
+    const signature = await signRSA(`${header}.${claimSet}`, sAccount.private_key);
+    const jwt = `${header}.${claimSet}.${signature}`;
 
-        const status = parseInt(group_size) > 6 ? "AI_Pending_Review" : "AI_Confirmed";
-        const val = [name, email, mobile || '', group_size, date, time, new Date().toISOString(), status];
+    const tRes = await fetch("https://oauth2.googleapis.com/token", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}` });
+    const { access_token } = await tRes.json();
 
-        const sheetRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A:H:append?valueInputOption=USER_ENTERED`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ values: [val] })
-        });
-
-        if (sheetRes.ok) {
-            return `Success: Booking created for ${name} on ${date} at ${time}. Status: ${status}.`;
-        } else {
-            const err = await sheetRes.text();
-            return `Error: Failed to write to Google Sheets. ${err}`;
-        }
-    } catch (e) {
-        return `Error: Exception during booking processing. ${e.message}`;
-    }
+    const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A:H:append?valueInputOption=USER_ENTERED`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${access_token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ values: [values] })
+    });
+    return res.ok ? "Success" : "Failed to sync";
 }
 
 function b64u(s) { return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, ''); }
-async function signRSA(content, pem) {
-    const pemContents = pem.replace(/\\n/g, '\n').replace(/-----BEGIN PRIVATE KEY-----/g, '').replace(/-----END PRIVATE KEY-----/g, '').replace(/\s/g, '');
-    const binaryDer = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
-    const key = await crypto.subtle.importKey("pkcs8", binaryDer.buffer, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["sign"]);
-    const sig = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", key, new TextEncoder().encode(content));
+async function signRSA(c, p) {
+    const pem = p.replace(/\\n/g, '\n').replace(/-----BEGIN PRIVATE KEY-----/g, '').replace(/-----END PRIVATE KEY-----/g, '').replace(/\s/g, '');
+    const der = Uint8Array.from(atob(pem), c => c.charCodeAt(0));
+    const key = await crypto.subtle.importKey("pkcs8", der.buffer, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["sign"]);
+    const sig = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", key, new TextEncoder().encode(c));
     return b64u(String.fromCharCode(...new Uint8Array(sig)));
 }
 
 export async function onRequestOptions() {
-    return new Response(null, {
-        headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "POST, OPTIONS",
-            "Access-Control-Allow-Headers": "Content-Type"
-        }
-    });
+    return new Response(null, { headers: { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "POST, OPTIONS", "Access-Control-Allow-Headers": "Content-Type" } });
 }
