@@ -45,7 +45,7 @@ export async function onRequestPost(context) {
         const range = 'Sheet1!A:H';
         const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${range}:append?valueInputOption=USER_ENTERED`;
 
-        const values = [[name, email, mobile || '', group_size || '1', date, time, new Date().toISOString(), status]];
+        const values = [[name, email, mobile || '', group_size || '1', date, time, new Date().toISOString(), status, 'Website']];
 
         const response = await fetch(url, {
             method: 'POST',

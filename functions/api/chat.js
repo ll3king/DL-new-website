@@ -203,7 +203,7 @@ async function handleCreate(args, env) {
         if (hourlyPax + requestedPax > 16) return "FAILED_WALK_IN_RECOMMENDED";
     }
 
-    const val = [args.name, args.email, args.mobile, args.group_size, args.date, args.time, new Date().toISOString(), "AI_Confirmed"];
+    const val = [args.name, args.email, args.mobile, args.group_size, args.date, args.time, new Date().toISOString(), "AI_Confirmed", "AI_Concierge"];
     return await sheetOperation('APPEND', val, env);
 }
 
@@ -222,7 +222,7 @@ async function handleCheck(args, env) {
 }
 
 async function handleNotify(args, env) {
-    const val = [args.customer_name || 'Guest', 'N/A', args.contact || 'N/A', '0', 'N/A', 'N/A', new Date().toISOString(), `ALERT: ${args.details}`];
+    const val = [args.customer_name || 'Guest', 'N/A', args.contact || 'N/A', '0', 'N/A', 'N/A', new Date().toISOString(), `ALERT: ${args.details}`, "AI_Concierge"];
     return await sheetOperation('APPEND', val, env);
 }
 

@@ -41,7 +41,7 @@ if __name__ == '__main__':
     print("=" * 50)
     
     schedule.every().day.at("08:00").do(run_scraper)
-    schedule.every().day.at("00:30").do(run_archive)
+    schedule.every().day.at("03:00").do(run_archive) # Daily Janitor at 3 AM
     
     # Run both once on startup
     run_scraper()

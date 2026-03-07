@@ -10,7 +10,8 @@ SCOPES = [
 ]
 
 # Standard Headers
-HEADERS = ['Name', 'Date', 'Time', 'Group_Size', 'Contact', 'Review', 'Status', 'Source']
+# Standard Headers (Aligned with Cloudflare Master Schema)
+HEADERS = ['Name', 'Email', 'Mobile', 'Group_Size', 'Date', 'Time', 'Timestamp', 'Status', 'Source']
 
 class SheetsTool:
     def __init__(self, spreadsheet_id, credentials_path):
@@ -57,40 +58,34 @@ class SheetsTool:
     def get_all_records(self):
         """
         Fetches all rows from the Google Sheet, standardizes keys, and sorts them.
-        Returns a list of dicts with an extra 'row_index' field.
         """
         if not self.sheet:
             return []
         try:
-            # get_all_records() returns a list of dictionaries mapping header to cell value
             records = self.sheet.get_all_records()
             standardized = []
             
-            # gspread row index is 1-based, data rows start at row 2
             for i, r in enumerate(records):
                 standardized.append({
-                    'row_index': i + 2, # Corresponds to the actual row in the sheet
+                    'row_index': i + 2,
                     'name': r.get('Name', 'Unknown'),
+                    'email': r.get('Email', '-'),
+                    'mobile': r.get('Mobile', '-'),
+                    'group_size': r.get('Group_Size', 1),
                     'date': r.get('Date', '-'),
                     'time': r.get('Time', '-'),
-                    'group_size': r.get('Group_Size', 1),
-                    'contact': r.get('Contact', '-'),
-                    'needs_manual_review': r.get('Review', False), # Header was Review
+                    'timestamp': r.get('Timestamp', '-'),
                     'status': r.get('Status', 'Pending'),
                     'source': r.get('Source', 'Messenger')
                 })
             
-            # Sort by Date and then Time ascending
             standardized.sort(key=lambda x: (x['date'], x['time']))
             return standardized
         except Exception as e:
-            print(f"ERROR: Failed to fetch and sort records: {e}")
+            print(f"ERROR: Failed to fetch records: {e}")
             return []
 
     def get_existing_bookings(self, start_time, end_time):
-        """
-        Internal capacity check helper.
-        """
         if not self.sheet:
             return []
         try:
@@ -101,9 +96,9 @@ class SheetsTool:
             bookings = []
             for row in all_values[1:]:
                 try:
-                    # Name, Date, Time, Group_Size, Contact, Manual, Status
-                    date_str = row[1]
-                    time_str = row[2]
+                    # Name, Email, Mobile, Group_Size, Date, Time, Timestamp, Status, Source
+                    date_str = row[4]
+                    time_str = row[5]
                     group_size = int(row[3]) if str(row[3]).isdigit() else 0
                     
                     booking_dt = datetime.fromisoformat(f"{date_str}T{time_str}")
@@ -118,27 +113,21 @@ class SheetsTool:
 
     def sync_to_sheets(self, data):
         """
-        Appends a new booking row to the Google Sheet.
-        data: { 'name', 'date', 'time', 'group_size', 'contact', 'needs_manual_review', 'status' }
+        Appends a new booking row to the Google Sheet using 9-column schema.
         """
         if not self.sheet:
             return False
         try:
-            # [V4.6] WhatsApp Contact Logic: Use sender_id if platform is whatsapp
-            contact = data.get('contact')
-            if self.current_platform == 'whatsapp' and (not contact or contact == 'None'):
-                contact = self.current_sender_id or contact
-
             row = [
                 data.get('name', 'Unknown'),
+                data.get('email', ''),
+                data.get('mobile', ''),
+                data.get('group_size', 1),
                 data.get('date', ''),
                 data.get('time', ''),
-                data.get('group_size', 1),
-                contact if contact else 'Messenger',
-                data.get('needs_manual_review', False),
+                data.get('timestamp', datetime.now().isoformat()),
                 data.get('status', 'Pending'),
-                data.get('source', self.current_platform),
-                data.get('notes', '')
+                data.get('source', self.current_platform)
             ]
             self.sheet.append_row(row)
             
@@ -162,48 +151,33 @@ class SheetsTool:
 
     def update_booking(self, row_index, data):
         """
-        Updates a specific row in the sheet.
-        data: { 'name', 'date', 'time', 'group_size', 'contact', 'needs_manual_review', 'status' }
+        Updates a specific row in the sheet using 9-column schema.
         """
         if not self.sheet:
             return False
         try:
             row_values = [
                 data.get('name'),
+                data.get('email'),
+                data.get('mobile'),
+                data.get('group_size'),
                 data.get('date'),
                 data.get('time'),
-                data.get('group_size'),
-                data.get('contact'),
-                data.get('needs_manual_review'),
+                data.get('timestamp', datetime.now().isoformat()),
                 data.get('status'),
-                data.get('source', self.current_platform),
-                data.get('notes', '')
+                data.get('source', self.current_platform)
             ]
             
             cell_range = f"A{row_index}:I{row_index}"
             self.sheet.update(cell_range, [row_values])
-            
-            # Apply highlighting if Manual_Review
-            if data.get('status') == 'Manual_Review':
-                try:
-                    self.sheet.format(cell_range, {
-                        "backgroundColor": {"red": 1.0, "green": 0.9, "blue": 0.6},
-                        "textFormat": {"bold": True}
-                    })
-                except Exception as format_err:
-                    print(f"Warning: Could not format updated row: {format_err}")
-            
-            print(f"Successfully updated row {row_index} in Sheets.")
             return True
         except Exception as e:
             print(f"ERROR updating sheet at row {row_index}: {e}")
             return False
 
-    def find_latest_booking(self, contact):
+    def find_latest_booking(self, identifier):
         """
-        Finds the latest booking row for a given contact/name.
-        Searches by Contact column (index 4) or Name column (index 0).
-        Returns dict with row data + row_index, or None if not found.
+        Finds the latest booking row for a given email/mobile/name.
         """
         if not self.sheet:
             return None
@@ -212,121 +186,66 @@ class SheetsTool:
             if not all_values or len(all_values) <= 1:
                 return None
             
-            latest_row = None
-            latest_index = -1
-            
-            for i, row in enumerate(all_values[1:], start=2):  # Start at row 2 (skip header)
-                if len(row) < 7:
-                    continue
-                # Match by Contact (col 4) or Name (col 0), case-insensitive
-                row_contact = str(row[4]).strip().lower()
-                row_name = str(row[0]).strip().lower()
-                search = contact.strip().lower()
-                
-                if search in row_contact or search in row_name:
-                    # Take the latest (highest row index)
-                    if i > latest_index:
-                        latest_index = i
-                        latest_row = {
-                            'row_index': i,
-                            'name': row[0],
-                            'date': row[1],
-                            'time': row[2],
-                            'group_size': int(row[3]) if str(row[3]).isdigit() else 1,
-                            'contact': row[4],
-                            'needs_manual_review': row[5],
-                            'status': row[6]
-                        }
-            
-            if latest_row:
-                print(f"RESCHEDULE: Found booking for '{contact}' at row {latest_index}")
-            else:
-                print(f"RESCHEDULE: No booking found for '{contact}'")
-            return latest_row
+            search = identifier.strip().lower()
+            for i, row in enumerate(reversed(all_values[1:]), start=1):
+                # Columns: Name(0), Email(1), Mobile(2)...
+                if any(search in str(val).lower() for val in row[:3]):
+                    actual_index = len(all_values) - i + 1
+                    return {
+                        'row_index': actual_index,
+                        'name': row[0],
+                        'email': row[1],
+                        'mobile': row[2],
+                        'group_size': row[3],
+                        'date': row[4],
+                        'time': row[5],
+                        'status': row[7]
+                    }
+            return None
         except Exception as e:
             print(f"ERROR: find_latest_booking failed: {e}")
             return None
 
-    def move_to_archive(self, row_index):
+    def move_to_archive(self, row_index, status_override=None):
         """
         Moves a specific row from the active sheet to the Archive sheet.
-        Used for cancellations or explicit removals.
         """
         if not self.client or not self.sheet:
             return False
         try:
-            # 1. Get raw row data before deleting
             all_values = self.sheet.get_all_values()
-            row_data = all_values[row_index - 1] # 1st row is header, index fits
-            
-            # Ensure status is marked as Cancelled in the archive
-            if len(row_data) >= 7:
-                row_data[6] = 'Cancelled'
+            row_data = all_values[row_index - 1]
+            if status_override:
+                row_data[7] = status_override
 
-            # 2. Get or create Archive sheet
             spreadsheet = self.client.open_by_key(self.spreadsheet_id)
             try:
                 archive_sheet = spreadsheet.worksheet('Archive')
             except:
-                archive_sheet = spreadsheet.add_worksheet(title='Archive', rows=1000, cols=8)
+                archive_sheet = spreadsheet.add_worksheet(title='Archive', rows=1000, cols=9)
                 archive_sheet.append_row(HEADERS)
 
-            # 3. Append to archive
             archive_sheet.append_row(row_data)
-
-            # 4. Physical delete from active
             self.sheet.delete_rows(row_index)
-            print(f"ARCHIVED & DELETED: Row {row_index} moved to Archive.")
             return True
         except Exception as e:
-            print(f"ERROR: move_to_archive failed for row {row_index}: {e}")
+            print(f"ERROR: move_to_archive failed: {e}")
             return False
 
-    def delete_row(self, row_index):
-        """DEPRECATED: Use move_to_archive for safety. Physically deletes a row."""
-        if not self.sheet:
-            return False
-        try:
-            self.sheet.delete_rows(int(row_index))
-            return True
-        except Exception as e:
-            print(f"ERROR: delete_row failed: {e}")
-            return False
-
-    def find_same_day_booking(self, name, contact, date):
-        """
-        Find an existing booking for the same name/contact on the same date.
-        Used for semantic dedup — overwrite instead of creating duplicates.
-        """
+    def find_same_day_booking(self, identifier, date):
         if not self.sheet:
             return None
         try:
             all_values = self.sheet.get_all_values()
-            if not all_values or len(all_values) <= 1:
-                return None
-            
-            search_name = name.strip().lower()
-            search_contact = contact.strip().lower()
-            
+            search = identifier.strip().lower()
             for i, row in enumerate(all_values[1:], start=2):
-                if len(row) < 7:
-                    continue
-                row_name = str(row[0]).strip().lower()
-                row_contact = str(row[4]).strip().lower()
-                row_date = str(row[1]).strip()
-                
-                # Same date AND same person (by name or contact)
-                if row_date == date and (search_name in row_name or row_name in search_name
-                                         or search_contact in row_contact or row_contact in search_contact):
+                if len(row) < 8: continue
+                if row[4] == date and any(search in str(val).lower() for val in row[:3]):
                     return {
                         'row_index': i,
                         'name': row[0],
-                        'date': row[1],
-                        'time': row[2],
-                        'group_size': int(row[3]) if str(row[3]).isdigit() else 1,
-                        'contact': row[4],
-                        'needs_manual_review': row[5],
-                        'status': row[6]
+                        'date': row[4],
+                        'status': row[7]
                     }
             return None
         except Exception as e:
@@ -335,63 +254,42 @@ class SheetsTool:
 
     def archive_old_data(self):
         """
-        Move bookings with dates before today from main sheet to Archive sheet.
-        Creates the Archive sheet if it doesn't exist.
+        Move bookings with dates before today from main sheet to Archive.
         """
         if not self.client or not self.sheet:
-            print("ARCHIVE: No sheet connection available.")
             return 0
-        
         try:
             spreadsheet = self.client.open_by_key(self.spreadsheet_id)
-            
-            # Get or create Archive sheet
-            archive_sheet = None
-            for ws in spreadsheet.worksheets():
-                if ws.title == 'Archive':
-                    archive_sheet = ws
-                    break
-            if not archive_sheet:
-                # Add sheet if missing
-                archive_sheet = spreadsheet.add_worksheet(title='Archive', rows=1000, cols=8)
+            try:
+                archive_sheet = spreadsheet.worksheet('Archive')
+            except:
+                archive_sheet = spreadsheet.add_worksheet(title='Archive', rows=1000, cols=9)
                 archive_sheet.append_row(HEADERS)
-                print("ARCHIVE: Created 'Archive' worksheet.")
             
-            # Get all data from main sheet
             all_values = self.sheet.get_all_values()
-            if not all_values or len(all_values) <= 1:
-                return 0
+            if len(all_values) <= 1: return 0
             
             today_str = datetime.now().strftime('%Y-%m-%d')
             rows_to_archive = []
             row_indices_to_delete = []
             
             for i, row in enumerate(all_values[1:], start=2):
-                if len(row) < 2:
-                    continue
-                row_date = str(row[1]).strip()
-                row_status = str(row[6]).strip() if len(row) > 6 else ""
+                if len(row) < 8: continue
+                row_date = row[4]
+                row_status = row[7]
                 
-                # Archive if date is old OR status is explicitly 'Archived'
                 if (row_date and row_date < today_str) or (row_status == 'Archived'):
                     rows_to_archive.append(row)
                     row_indices_to_delete.append(i)
             
-            if not rows_to_archive:
-                print("ARCHIVE: No old data to archive.")
-                return 0
+            if rows_to_archive:
+                archive_sheet.append_rows(rows_to_archive)
+                for idx in sorted(row_indices_to_delete, reverse=True):
+                    self.sheet.delete_rows(idx)
             
-            # Batch append to Archive
-            archive_sheet.append_rows(rows_to_archive)
-            
-            # Delete from main sheet (reverse order)
-            for idx in sorted(row_indices_to_delete, reverse=True):
-                self.sheet.delete_rows(idx)
-            
-            print(f"ARCHIVE: Moved {len(rows_to_archive)} old entries to Archive.")
             return len(rows_to_archive)
-        
         except Exception as e:
             print(f"ERROR: archive_old_data failed: {e}")
             return 0
+
 
