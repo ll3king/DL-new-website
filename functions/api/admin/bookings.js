@@ -37,7 +37,7 @@ export async function onRequestGet(context) {
         const SPREADSHEET_ID = env.SPREADSHEET_ID || '1d-FmRVSMfrUqNOhJjsbNVk2cgeqvkk5ZdDnDtx8QONc';
 
         const token = await getGoogleAuthToken(serviceAccount);
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!A2:H200`;
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!A2:I200`;
         const response = await fetch(url, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -53,13 +53,14 @@ export async function onRequestGet(context) {
         const bookings = (data.values || []).map((row, index) => ({
             id: (index + 2).toString(),
             name: row[0] || '',
-            email: row[1] || '',
-            mobile: row[2] || '',
+            date: row[1] || '',
+            time: row[2] || '',
             group_size: row[3] || '',
-            date: row[4] || '',
-            time: row[5] || '',
-            timestamp: row[6] || '',
-            status: row[7] || 'Pending'
+            contact: row[4] || '',
+            needs_manual_review: row[5] || false,
+            status: row[6] || 'Pending',
+            source: row[7] || '',
+            notes: row[8] || ''
         })).filter(b => b.status !== 'Archived'); // Hide archived bookings
 
         return new Response(JSON.stringify({ bookings }), { headers: HEADERS });
@@ -92,7 +93,7 @@ export async function onRequestPatch(context) {
         if (action === "approve") status = "Confirmed";
         if (action === "archive") status = "Archived";
 
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!H${id}?valueInputOption=USER_ENTERED`;
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!G${id}?valueInputOption=USER_ENTERED`;
         const response = await fetch(url, {
             method: "PUT",
             headers: {

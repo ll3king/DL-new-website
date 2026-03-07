@@ -103,6 +103,16 @@ class GeminiBrain:
                     self.sheets_service.sync_to_sheets(data)
                     return "FAILED_MANUAL_REVIEW_TRIGGERED: Group size > 10. Manager notified. Guide guest to walk-in while we review."
 
+                # Capacity Check (16 people/hour)
+                if date and time:
+                    day_bookings = self.sheets_service.get_all_records()
+                    # Aggregate pax for the specific hour
+                    hour_pax = sum(int(b.get('group_size', 0)) for b in day_bookings 
+                                  if b.get('date') == date and b.get('time') == time and b.get('status') != 'Cancelled')
+                    
+                    if hour_pax + group_size > 16:
+                         return "FAILED_WALK_IN_RECOMMENDED: Venue is at capacity for this specific hour. Please guide to walk-in."
+
                 # Standard booking (<= 6)
                 data = {
                     'name': name, 'date': date, 'time': time, 'group_size': group_size, 'contact': contact,

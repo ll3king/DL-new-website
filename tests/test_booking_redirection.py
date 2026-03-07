@@ -31,5 +31,16 @@ class TestBookingRedirection(unittest.TestCase):
         self.assertEqual(args[0]['status'], 'Manual_Review')
         self.assertIn("SYSTEM ALERT", args[0]['notes'])
 
+    def test_capacity_exceeded(self):
+        """Case: Total capacity > 16. Should return WALK_IN_RECOMMENDED."""
+        # Mock existing bookings for that hour
+        self.mock_sheets.get_all_records.return_value = [
+            {'date': '2024-01-01', 'time': '11:00', 'group_size': 12, 'status': 'Confirmed'}
+        ]
+        
+        # Try to book 5 more people for the same date at 11:00 (Total = 17)
+        result = self.brain.manage_booking(action='create', name='Busy', contact='456', date='2024-01-01', time='11:00', group_size=5)
+        self.assertIn("WALK_IN_RECOMMENDED", result)
+
 if __name__ == '__main__':
     unittest.main()
