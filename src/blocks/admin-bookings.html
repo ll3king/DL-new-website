@@ -44,31 +44,43 @@
                 </table>
             </div>
 
-            <!-- Calendar View (Simplified placeholder) -->
+            <!-- Calendar View -->
             <div id="calendar-view" style="display: none;">
+                <div class="calendar-controls"
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <button id="prev-month"
+                        style="background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">&larr;
+                        Prev</button>
+                    <h2 id="current-month-display"
+                        style="margin: 0; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 0.1em;">
+                        Loading...</h2>
+                    <button id="next-month"
+                        style="background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">Next
+                        &rarr;</button>
+                </div>
                 <div
-                    style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #eee; border: 1px solid #eee;">
+                    style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #eee; border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
                     <!-- Calendar Grid Header -->
                     <div
-                        style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.8rem;">
+                        style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.7rem; color: #7f8c8d;">
                         MON</div>
                     <div
-                        style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.8rem;">
+                        style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.7rem; color: #7f8c8d;">
                         TUE</div>
                     <div
-                        style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.8rem;">
+                        style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.7rem; color: #7f8c8d;">
                         WED</div>
                     <div
-                        style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.8rem;">
+                        style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.7rem; color: #7f8c8d;">
                         THU</div>
                     <div
-                        style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.8rem;">
+                        style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.7rem; color: #7f8c8d;">
                         FRI</div>
                     <div
-                        style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.8rem;">
+                        style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.7rem; color: #7f8c8d;">
                         SAT</div>
                     <div
-                        style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.8rem;">
+                        style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.7rem; color: #7f8c8d;">
                         SUN</div>
 
                     <!-- Days -->
@@ -164,6 +176,11 @@
         const calView = document.getElementById('calendar-view');
         const listBtn = document.getElementById('view-list-btn');
         const calBtn = document.getElementById('view-cal-btn');
+        const prevBtn = document.getElementById('prev-month');
+        const nextBtn = document.getElementById('next-month');
+        const monthDisplay = document.getElementById('current-month-display');
+
+        let calendarDate = new Date();
 
         listBtn.addEventListener('click', () => {
             listView.style.display = 'block';
@@ -184,6 +201,16 @@
             renderCalendar();
         });
 
+        prevBtn.addEventListener('click', () => {
+            calendarDate.setMonth(calendarDate.getMonth() - 1);
+            renderCalendar();
+        });
+
+        nextBtn.addEventListener('click', () => {
+            calendarDate.setMonth(calendarDate.getMonth() + 1);
+            renderCalendar();
+        });
+
         function renderList() {
             const body = document.getElementById('bookings-list-body');
             if (bookings.length === 0) {
@@ -199,13 +226,13 @@
                 </td>
                 <td style="padding: 1.2rem;">
                     <strong>${b.name}</strong><br>
-                    <span style="font-size: 0.8rem; color: #7f8c8d;">${b.contact || b.email || 'No Contact'}</span>
+                    <span style="font-size: 0.8rem; color: #7f8c8d;">${b.contact || 'No Contact'}</span>
                 </td>
                 <td style="padding: 1.2rem;">
                     ${b.date}<br>
                     <span style="font-size: 0.8rem; font-weight: 600;">${b.time}</span>
                 </td>
-                <td style="padding: 1.2rem;">${b.group_size || b.size || '?'} People</td>
+                <td style="padding: 1.2rem;">${b.group_size || '?'} People</td>
                 <td style="padding: 1.2rem;">
                     <button onclick="updateStatus('${b.id}', 'archive')" style="background: #34495e; color: white; border: none; padding: 0.5rem; border-radius: 4px; font-size: 0.7rem; cursor: pointer;">Archive</button>
                     ${(b.status || '').includes('Review') ? `<button onclick="updateStatus('${b.id}', 'approve')" style="background: #27ae60; color: white; border: none; padding: 0.5rem; border-radius: 4px; font-size: 0.7rem; cursor: pointer; margin-left: 0.2rem;">Approve</button>` : ''}
@@ -226,15 +253,49 @@
         function renderCalendar() {
             const grid = document.getElementById('calendar-days-grid');
             grid.innerHTML = '';
-            for (let i = 1; i <= 31; i++) {
+
+            const year = calendarDate.getFullYear();
+            const month = calendarDate.getMonth();
+
+            // Display Month Year
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            monthDisplay.innerText = `${monthNames[month]} ${year}`;
+
+            // Get first day of month and total days
+            const firstDay = new Date(year, month, 1).getDay(); // 0 is Sunday, 1 is Monday
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            // Adjust first day to start from Monday (0: Mon, 6: Sun)
+            const startOffset = firstDay === 0 ? 6 : firstDay - 1;
+
+            // Empty cells for offset
+            for (let i = 0; i < startOffset; i++) {
+                const empty = document.createElement('div');
+                empty.style.cssText = `background: #fdfdfd; min-height: 120px; border-bottom: 1px solid #eee; border-left: 1px solid #eee;`;
+                grid.appendChild(empty);
+            }
+
+            for (let i = 1; i <= daysInMonth; i++) {
                 const dayStr = i.toString().padStart(2, '0');
-                const dayBookings = bookings.filter(b => b.date && b.date.endsWith(dayStr));
+                const monthStr = (month + 1).toString().padStart(2, '0');
+                const isoDate = `${year}-${monthStr}-${dayStr}`;
+
+                const dayBookings = bookings.filter(b => b.date === isoDate);
+                const totalPax = dayBookings.reduce((sum, b) => sum + parseInt(b.group_size || 0), 0);
+
                 const div = document.createElement('div');
-                div.style.cssText = `background: white; min-height: 100px; padding: 0.8rem; border-bottom: 1px solid #eee; border-left: 1px solid #eee; position: relative; cursor: pointer;`;
+                div.style.cssText = `background: white; min-height: 120px; padding: 1rem; border-bottom: 1px solid #eee; border-left: 1px solid #eee; position: relative; transition: background 0.2s;`;
+                div.onmouseover = () => div.style.background = '#fcfcfc';
+                div.onmouseout = () => div.style.background = 'white';
+
                 div.innerHTML = `
-                <div style="font-size: 0.8rem; color: #bdc3c7;">${i}</div>
-                ${dayBookings.length > 0 ? `<div style="margin-top: 0.5rem; background: var(--accent); height: 4px; border-radius: 2px;"></div>
-                <div style="font-size: 0.65rem; color: var(--accent); font-weight: 700; margin-top: 0.3rem;">${dayBookings.length} Booked</div>` : ''}
+                <div style="font-size: 0.9rem; font-weight: 700; color: #bdc3c7; margin-bottom: 0.5rem;">${i}</div>
+                ${dayBookings.length > 0 ? `
+                    <div style="background: var(--accent); color: white; padding: 0.4rem; border-radius: 4px; font-size: 0.7rem; font-weight: 700; box-shadow: 0 2px 5px rgba(214, 48, 49, 0.2);">
+                        ${dayBookings.length} RES / ${totalPax} PAX
+                    </div>
+                ` : ''}
+                ${totalPax >= 16 ? `<div style="font-size: 0.6rem; color: var(--accent); font-weight: 800; margin-top: 0.3rem;">⚠️ AT CAPACITY</div>` : ''}
             `;
                 grid.appendChild(div);
             }
