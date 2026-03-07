@@ -137,9 +137,23 @@ class SheetsTool:
                 contact if contact else 'Messenger',
                 data.get('needs_manual_review', False),
                 data.get('status', 'Pending'),
-                data.get('source', self.current_platform)
+                data.get('source', self.current_platform),
+                data.get('notes', '')
             ]
             self.sheet.append_row(row)
+            
+            # Apply highlighting if Manual_Review
+            if data.get('status') == 'Manual_Review':
+                try:
+                    # Get the index of the newly added row
+                    last_row = len(self.sheet.get_all_values())
+                    self.sheet.format(f"A{last_row}:I{last_row}", {
+                        "backgroundColor": {"red": 1.0, "green": 0.9, "blue": 0.6}, # Light Gold/Yellow
+                        "textFormat": {"bold": True}
+                    })
+                except Exception as format_err:
+                    print(f"Warning: Could not format row: {format_err}")
+                    
             return True
         except Exception as e:
             print(f"Failed to sync to Sheets: {e}")
@@ -162,11 +176,23 @@ class SheetsTool:
                 data.get('contact'),
                 data.get('needs_manual_review'),
                 data.get('status'),
-                data.get('source', self.current_platform)
+                data.get('source', self.current_platform),
+                data.get('notes', '')
             ]
             
-            cell_range = f"A{row_index}:H{row_index}"
+            cell_range = f"A{row_index}:I{row_index}"
             self.sheet.update(cell_range, [row_values])
+            
+            # Apply highlighting if Manual_Review
+            if data.get('status') == 'Manual_Review':
+                try:
+                    self.sheet.format(cell_range, {
+                        "backgroundColor": {"red": 1.0, "green": 0.9, "blue": 0.6},
+                        "textFormat": {"bold": True}
+                    })
+                except Exception as format_err:
+                    print(f"Warning: Could not format updated row: {format_err}")
+            
             print(f"Successfully updated row {row_index} in Sheets.")
             return True
         except Exception as e:

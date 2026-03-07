@@ -9,28 +9,19 @@ from datetime import datetime
 # --- CONFIGURATION ---
 BASE_URL = "https://evomap.ai/a2a"
 IDENTITY_FILE = os.path.join(os.getcwd(), "node_identity.json")
+KNOWLEDGE_FILE = r"C:\Users\61413\.gemini\antigravity\brain\7373eb33-0a18-419b-9aad-84a3f9920488\project_knowledge_base.md"
 
 def get_node_id():
     if os.path.exists(IDENTITY_FILE):
         with open(IDENTITY_FILE, "r") as f:
             data = json.load(f)
             return data["node_id"]
-    
-    # Generate new node ID: node_ + 16 random hex chars
-    import secrets
-    node_id = f"node_{secrets.token_hex(8)}"
-    with open(IDENTITY_FILE, "w") as f:
-        json.dump({"node_id": node_id}, f)
-    print(f"Generated and saved new node_id: {node_id}")
-    return node_id
+    return None
 
 def compute_asset_id(asset_dict):
-    # Canonical JSON: sorted keys, no whitespace (separators=[',', ':'])
-    # Must exclude 'asset_id' field if it exists
     asset_copy = asset_dict.copy()
     if "asset_id" in asset_copy:
         del asset_copy["asset_id"]
-    
     canonical_json = json.dumps(asset_copy, sort_keys=True, separators=(',', ':'))
     hash_object = hashlib.sha256(canonical_json.encode('utf-8'))
     return f"sha256:{hash_object.hexdigest()}"
@@ -39,7 +30,6 @@ def generate_envelope(message_type, payload, node_id):
     timestamp = datetime.utcnow().isoformat() + "Z"
     import secrets
     message_id = f"msg_{int(time.time())}_{secrets.token_hex(4)}"
-    
     return {
         "protocol": "gep-a2a",
         "protocol_version": "1.0.0",
@@ -50,61 +40,32 @@ def generate_envelope(message_type, payload, node_id):
         "payload": payload
     }
 
-def step_2_register(node_id):
-    print("\n--- Step 2: Registering Node (hello) ---")
-    payload = {
-        "capabilities": {"reasoning": "high", "creative": "medium"},
-        "gene_count": 0,
-        "capsule_count": 0,
-        "env_fingerprint": {
-            "platform": platform.system().lower(),
-            "arch": platform.machine().lower()
-        }
-    }
-    
-    envelope = generate_envelope("hello", payload, node_id)
-    response = requests.post(f"{BASE_URL}/hello", json=envelope)
-    
-    print(f"Response Status: {response.status_code}")
-    print(f"Response Body: {response.text}")
-    
-    if response.status_code == 200:
-        data = response.json()
-        print(f"Registration successful!")
-        print(f"Claim URL: {data.get('claim_url')}")
-        print(f"Claim Code: {data.get('claim_code')}")
-        return data
-    else:
-        print(f"Registration failed")
-        return None
+def publish_knowledge(node_id):
+    if not os.path.exists(KNOWLEDGE_FILE):
+        print(f"Error: Knowledge file not found at {KNOWLEDGE_FILE}")
+        return
 
-def step_3_publish(node_id):
-    print("\n--- Step 3: Publishing Project Knowledge (publish) ---")
+    # with open(KNOWLEDGE_FILE, "r", encoding="utf-8") as f:
+    #     knowledge_content = f.read().strip()
+    
+    knowledge_content = "Dandy Lane Sanctuary Website: AI Logic & Mobile Performance Experience recording."
+
+    print("\n--- Publishing Project Knowledge to EvoMap (TEST) ---")
     
     env_fingerprint = {
         "platform": platform.system().lower(),
         "arch": platform.machine().lower()
     }
 
-    KNOWLEDGE_FILE = r"C:\Users\61413\.gemini\antigravity\brain\7373eb33-0a18-419b-9aad-84a3f9920488\project_knowledge_base.md"
-    if not os.path.exists(KNOWLEDGE_FILE):
-        print(f"Error: Knowledge file not found at {KNOWLEDGE_FILE}")
-        return
-
-    with open(KNOWLEDGE_FILE, "r", encoding="utf-8") as f:
-        knowledge_content = f.read().strip()
-
     # 1. Gene
     gene = {
         "type": "Gene",
         "schema_version": "1.5.0",
         "category": "architectural_pattern",
-        "signals_match": ["AI Hallucination", "Reservation Logic", "Mobile UX"],
-        "summary": "Deterministic AI & Mobile Performance Patterns for Sanctuary Websites.",
+        "signals_match": ["AI Hallucination", "Reservation Logic"],
+        "summary": "Implementation patterns for deterministic AI business logic.",
         "strategy": [
-            "Enforce constraints in Tool code.",
-            "Build-time asset optimization (Sharp).",
-            "Responsive grid stacking."
+            "Enforce constraints in Tool Function code."
         ]
     }
     gene["asset_id"] = compute_asset_id(gene)
@@ -113,10 +74,10 @@ def step_3_publish(node_id):
     capsule = {
         "type": "Capsule",
         "schema_version": "1.5.0",
-        "trigger": ["Dandy Lane"],
+        "trigger": ["Project Post-Mortem"],
         "gene": gene["asset_id"],
-        "summary": "Project Knowledge",
-        "content": "Dandy Lane Sanctuary Website Experience.",
+        "summary": "Dandy Lane Project Knowledge",
+        "content": knowledge_content,
         "confidence": 0.95,
         "blast_radius": {"files": 1, "lines": 25},
         "outcome": {"status": "success", "score": 0.9},
@@ -141,6 +102,10 @@ def step_3_publish(node_id):
     }
     
     envelope = generate_envelope("publish", payload, node_id)
+    
+    print(f"DEBUG: Gene ID: {gene['asset_id']}")
+    print(f"DEBUG: Capsule ID: {capsule['asset_id']}")
+    
     response = requests.post(f"{BASE_URL}/publish", json=envelope)
     
     print(f"Response Status: {response.status_code}")
@@ -152,8 +117,10 @@ def step_3_publish(node_id):
     else:
         print(f"Publishing failed")
         return None
-    
+
 if __name__ == "__main__":
     node_id = get_node_id()
     if node_id:
-        step_3_publish(node_id)
+        publish_knowledge(node_id)
+    else:
+        print("Node ID not found. Please run onboarding first.")

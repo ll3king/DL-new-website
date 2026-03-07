@@ -91,12 +91,21 @@ class GeminiBrain:
         print(f"TOOL CALL: manage_booking(action={action}, name={name}, contact={contact}, date={date}, time={time}, group_size={group_size})")
         try:
             if action == 'create':
-                if group_size > 6:
-                    return f"FAILED: Group size {group_size} exceeds the strict limit of 6. Please ask the guest to call us directly."
+                if 6 < group_size <= 10:
+                    return "FAILED_WALK_IN_RECOMMENDED: We always reserve space for walk-ins. Please guide the guest to just come by."
                 
+                if group_size > 10:
+                    data = {
+                        'name': name, 'date': date, 'time': time, 'group_size': group_size, 'contact': contact,
+                        'status': 'Manual_Review',
+                        'notes': f"SYSTEM ALERT: Large Group Inquiry ({group_size})"
+                    }
+                    self.sheets_service.sync_to_sheets(data)
+                    return "FAILED_MANUAL_REVIEW_TRIGGERED: Group size > 10. Manager notified. Guide guest to walk-in while we review."
+
+                # Standard booking (<= 6)
                 data = {
                     'name': name, 'date': date, 'time': time, 'group_size': group_size, 'contact': contact,
-                    'needs_manual_review': False,
                     'status': 'Confirmed'
                 }
                 success = self.sheets_service.sync_to_sheets(data)
