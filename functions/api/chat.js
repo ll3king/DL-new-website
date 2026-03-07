@@ -15,7 +15,7 @@ const SITE_KNOWLEDGE = {
         "Scotch Steak Sandwich - Prime scotch steak, caramelized onion jam"
     ],
     features: "Laptop-friendly, free WiFi, quiet workspace areas, pet-friendly outdoor seating",
-    booking: "Groups of 6+ please call. Max 16 people per hour. Must book for tomorrow onwards."
+    booking: "Max 16 people per hour. 1-6 people: Online. 7-10 people: Walk-in recommended. >10 people: Manual review. Must book for tomorrow onwards."
 };
 
 const TOOLS = [
@@ -87,17 +87,19 @@ export async function onRequestPost(context) {
 
 CORE RULES:
 1. **NEVER** mention prices.
-2. **NEVER** say "I am an AI assistant" or "I cannot remember".
-3. **MEMORY**: Use conversation history to recognize the customer.
+2. **NEVER** say "I am an AI assistant".
+3. **MEMORY**: Use conversation history.
 4. **DATE LOGIC**: Today is: ${hobartTime}. Online bookings are for TOMORROW onwards. Suggest walk-in for today.
-5. **CHECKING**: If a user asks to check their booking, ask for their name or email and use 'check_booking'.
-6. **SILENT HANDOFF**: For complex stuff, use 'notify_management'.
-7. **LANGUAGE MIRRORING**: Mirror the guest's language (e.g. reply in Chinese if they speak Chinese).
+5. **CAPACITY (STRICT)**: 16 people per hour max. 
+6. **TIERED GROUPS**:
+   - 1-6: Standard booking.
+   - 7-10: If tool returns FAILED_WALK_IN_RECOMMENDED, say online bookings are full but we love walk-ins!
+   - >10: If tool returns FAILED_MANUAL_REVIEW, say you've alerted the manager but walk-ins are welcome.
+7. **LANGUAGE MIRRORING**: Reply in the customer's language.
 
 Knowledge:
 - Location: ${SITE_KNOWLEDGE.address}
 - Hours: ${SITE_KNOWLEDGE.hours}
-- Phone: ${SITE_KNOWLEDGE.phone}
 - Booking: ${SITE_KNOWLEDGE.booking}`;
 
         const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
@@ -170,6 +172,37 @@ Knowledge:
 }
 
 async function handleCreate(args, env) {
+    const requestedPax = parseInt(args.group_size) || 0;
+    const date = args.date;
+    const time = args.time;
+
+    // 1. Tier Check
+    if (requestedPax > 10) {
+        await handleNotify({
+            customer_name: args.name,
+            contact: args.email || args.mobile,
+            details: `Large group (${requestedPax}) requested for ${date} at ${time}.`
+        }, env);
+        return "FAILED_MANUAL_REVIEW";
+    }
+    if (requestedPax > 6) return "FAILED_WALK_IN_RECOMMENDED";
+
+    // 2. Capacity Check (16/hr)
+    const result = await sheetOperation('GET', null, env);
+    if (!result.error) {
+        const rows = result.values || [];
+        const hourlyPax = rows.filter(r => {
+            const rDate = r[4];
+            const rTime = r[5];
+            const rStatus = r[7];
+            if (rDate !== date || rStatus === 'Archived') return false;
+            // Simple hour match (e.g. 09:15 and 09:45 are same hour)
+            return rTime.split(':')[0] === time.split(':')[0];
+        }).reduce((sum, r) => sum + (parseInt(r[3]) || 0), 0);
+
+        if (hourlyPax + requestedPax > 16) return "FAILED_WALK_IN_RECOMMENDED";
+    }
+
     const val = [args.name, args.email, args.mobile, args.group_size, args.date, args.time, new Date().toISOString(), "AI_Confirmed"];
     return await sheetOperation('APPEND', val, env);
 }
@@ -177,22 +210,22 @@ async function handleCreate(args, env) {
 async function handleCheck(args, env) {
     const id = args.identifier.toLowerCase();
     const result = await sheetOperation('GET', null, env);
-    if (result.error) return "Sorry, I'm having trouble checking the records right now.";
+    if (result.error) return "Error accessing records.";
 
-    // Simple search in local logic
     const rows = result.values || [];
-    const match = rows.find(r => (r[0] && r[0].toLowerCase().includes(id)) || (r[1] && r[1].toLowerCase().includes(id)));
+    const match = rows.reverse().find(r => (r[0] && r[0].toLowerCase().includes(id)) || (r[1] && r[1].toLowerCase().includes(id)));
 
     if (match) {
-        return `Found it! Booking for ${match[0]} on ${match[4]} at ${match[5]}. Status: ${match[7]}.`;
+        return `Found booking for ${match[0]} on ${match[4]} at ${match[5]}. Status: ${match[7]}.`;
     }
-    return "I couldn't find a booking under that name or email. Would you like me to create one?";
+    return "No booking found. Would you like to create one?";
 }
 
 async function handleNotify(args, env) {
-    const val = [args.customer_name || 'Guest', 'N/A', args.contact || 'N/A', '0', 'N/A', 'N/A', new Date().toISOString(), `REQ: ${args.details}`];
+    const val = [args.customer_name || 'Guest', 'N/A', args.contact || 'N/A', '0', 'N/A', 'N/A', new Date().toISOString(), `ALERT: ${args.details}`];
     return await sheetOperation('APPEND', val, env);
 }
+
 
 // Unified Sheet Operation
 async function sheetOperation(mode, values, env) {
