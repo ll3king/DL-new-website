@@ -226,7 +226,7 @@
                 </td>
                 <td style="padding: 1.2rem;">
                     <strong>${b.name}</strong><br>
-                    <span style="font-size: 0.8rem; color: #7f8c8d;">${b.contact || 'No Contact'}</span>
+                    <span style="font-size: 0.8rem; color: #7f8c8d;">${b.email || ''} ${b.mobile ? `(${b.mobile})` : ''}</span>
                 </td>
                 <td style="padding: 1.2rem;">
                     ${b.date}<br>
@@ -239,6 +239,9 @@
                 </td>
             </tr>
         `).join('');
+
+            // Also update calendar if visible
+            if (calView.style.display === 'block') renderCalendar();
 
             // Expose updateStatus to window for onclick
             window.updateStatus = updateStatus;
