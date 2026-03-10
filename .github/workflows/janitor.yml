@@ -1,0 +1,33 @@
+name: Dandy Lane 3 AM Data Janitor
+
+on:
+  schedule:
+    # 16:00 UTC is exactly 3:00 AM in Hobart (AEDT/Summer Time)
+    # Note: GitHub Actions cron uses UTC
+    - cron: '0 16 * * *'
+  # Allow manual triggering from GitHub UI
+  workflow_dispatch:
+
+jobs:
+  run-janitor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Cloudflare Pages Janitor API
+        env:
+          # Secret is pulled from GitHub Repository Secrets
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+        run: |
+          echo "Initiating 3 AM Data Sweep..."
+          response=$(curl -s -w "\n%{http_code}" -X GET -H "Authorization: Bearer $ADMIN_PASSWORD" "https://www.dandylanecafe.com/api/janitor")
+          
+          # Splitting body and status code
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+          
+          echo "Response Code: $http_code"
+          echo "Server Reply: $body"
+          
+          if [ "$http_code" -ne 200 ]; then
+            echo "Failed to run Janitor! Exiting with error."
+            exit 1
+          fi
