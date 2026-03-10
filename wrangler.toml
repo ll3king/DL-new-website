@@ -1,0 +1,6 @@
+name = "dl-new-website"
+pages_build_output_dir = "public"
+compatibility_date = "2024-03-20"
+
+[triggers]
+crons = ["0 16 * * *"] # Fires daily at 16:00 UTC (which is 3:00 AM AEDT)
