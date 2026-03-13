@@ -6,41 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ page_title }} | {{ site.identity.name }}</title>
     <meta name="description" content="{{ page_description or site.identity.description }}">
-    <link rel="canonical" href="{{ site.seo.site_url }}/{{ current_page_id }}.html">
+    <link rel="canonical" href="{{ site.seo.site_url }}{% if current_page_id == 'index' %}/{% else %}/{{ current_page_id }}{% endif %}">
 
-    <!-- AEO: Enhanced Dynamic JSON-LD Entity Representation -->
+    <!-- AEO: Consolidated JSON-LD Entity Graph -->
     {% if global_schema %}
     {{ global_schema | safe }}
     {% endif %}
-
-    <!-- Dynamic Page-Specific Schema -->
-    {% if page_specific_schema %}
-    {{ page_specific_schema | safe }}
-    {% endif %}
-
-    <!-- Breadcrumb Schema (AEO) -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "{{ site.seo.site_url }}/index.html"
-        }
-        {% if current_page_id != 'index' %}
-        ,{
-          "@type": "ListItem",
-          "position": 2,
-          "name": "{{ page_title }}",
-          "item": "{{ site.seo.site_url }}/{{ slug or (current_page_id + '.html') }}"
-        }
-        {% endif %}
-      ]
-    }
-    </script>
 
     <style>
         :root {

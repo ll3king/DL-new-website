@@ -170,15 +170,24 @@ async function render() {
             };
         }
 
-        function generateOmniSchema(siteData, faqData, menuData) {
+        function generateOmniSchema(siteData, faqData, menuData, currentPageId, currentPageTitle) {
             const restaurant = generateRestaurantData(siteData);
+            
+            // Refine Restaurant to include FoodEstablishment for broader coverage
+            restaurant["@type"] = ["Restaurant", "FoodEstablishment", "LocalBusiness"];
+            restaurant["telephone"] = "+61 498 061 067"; // Standardized International Format
             
             const organization = {
                 "@type": "Organization",
                 "@id": siteData.seo.site_url + "/#organization",
                 "name": siteData.identity.name,
                 "url": siteData.seo.site_url,
-                "logo": siteData.seo.site_url + "/assets/media/logo.png",
+                "logo": {
+                    "@type": "ImageObject",
+                    "url": siteData.seo.site_url + "/assets/media/logo.png",
+                    "width": "200",
+                    "height": "200"
+                },
                 "sameAs": siteData.same_as
             };
 
@@ -190,7 +199,28 @@ async function render() {
                 "publisher": { "@id": siteData.seo.site_url + "/#organization" }
             };
 
-            // Link FAQ and Menu to the Restaurant entity
+            const breadcrumbs = {
+                "@type": "BreadcrumbList",
+                "@id": siteData.seo.site_url + (currentPageId === 'index' ? '/' : '/' + currentPageId) + "#breadcrumb",
+                "itemListElement": [
+                    {
+                        "@type": "ListItem",
+                        "position": 1,
+                        "name": "Home",
+                        "item": siteData.seo.site_url
+                    }
+                ]
+            };
+
+            if (currentPageId !== 'index') {
+                breadcrumbs.itemListElement.push({
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": currentPageTitle,
+                    "item": siteData.seo.site_url + "/" + (currentPageId === 'stories' ? 'stories' : currentPageId)
+                });
+            }
+
             const faq = {
                 "@type": "FAQPage",
                 "@id": siteData.seo.site_url + "/#faq",
@@ -221,55 +251,12 @@ async function render() {
                 }))
             };
 
-            return JSON.stringify({
+            // Wrap in explicit AEO markers for crawlers
+            return `<!-- START AEO ENTITY GRAPH -->\n<script type="application/ld+json">\n${JSON.stringify({
                 "@context": "https://schema.org",
-                "@graph": [organization, website, restaurant, faq, menu]
-            }, null, 2);
+                "@graph": [organization, website, restaurant, breadcrumbs, faq, menu]
+            }, null, 2)}\n</script>\n<!-- END AEO ENTITY GRAPH -->`;
         }
-
-        function generateFaqSchema(faqs) {
-            return JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "FAQPage",
-                "mainEntity": faqs.questions.map(q => ({
-                    "@type": "Question",
-                    "name": q.question,
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": q.answer
-                    }
-                }))
-            }, null, 2);
-        }
-
-        function generateMenuSchema(menuData, siteData) {
-            const menuItems = [];
-            menuData.categories.forEach(cat => {
-                cat.items.forEach(item => {
-                    menuItems.push({
-                        "@type": "MenuItem",
-                        "name": item.name,
-                        "description": item.description || "",
-                        "offers": {
-                            "@type": "Offer",
-                            "price": item.price,
-                            "priceCurrency": "AUD"
-                        }
-                    });
-                });
-            });
-
-            return JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "Menu",
-                "name": "Dandy Lane Menu",
-                "mainEntityOfPage": siteData.seo.site_url + "/menu",
-                "hasMenuItem": menuItems
-            }, null, 2);
-        }
-
-        const omniSchema = `<script type="application/ld+json">\n${generateOmniSchema(siteData, faqData, menuData)}\n</script>`;
-        const restaurantSchema = `<script type="application/ld+json">\n${JSON.stringify({ "@context": "https://schema.org", ...generateRestaurantData(siteData) }, null, 2)}\n</script>`;
 
         const generatedPages = [];
 
@@ -279,13 +266,8 @@ async function render() {
             const pageConfig = siteData.pages[page.id] || {};
             generatedPages.push(page.slug);
 
-            // Generate Page-Specific Schema
-            let pageSchema = "";
-            if (page.id === 'faq') {
-                pageSchema = `<script type="application/ld+json">\n${generateFaqSchema(faqData)}\n</script>`;
-            } else if (page.id === 'menu') {
-                pageSchema = `<script type="application/ld+json">\n${generateMenuSchema(menuData, siteData)}\n</script>`;
-            }
+            // Generate Consolidated Omni-Schema for every page
+            const pageSchema = generateOmniSchema(siteData, faqData, menuData, page.id, pageConfig.title);
 
             let pageBody = "";
             page.blocks.forEach(blockFile => {
@@ -302,8 +284,7 @@ async function render() {
                 page_title: pageConfig.title,
                 page_description: pageConfig.emphasis,
                 current_page_id: page.id,
-                global_schema: page.id === 'index' ? omniSchema : restaurantSchema,
-                page_specific_schema: pageSchema,
+                global_schema: pageSchema,
                 current_year: new Date().getFullYear()
             });
 
@@ -322,6 +303,8 @@ async function render() {
                 active_story: story
             });
 
+            const pageSchema = generateOmniSchema(siteData, faqData, menuData, 'stories', story.title);
+
             const finalHtml = nunjucks.render('base.html', {
                 ...context,
                 content: pageBody,
@@ -329,9 +312,7 @@ async function render() {
                 page_description: story.summary,
                 current_page_id: 'stories',
                 slug: slug,
-                story: story,
-                story: story,
-                global_schema: restaurantSchema,
+                global_schema: pageSchema,
                 current_year: new Date().getFullYear()
             });
 
@@ -341,10 +322,20 @@ async function render() {
         // 5. Generate AEO Artifacts & Infrastructure (L3 logic to L4 output)
         console.log("[L3] Generating AEO Artifacts: sitemap.xml, robots.txt, _redirects");
         
-        // Sitemap
+        // Sitemap - Standardize URLs (Pretty URLs)
+        const sitemapEntries = pages.map(p => {
+            const path = p.id === 'index' ? '' : `/${p.id}`;
+            return `  <url><loc>${siteData.seo.site_url}${path}</loc></url>`;
+        });
+
+        // Add stories to sitemap
+        storiesData.stories.forEach(story => {
+            sitemapEntries.push(`  <url><loc>${siteData.seo.site_url}/stories-${story.slug}</loc></url>`);
+        });
+
         const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${generatedPages.map(p => `  <url><loc>${siteData.seo.site_url}/${p}</loc></url>`).join('\n')}
+${sitemapEntries.join('\n')}
 </urlset>`;
         fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap.xml'), sitemap);
 
