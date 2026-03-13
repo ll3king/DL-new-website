@@ -170,13 +170,8 @@ async function render() {
             };
         }
 
-        function generateOmniSchema(siteData, faqData, menuData, currentPageId, currentPageTitle) {
-            const restaurant = generateRestaurantData(siteData);
-            
-            // Refine Restaurant to include FoodEstablishment for broader coverage
-            restaurant["@type"] = ["Restaurant", "FoodEstablishment", "LocalBusiness"];
-            restaurant["telephone"] = "+61 498 061 067"; // Standardized International Format
-            
+        // AEO: Fact-aligned Schema Generators
+        function generateBaseBusinessSchema(siteData) {
             const organization = {
                 "@type": "Organization",
                 "@id": siteData.seo.site_url + "/#organization",
@@ -199,32 +194,54 @@ async function render() {
                 "publisher": { "@id": siteData.seo.site_url + "/#organization" }
             };
 
-            const breadcrumbs = {
-                "@type": "BreadcrumbList",
-                "@id": siteData.seo.site_url + (currentPageId === 'index' ? '/' : '/' + currentPageId) + "#breadcrumb",
-                "itemListElement": [
+            const restaurant = {
+                "@type": ["Restaurant", "FoodEstablishment", "LocalBusiness"],
+                "@id": siteData.seo.site_url + "/#restaurant",
+                "name": siteData.identity.name,
+                "image": siteData.seo.site_url + "/assets/media/home_hero.jpg",
+                "url": siteData.seo.site_url,
+                "telephone": "+61 498 061 067",
+                "priceRange": siteData.identity.price_range,
+                "servesCuisine": siteData.seo.schema.cuisine,
+                "acceptsReservations": siteData.seo.schema.accepts_reservations,
+                "address": {
+                    "@type": "PostalAddress",
+                    "streetAddress": "Unit 10 / 138 Collins Street",
+                    "addressLocality": "Hobart",
+                    "addressRegion": "TAS",
+                    "postalCode": "7000",
+                    "addressCountry": "AU"
+                },
+                "geo": {
+                    "@type": "GeoCoordinates",
+                    "latitude": siteData.contact.nap.geo.latitude,
+                    "longitude": siteData.contact.nap.geo.longitude
+                },
+                "openingHoursSpecification": [
                     {
-                        "@type": "ListItem",
-                        "position": 1,
-                        "name": "Home",
-                        "item": siteData.seo.site_url
+                        "@type": "OpeningHoursSpecification",
+                        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+                        "opens": "07:00",
+                        "closes": "15:00"
+                    },
+                    {
+                        "@type": "OpeningHoursSpecification",
+                        "dayOfWeek": ["Saturday", "Sunday"],
+                        "opens": "09:00",
+                        "closes": "14:00"
                     }
-                ]
+                ],
+                "sameAs": siteData.same_as
             };
 
-            if (currentPageId !== 'index') {
-                breadcrumbs.itemListElement.push({
-                    "@type": "ListItem",
-                    "position": 2,
-                    "name": currentPageTitle,
-                    "item": siteData.seo.site_url + "/" + (currentPageId === 'stories' ? 'stories' : currentPageId)
-                });
-            }
+            return [organization, website, restaurant];
+        }
 
-            const faq = {
+        function generateFaqSchema(faqData, siteUrl) {
+            return {
                 "@type": "FAQPage",
-                "@id": siteData.seo.site_url + "/#faq",
-                "mainEntity": faqData.questions.slice(0, 5).map(q => ({
+                "@id": siteUrl + "/faq#faq",
+                "mainEntity": faqData.questions.map(q => ({
                     "@type": "Question",
                     "name": q.question,
                     "acceptedAnswer": {
@@ -233,29 +250,53 @@ async function render() {
                     }
                 }))
             };
+        }
 
-            const menu = {
+        function generateMenuSchema(menuData, siteData) {
+            return {
                 "@type": "Menu",
-                "@id": siteData.seo.site_url + "/#menu",
+                "@id": siteData.seo.site_url + "/menu#menu",
                 "name": siteData.identity.name + " Signature Menu",
                 "mainEntityOfPage": siteData.seo.site_url + "/menu",
-                "hasMenuItem": menuData.categories[0].items.slice(0, 3).map(item => ({
-                    "@type": "MenuItem",
-                    "name": item.name,
-                    "description": item.description || "",
-                    "offers": {
-                        "@type": "Offer",
-                        "price": item.price,
-                        "priceCurrency": "AUD"
-                    }
-                }))
+                "hasMenuItem": menuData.categories.flatMap(cat => 
+                    cat.items.map(item => ({
+                        "@type": "MenuItem",
+                        "name": item.name,
+                        "description": item.description || "",
+                        "offers": {
+                            "@type": "Offer",
+                            "price": item.price,
+                            "priceCurrency": "AUD"
+                        }
+                    }))
+                )
             };
+        }
 
-            // Wrap in explicit AEO markers for crawlers
-            return `<!-- START AEO ENTITY GRAPH -->\n<script type="application/ld+json">\n${JSON.stringify({
-                "@context": "https://schema.org",
-                "@graph": [organization, website, restaurant, breadcrumbs, faq, menu]
-            }, null, 2)}\n</script>\n<!-- END AEO ENTITY GRAPH -->`;
+        function generateBreadcrumbSchema(siteUrl, pageId, pageTitle) {
+            const listItems = [
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Home",
+                    "item": siteUrl
+                }
+            ];
+
+            if (pageId !== 'index') {
+                listItems.push({
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": pageTitle,
+                    "item": `${siteUrl}/${pageId}`
+                });
+            }
+
+            return {
+                "@type": "BreadcrumbList",
+                "@id": `${siteUrl}/${pageId === 'index' ? '' : pageId}#breadcrumb`,
+                "itemListElement": listItems
+            };
         }
 
         const generatedPages = [];
@@ -266,8 +307,25 @@ async function render() {
             const pageConfig = siteData.pages[page.id] || {};
             generatedPages.push(page.slug);
 
-            // Generate Consolidated Omni-Schema for every page
-            const pageSchema = generateOmniSchema(siteData, faqData, menuData, page.id, pageConfig.title);
+            // Targeted Schema Logic
+            let schemas = [];
+            
+            // 1. Breadcrumbs (Global)
+            schemas.push(generateBreadcrumbSchema(siteData.seo.site_url, page.id, pageConfig.title));
+
+            // 2. Primary Page Entities
+            if (page.id === 'index') {
+                schemas.push(...generateBaseBusinessSchema(siteData));
+            } else if (page.id === 'faq') {
+                schemas.push(generateFaqSchema(faqData, siteData.seo.site_url));
+            } else if (page.id === 'menu') {
+                schemas.push(generateMenuSchema(menuData, siteData));
+            }
+
+            const pageSchema = `<!-- AEO: Targeted Page Schema -->\n<script type="application/ld+json">\n${JSON.stringify({
+                "@context": "https://schema.org",
+                "@graph": schemas
+            }, null, 2)}\n</script>`;
 
             let pageBody = "";
             page.blocks.forEach(blockFile => {
@@ -303,7 +361,34 @@ async function render() {
                 active_story: story
             });
 
-            const pageSchema = generateOmniSchema(siteData, faqData, menuData, 'stories', story.title);
+            // Targeted Schema for Stories
+            const breadcrumbs = generateBreadcrumbSchema(siteData.seo.site_url, 'stories', story.title);
+            const article = {
+                "@type": "Article",
+                "headline": story.title,
+                "description": story.summary,
+                "author": {
+                    "@type": "Organization",
+                    "name": siteData.identity.name
+                },
+                "publisher": {
+                    "@type": "Organization",
+                    "name": siteData.identity.name,
+                    "logo": {
+                        "@type": "ImageObject",
+                        "url": siteData.seo.site_url + "/assets/media/logo.png"
+                    }
+                },
+                "mainEntityOfPage": {
+                    "@type": "WebPage",
+                    "@id": `${siteData.seo.site_url}/stories-${story.slug}`
+                }
+            };
+
+            const pageSchema = `<!-- AEO: Story Schema -->\n<script type="application/ld+json">\n${JSON.stringify({
+                "@context": "https://schema.org",
+                "@graph": [breadcrumbs, article]
+            }, null, 2)}\n</script>`;
 
             const finalHtml = nunjucks.render('base.html', {
                 ...context,
