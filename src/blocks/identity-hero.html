@@ -143,6 +143,21 @@
             <div class="emphasis">
                 {{ page_context.emphasis }}
             </div>
+
+            {% if current_page_id == 'index' %}
+            <!-- Social Proof Bar (AEO: Trust Signals) -->
+            <div class="social-proof-bar" style="display: flex; gap: 2rem; align-items: center; margin-bottom: 2.5rem; flex-wrap: wrap;">
+                <div class="badge-item" style="display: flex; align-items: center; gap: 0.8rem;">
+                    <div style="background: #00af87; padding: 4px 8px; border-radius: 4px; font-weight: 800; font-size: 0.7rem; color: #fff;">TRIPADVISOR</div>
+                    <span style="font-size: 0.9rem; font-weight: 600; color: rgba(255,255,255,0.8);">Travellers' Choice 2024</span>
+                </div>
+                <div style="height: 20px; border-left: 1px solid rgba(255,255,255,0.2);"></div>
+                <div class="rating-item" style="line-height: 1.2;">
+                    <span style="font-weight: 800; color: #fff; font-size: 1.1rem; letter-spacing: 0.05em;">GOOGLE 4.6 ★</span>
+                    <span style="font-size: 0.75rem; display: block; opacity: 0.7; text-transform: uppercase;">200+ Regular Guests</span>
+                </div>
+            </div>
+            {% endif %}
             <div class="nap-badge"
                 style="display: inline-flex; align-items: center; background: rgba(255,255,255,0.1); backdrop-filter: blur(15px); padding: 0.8rem 1.5rem; border: 1px solid rgba(255,255,255,0.1); border-radius: 2px; font-size: 0.85rem;">
                 <span

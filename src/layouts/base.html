@@ -8,45 +8,10 @@
     <meta name="description" content="{{ page_description or site.identity.description }}">
     <link rel="canonical" href="{{ site.seo.site_url }}/{{ current_page_id }}.html">
 
-    <!-- AEO: Enhanced JSON-LD Entity Representation -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Restaurant",
-      "name": "{{ site.identity.name }}",
-      "url": "{{ site.seo.site_url }}",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "{{ site.contact.nap.address }}"
-      },
-      "telephone": "{{ site.contact.nap.phone }}",
-      "servesCuisine": "{{ site.seo.schema.cuisine }}",
-      "priceRange": "{{ site.seo.schema.price_range }}",
-      "hasMenu": "{{ site.seo.schema.has_menu_url }}",
-      "acceptsReservations": {{ site.seo.schema.accepts_reservations }},
-      "potentialAction": {
-        "@type": "ReserveAction",
-        "target": {
-          "@type": "EntryPoint",
-          "urlTemplate": "{{ site.seo.site_url }}/booking.html",
-          "inLanguage": "en-US",
-          "actionPlatform": [
-            "http://schema.org/DesktopWebPlatform",
-            "http://schema.org/MobileWebPlatform"
-          ]
-        },
-        "result": {
-          "@type": "FoodEstablishmentReservation",
-          "name": "Reserve a Table"
-        }
-      },
-      "openingHours": [
-        {% for hours in site.operations.opening_hours %}
-        "{{ hours.days }} {{ hours.open }}-{{ hours.close }}"{% if not loop.last %},{% endif %}
-        {% endfor %}
-      ]
-    }
-    </script>
+    <!-- AEO: Enhanced Dynamic JSON-LD Entity Representation -->
+    {% if global_schema %}
+    {{ global_schema | safe }}
+    {% endif %}
 
     <!-- Dynamic Page-Specific Schema -->
     {% if page_specific_schema %}

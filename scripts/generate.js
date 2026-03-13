@@ -133,6 +133,44 @@ async function render() {
 
 
         // 3. Schema Generation Helpers (AEO Logic)
+        function generateRestaurantSchema(siteData) {
+            return JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "Restaurant",
+                "name": siteData.identity.name,
+                "image": siteData.seo.site_url + "/assets/media/home_hero.jpg",
+                "@id": siteData.seo.site_url,
+                "url": siteData.seo.site_url,
+                "telephone": siteData.contact.nap.phone,
+                "priceRange": siteData.identity.price_range,
+                "menu": siteData.seo.site_url + "/menu",
+                "servesCuisine": siteData.seo.schema.cuisine,
+                "acceptsReservations": siteData.seo.schema.accepts_reservations,
+                "address": {
+                    "@type": "PostalAddress",
+                    "streetAddress": siteData.contact.nap.address.split(',')[0],
+                    "addressLocality": "Hobart",
+                    "addressRegion": "TAS",
+                    "postalCode": "7000",
+                    "addressCountry": "AU"
+                },
+                "geo": {
+                    "@type": "GeoCoordinates",
+                    "latitude": siteData.contact.nap.geo.latitude,
+                    "longitude": siteData.contact.nap.geo.longitude
+                },
+                "openingHoursSpecification": siteData.operations.opening_hours.map(h => ({
+                    "@type": "OpeningHoursSpecification",
+                    "dayOfWeek": h.days.includes('-') 
+                        ? ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"] 
+                        : [h.days],
+                    "opens": h.open,
+                    "closes": h.close
+                })),
+                "sameAs": siteData.same_as
+            }, null, 2);
+        }
+
         function generateFaqSchema(faqs) {
             return JSON.stringify({
                 "@context": "https://schema.org",
@@ -169,12 +207,13 @@ async function render() {
                 "@context": "https://schema.org",
                 "@type": "Menu",
                 "name": "Dandy Lane Menu",
-                "mainEntityOfPage": siteData.seo.site_url + "/menu.html",
+                "mainEntityOfPage": siteData.seo.site_url + "/menu",
                 "hasMenuItem": menuItems
             }, null, 2);
         }
 
         const generatedPages = [];
+        const globalSchema = `<script type="application/ld+json">\n${generateRestaurantSchema(siteData)}\n</script>`;
 
         // 4. Render Static Pages
         pages.forEach(page => {
@@ -205,6 +244,7 @@ async function render() {
                 page_title: pageConfig.title,
                 page_description: pageConfig.emphasis,
                 current_page_id: page.id,
+                global_schema: globalSchema,
                 page_specific_schema: pageSchema,
                 current_year: new Date().getFullYear()
             });
@@ -232,24 +272,40 @@ async function render() {
                 current_page_id: 'stories',
                 slug: slug,
                 story: story,
+                global_schema: globalSchema,
                 current_year: new Date().getFullYear()
             });
 
             fs.writeFileSync(path.join(PUBLIC_DIR, slug), finalHtml);
         });
 
-        // 5. Generate AEO Artifacts (L3 logic to L4 output)
-        console.log("[L3] Generating AEO Artifacts: sitemap.xml & robots.txt");
+        // 5. Generate AEO Artifacts & Infrastructure (L3 logic to L4 output)
+        console.log("[L3] Generating AEO Artifacts: sitemap.xml, robots.txt, _redirects");
+        
+        // Sitemap
         const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${generatedPages.map(p => `  <url><loc>${siteData.seo.site_url}/${p}</loc></url>`).join('\n')}
 </urlset>`;
         fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap.xml'), sitemap);
 
+        // Robots.txt
         const robots = `User-agent: *
 Allow: /
 Sitemap: ${siteData.seo.site_url}/sitemap.xml`;
         fs.writeFileSync(path.join(PUBLIC_DIR, 'robots.txt'), robots);
+
+        // Cloudflare Redirects (AEO 301 Consolidation)
+        const redirects = `
+/blog            /stories         301
+/contact-us      /location        301
+/menu.html       /menu            301
+/bookings.html   /booking         301
+/faq.html        /faq             301
+/location.html   /location        301
+/stories.html    /stories         301
+`;
+        fs.writeFileSync(path.join(PUBLIC_DIR, '_redirects'), redirects);
 
         // 6. Generate Cloudflare Headers (Caching)
         const headers = `/*
