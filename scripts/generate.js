@@ -173,7 +173,7 @@ async function render() {
         // AEO: Unified Fact-aligned Schema Generator (Minimal Redundancy)
         function generateBaseBusinessSchema(siteData) {
             const restaurant = {
-                "@type": ["Restaurant", "FoodEstablishment", "LocalBusiness"],
+                "@type": "Restaurant",
                 "@id": siteData.seo.site_url + "/#restaurant",
                 "name": siteData.identity.name,
                 "image": siteData.seo.site_url + "/assets/media/home_hero.jpg",

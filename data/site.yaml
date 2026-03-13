@@ -1,7 +1,7 @@
 identity:
   name: "Dandy Lane Cafe"
   legal_name: "Dandy Lane Hobart Pty Ltd"
-  core_purpose: "A hidden-lane brunch sanctuary in Hobart CBD, serving handcrafted daily hollandaise and premium specialty coffee in a quiet, laptop-friendly environment."
+  core_purpose: "Hidden-lane brunch sanctuary in Hobart CBD"
   price_range: "$$"
   currency: "AUD"
   average_spend_aud: "20-40"
@@ -15,7 +15,7 @@ seo:
   schema:
     cuisine: "Cafe, Australian Modern"
     price_range: "$$"
-    has_menu_url: "https://dandylanecafe.com/menu.html"
+    has_menu_url: "https://dandylanecafe.com/menu"
     accepts_reservations: true
 
 booking:
@@ -26,9 +26,10 @@ booking:
   method: "system"
   contact_value: "dandylane-hobart@dandylanecafe.com"
   terms:
-    - "Maximum stay is 90 minutes during peak hours."
+    - "For groups larger than 6, please call us directly on 0498 061 067."
+    - "We have a maximum of 16 people per hour to maintain our atmosphere."
+    - "Peak-hour seating is capped at 90 minutes."
     - "Laptops are welcome in designated workspace areas."
-    - "For groups larger than 6, please call us directly."
   capacity:
     max_per_hour: 16
     interval_minutes: 15
@@ -80,7 +81,7 @@ pages:
   index:
     title: "Hidden Lane Sanctuary"
     subtitle: "Discover Hobart's Best-Kept Brunch Secret."
-    emphasis: "Experience the perfect balance of specialty coffee and a peaceful atmosphere tucked away in Collins Court."
+    emphasis: "Dandy Lane Cafe is a hidden-lane brunch café in Hobart CBD, known for Wine-Infused Benedicts, daily hollandaise, specialty coffee, and a quiet laptop-friendly atmosphere."
     media: "assets/media/home_hero.mp4"
     focal_point: "center 38%"
     focal_point_mobile: "80% center"
@@ -127,7 +128,7 @@ contact:
     address: "Unit 10 / 138 Collins Street, Hobart TAS 7000"
     address_short: "Unit 10 / 138 Collins Street, Hobart TAS 7000"
     directions: "Tucked away in Collins Court opposite JB HI-FI Hobart, in a laneway near Collins Street."
-    phone: "0498061067"
+    phone: "0498 061 067"
     email: "dandylane-hobart@dandylanecafe.com"
     website: "https://dandylanecafe.com"
     geo:
@@ -144,15 +145,12 @@ same_as:
   - "https://www.tripadvisor.com.au/Restaurant_Review-g255097-d1234567-Reviews-Dandy_Lane_Cafe-Hobart_Tasmania.html"
 
 operations:
-  hours_text: "Mon-Fri 7am-3pm, Sat-Sun 9am-2pm"
+  hours_text: "Mon–Fri 07:00–15:00 · Sat–Sun 09:00–14:00"
   opening_hours:
     - days: "Monday - Friday"
       open: "07:00"
       close: "15:00"
-    - days: "Saturday"
-      open: "09:00"
-      close: "14:00"
-    - days: "Sunday"
+    - days: "Saturday - Sunday"
       open: "09:00"
       close: "14:00"
 
