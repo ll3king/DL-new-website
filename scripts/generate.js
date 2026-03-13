@@ -173,6 +173,23 @@ async function render() {
         function generateOmniSchema(siteData, faqData, menuData) {
             const restaurant = generateRestaurantData(siteData);
             
+            const organization = {
+                "@type": "Organization",
+                "@id": siteData.seo.site_url + "/#organization",
+                "name": siteData.identity.name,
+                "url": siteData.seo.site_url,
+                "logo": siteData.seo.site_url + "/assets/media/logo.png",
+                "sameAs": siteData.same_as
+            };
+
+            const website = {
+                "@type": "WebSite",
+                "@id": siteData.seo.site_url + "/#website",
+                "url": siteData.seo.site_url,
+                "name": siteData.identity.name,
+                "publisher": { "@id": siteData.seo.site_url + "/#organization" }
+            };
+
             // Link FAQ and Menu to the Restaurant entity
             const faq = {
                 "@type": "FAQPage",
@@ -206,7 +223,7 @@ async function render() {
 
             return JSON.stringify({
                 "@context": "https://schema.org",
-                "@graph": [restaurant, faq, menu]
+                "@graph": [organization, website, restaurant, faq, menu]
             }, null, 2);
         }
 
@@ -339,6 +356,10 @@ Sitemap: ${siteData.seo.site_url}/sitemap.xml`;
 
         // Cloudflare Redirects (AEO 301 Consolidation)
         const redirects = `
+# Domain Consolidation
+https://dl-new-website.pages.dev/*  https://dandylanecafe.com/:splat  301!
+
+# Precise Fact Pathing
 /blog            /stories         301
 /contact-us      /location        301
 /menu.html       /menu            301
