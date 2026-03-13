@@ -97,7 +97,7 @@ async function render() {
             {
                 id: 'index',
                 slug: 'index.html',
-                blocks: ['identity-hero.html', 'signature-trio.html', 'intent-match.html', 'faq-list.html', 'location-nap.html']
+                blocks: ['identity-hero.html', 'social-proof-reviews.html', 'signature-trio.html', 'intent-match.html', 'faq-list.html', 'location-nap.html']
             },
             {
                 id: 'menu',
@@ -133,13 +133,12 @@ async function render() {
 
 
         // 3. Schema Generation Helpers (AEO Logic)
-        function generateRestaurantSchema(siteData) {
-            return JSON.stringify({
-                "@context": "https://schema.org",
+        function generateRestaurantData(siteData) {
+            return {
                 "@type": "Restaurant",
                 "name": siteData.identity.name,
                 "image": siteData.seo.site_url + "/assets/media/home_hero.jpg",
-                "@id": siteData.seo.site_url,
+                "@id": siteData.seo.site_url + "/#restaurant",
                 "url": siteData.seo.site_url,
                 "telephone": siteData.contact.nap.phone,
                 "priceRange": siteData.identity.price_range,
@@ -162,12 +161,52 @@ async function render() {
                 "openingHoursSpecification": siteData.operations.opening_hours.map(h => ({
                     "@type": "OpeningHoursSpecification",
                     "dayOfWeek": h.days.includes('-') 
-                        ? ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"] 
-                        : [h.days],
+                         ? ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"] 
+                         : [h.days],
                     "opens": h.open,
                     "closes": h.close
                 })),
                 "sameAs": siteData.same_as
+            };
+        }
+
+        function generateOmniSchema(siteData, faqData, menuData) {
+            const restaurant = generateRestaurantData(siteData);
+            
+            // Link FAQ and Menu to the Restaurant entity
+            const faq = {
+                "@type": "FAQPage",
+                "@id": siteData.seo.site_url + "/#faq",
+                "mainEntity": faqData.questions.slice(0, 5).map(q => ({
+                    "@type": "Question",
+                    "name": q.question,
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": q.answer
+                    }
+                }))
+            };
+
+            const menu = {
+                "@type": "Menu",
+                "@id": siteData.seo.site_url + "/#menu",
+                "name": siteData.identity.name + " Signature Menu",
+                "mainEntityOfPage": siteData.seo.site_url + "/menu",
+                "hasMenuItem": menuData.categories[0].items.slice(0, 3).map(item => ({
+                    "@type": "MenuItem",
+                    "name": item.name,
+                    "description": item.description || "",
+                    "offers": {
+                        "@type": "Offer",
+                        "price": item.price,
+                        "priceCurrency": "AUD"
+                    }
+                }))
+            };
+
+            return JSON.stringify({
+                "@context": "https://schema.org",
+                "@graph": [restaurant, faq, menu]
             }, null, 2);
         }
 
@@ -212,8 +251,10 @@ async function render() {
             }, null, 2);
         }
 
+        const omniSchema = `<script type="application/ld+json">\n${generateOmniSchema(siteData, faqData, menuData)}\n</script>`;
+        const restaurantSchema = `<script type="application/ld+json">\n${JSON.stringify({ "@context": "https://schema.org", ...generateRestaurantData(siteData) }, null, 2)}\n</script>`;
+
         const generatedPages = [];
-        const globalSchema = `<script type="application/ld+json">\n${generateRestaurantSchema(siteData)}\n</script>`;
 
         // 4. Render Static Pages
         pages.forEach(page => {
@@ -244,7 +285,7 @@ async function render() {
                 page_title: pageConfig.title,
                 page_description: pageConfig.emphasis,
                 current_page_id: page.id,
-                global_schema: globalSchema,
+                global_schema: page.id === 'index' ? omniSchema : restaurantSchema,
                 page_specific_schema: pageSchema,
                 current_year: new Date().getFullYear()
             });
@@ -272,7 +313,8 @@ async function render() {
                 current_page_id: 'stories',
                 slug: slug,
                 story: story,
-                global_schema: globalSchema,
+                story: story,
+                global_schema: restaurantSchema,
                 current_year: new Date().getFullYear()
             });
 

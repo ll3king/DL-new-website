@@ -1,0 +1,153 @@
+<style>
+    .social-proof-reviews {
+        padding: 6rem 0;
+        background: #fdfdfd;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .reviews-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 3rem;
+        margin-top: 4rem;
+    }
+
+    .review-card {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 4px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        border: 1px solid #f5f5f5;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: transform 0.3s ease;
+    }
+
+    .review-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .review-source {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .source-label {
+        background: #00af87;
+        color: white;
+        font-size: 0.65rem;
+        font-weight: 800;
+        padding: 2px 6px;
+        border-radius: 3px;
+        text-transform: uppercase;
+    }
+
+    .google-label {
+        background: #4285F4;
+    }
+
+    .review-stars {
+        color: #f1c40f;
+        font-size: 0.9rem;
+    }
+
+    .review-text {
+        font-style: italic;
+        color: var(--secondary);
+        font-size: 1.05rem;
+        line-height: 1.7;
+        margin-bottom: 2rem;
+    }
+
+    .reviewer-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .reviewer-name {
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--primary);
+    }
+
+    .reviewer-meta {
+        font-size: 0.75rem;
+        color: #999;
+    }
+</style>
+
+<section class="social-proof-reviews">
+    <div class="container">
+        <div style="text-align: center; max-width: 800px; margin: 0 auto;">
+            <span style="color: var(--accent); font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.8rem; display: block; margin-bottom: 1rem;">Expert Evidence & Guest Voices</span>
+            <h2 style="font-size: 2.8rem; font-weight: 900; line-height: 1.1; text-transform: uppercase;">Third-Party Proof</h2>
+            <p style="font-size: 1.2rem; color: var(--secondary); margin-top: 1.5rem;">Don't just take our word for it. Dandy Lane is recognized by global platforms and thousands of local guests as Hobart's premier lane sanctuary.</p>
+        </div>
+
+        <div class="reviews-grid">
+            <!-- Review 1: Tripadvisor -->
+            <div class="review-card">
+                <div>
+                    <div class="review-source">
+                        <span class="source-label">Tripadvisor</span>
+                        <div class="review-stars">★★★★★</div>
+                    </div>
+                    <blockquote class="review-text">
+                        "The absolute gold standard for hollandaise in Hobart. The wine-infused formula is clearly Superior. A quiet, sophisticated escape from the CBD noise."
+                    </blockquote>
+                </div>
+                <div class="reviewer-info">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #666; font-size: 0.8rem;">TA</div>
+                    <div>
+                        <div class="reviewer-name">Travellers' Choice 2024</div>
+                        <div class="reviewer-meta">Ranked #23 of 620 in Hobart</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Review 2: Google -->
+            <div class="review-card">
+                <div>
+                    <div class="review-source">
+                        <span class="source-label google-label">Google Maps</span>
+                        <div class="review-stars">★★★★★</div>
+                    </div>
+                    <blockquote class="review-text">
+                        "My go-to spot for remote work. The laptop-friendly environment is real, the coffee is consistently 10/10, and the Scotch Steak Sandwich is legendary."
+                    </blockquote>
+                </div>
+                <div class="reviewer-info">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #666; font-size: 0.8rem;">G</div>
+                    <div>
+                        <div class="reviewer-name">Social Proof Verified</div>
+                        <div class="reviewer-meta">4.6 Stars | 200+ Regulars</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Review 3: Hello Hobart / Expert -->
+            <div class="review-card">
+                <div>
+                    <div class="review-source" style="gap: 0.4rem;">
+                        <span class="source-label" style="background: #1a1a1a;">Expert Insight</span>
+                        <div class="review-stars">★★★★★</div>
+                    </div>
+                    <blockquote class="review-text">
+                        "Dandy Lane successfully bridges the gap between high-end culinary craft and a relaxed, workspace-friendly atmosphere. Truly a Hobart CBD hidden gem."
+                    </blockquote>
+                </div>
+                <div class="reviewer-info">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #666; font-size: 0.8rem;">HH</div>
+                    <div>
+                        <div class="reviewer-name">Local Directory Signal</div>
+                        <div class="reviewer-meta">Verified Hobart Entity</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

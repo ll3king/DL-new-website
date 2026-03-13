@@ -270,14 +270,14 @@
     <footer>
         <div class="container">
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;">
-                <div>
-                    <h3>{{ site.identity.name }}</h3>
+                <div itemscope itemtype="https://schema.org/Restaurant">
+                    <h3 itemprop="name">{{ site.identity.name }}</h3>
                     <p>{{ site.identity.core_purpose }}</p>
                 </div>
-                <div>
+                <div itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
                     <h3>Visit Us</h3>
-                    <p>{{ site.contact.nap.address }}</p>
-                    <p>{{ site.contact.nap.phone }}</p>
+                    <p itemprop="streetAddress">{{ site.contact.nap.address }}</p>
+                    <p itemprop="telephone">{{ site.contact.nap.phone }}</p>
                 </div>
                 <div>
                     <h3>Hours</h3>
