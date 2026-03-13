@@ -1,7 +1,33 @@
+<style>
+    .intent-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+    }
+
+    @media (max-width: 768px) {
+        .intent-grid {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+    }
+</style>
+
 <section class="intent-match" style="padding: 4rem 0; background: #fff;">
     <div class="container">
         <h2 style="text-align: center; margin-bottom: 3rem;">Tailored for Your Morning</h2>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;">
+        <div class="intent-grid">
+            <div class="intent-box"
+                style="padding: 2.5rem; background: var(--bg); border-radius: 12px; border-left: 4px solid var(--accent);">
+                <h3 style="margin-top: 0;">Specialist Brunch</h3>
+                <p>Experience Hobart's most consistent brunch. From our <strong>daily wine-infused hollandaise</strong>
+                    to locally sourced Tasmanian produce, every plate is a commitment to quality.</p>
+                <ul style="padding-left: 1.2rem; font-size: 0.95rem;">
+                    <li>Handcrafted daily sauces</li>
+                    <li>Prime Tasmanian steak and salmon</li>
+                    <li>Expertly brewed specialty coffee</li>
+                </ul>
+            </div>
             <div class="intent-box"
                 style="padding: 2.5rem; background: var(--bg); border-radius: 12px; border-left: 4px solid var(--accent);">
                 <h3 style="margin-top: 0;">Remote Work & Focus</h3>
@@ -12,17 +38,6 @@
                     <li>High-speed connectivity</li>
                     <li>Power-accessible seating</li>
                     <li>Hidden lane tranquility</li>
-                </ul>
-            </div>
-            <div class="intent-box"
-                style="padding: 2.5rem; background: var(--bg); border-radius: 12px; border-left: 4px solid var(--accent);">
-                <h3 style="margin-top: 0;">Specialist Brunch</h3>
-                <p>Experience Hobart's most consistent brunch. From our <strong>daily wine-infused hollandaise</strong>
-                    to locally sourced Tasmanian produce, every plate is a commitment to quality.</p>
-                <ul style="padding-left: 1.2rem; font-size: 0.95rem;">
-                    <li>Handcrafted daily sauces</li>
-                    <li>Prime Tasmanian steak and salmon</li>
-                    <li>Expertly brewed specialty coffee</li>
                 </ul>
             </div>
         </div>
