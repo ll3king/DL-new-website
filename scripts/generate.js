@@ -170,12 +170,13 @@ async function render() {
             };
         }
 
-        // AEO: Fact-aligned Schema Generators
+        // AEO: Unified Fact-aligned Schema Generator (Minimal Redundancy)
         function generateBaseBusinessSchema(siteData) {
-            const organization = {
-                "@type": "Organization",
-                "@id": siteData.seo.site_url + "/#organization",
+            const restaurant = {
+                "@type": ["Restaurant", "FoodEstablishment", "LocalBusiness"],
+                "@id": siteData.seo.site_url + "/#restaurant",
                 "name": siteData.identity.name,
+                "image": siteData.seo.site_url + "/assets/media/home_hero.jpg",
                 "url": siteData.seo.site_url,
                 "logo": {
                     "@type": "ImageObject",
@@ -183,23 +184,6 @@ async function render() {
                     "width": "200",
                     "height": "200"
                 },
-                "sameAs": siteData.same_as
-            };
-
-            const website = {
-                "@type": "WebSite",
-                "@id": siteData.seo.site_url + "/#website",
-                "url": siteData.seo.site_url,
-                "name": siteData.identity.name,
-                "publisher": { "@id": siteData.seo.site_url + "/#organization" }
-            };
-
-            const restaurant = {
-                "@type": ["Restaurant", "FoodEstablishment", "LocalBusiness"],
-                "@id": siteData.seo.site_url + "/#restaurant",
-                "name": siteData.identity.name,
-                "image": siteData.seo.site_url + "/assets/media/home_hero.jpg",
-                "url": siteData.seo.site_url,
                 "telephone": "+61 498 061 067",
                 "priceRange": siteData.identity.price_range,
                 "servesCuisine": siteData.seo.schema.cuisine,
@@ -234,7 +218,7 @@ async function render() {
                 "sameAs": siteData.same_as
             };
 
-            return [organization, website, restaurant];
+            return [restaurant];
         }
 
         function generateFaqSchema(faqData, siteUrl) {

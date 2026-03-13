@@ -1,15 +1,12 @@
-<section class="location-nap" style="padding: 5rem 0; background: var(--bg);" itemscope itemtype="https://schema.org/Restaurant">
-    <meta itemprop="name" content="{{ site.identity.name }}">
-    <meta itemprop="servesCuisine" content="{{ site.seo.schema.cuisine }}">
-    <meta itemprop="priceRange" content="{{ site.identity.price_range }}">
+<section class="location-nap" style="padding: 5rem 0; background: var(--bg);">
     <div class="container">
         <div
             style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 4rem; align-items: flex-start;">
             <div class="info">
                 <h2 style="margin-top: 0; font-weight: 900; font-size: 2.5rem; text-transform: uppercase;">{{
                     page_context.title or 'Find Us' }}</h2>
-                <p style="font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 600;" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
-                    <span itemprop="streetAddress">{{ site.contact.nap.address }}</span>
+                <p style="font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 600;">
+                    <span>{{ site.contact.nap.address }}</span>
                 </p>
                 <p style="color: #b71c1c; font-weight: 700; margin-bottom: 2rem; line-height: 1.4;">
                     {{ site.contact.nap.directions }}
