@@ -71,13 +71,18 @@
         }
 
         .grid-form {
-            grid-template-columns: 1fr;
-            /* Stack everything on mobile */
-            gap: 1.2rem;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 1.2rem !important;
         }
 
-        .grid-form > .form-group {
+        .grid-form > div {
+            width: 100% !important;
             grid-column: span 1 !important;
+        }
+        
+        .form-group label {
+            margin-bottom: 0.4rem !important;
         }
     }
 </style>
