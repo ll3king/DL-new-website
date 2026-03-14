@@ -20,24 +20,35 @@ AI Bot 的表现基于 `functions/api/chat.js` 中的 System Prompt。
 - **资产管道**：`src/assets/media` 是唯一数据源。`npm run build` 会自动将其同步至 `public/assets`。
 - **安全隔离**：所有密钥（API Keys, Google JSON）存放在 Cloudflare 环境变量中，绝不上传至代码库。
 
-## 4. AEO (AI Engine Optimization)
-- 项目包含了动态生成的 `JSON-LD` 结构化数据：
-  - `Restaurant`：餐厅基本信息、地址、评分。
-  - `FAQPage`：常见问题，提升 AI 回答命中率。
-  - `Breadcrumb`：导航路径优化。
-- 这些数据确保了 ChatGPT、Perplexity、Gemini 等 AI 在爬取网站时能精准捕捉 Dandy Lane 的特征。
+## 4. AEO (AI Engine Optimization) — Schema Governance v2
+- **Schema 治理原则**: Entity Clarity > Entity Quantity
+  - 每个页面最多 1 个主商家实体（`Restaurant`），不并列输出 Organization / WebSite
+  - `@type` 使用 `"Restaurant"` 单值，不重复继承层级
+  - HTML 中不得使用 Microdata（itemscope / itemprop），全部由 JSON-LD 承载
+- **页面级 Schema 分配**:
+  - `Homepage`: BreadcrumbList + Restaurant
+  - `FAQ`: BreadcrumbList + FAQPage（Q&A 数量 = 可见内容数量）
+  - `Menu`: BreadcrumbList + Menu/MenuItem（从 menu.yaml 读取）
+  - 其他页面: BreadcrumbList + 可选页面级 schema（不重复主实体）
+- **3 AEO 主轴**:
+  1. Wine-Infused Benedicts（首席招牌）
+  2. Quiet laptop-friendly brunch in Hobart CBD
+  3. Third-party proof（Tripadvisor + Google，纯事实型）
+- **Proof 写作规则**: 只使用可验证事实（平台名 + 评分 + 数量），禁止主观归纳
 
 ## 5. 开发者维护备忘 (Maintenance Guide)
 - **修改菜单/内容**：修改 `data/site.yaml` 或 `data/stories.yaml` -> `npm run build` -> `git push`。
 - **修改 AI 语气**：编辑 `functions/api/chat.js` 中的 `systemPrompt` 字符串。
 - **私钥注入补丁**：`functions/` 下的合约包含 `.replace(/\\n/g, '\n')` 补丁，确保从环境变量读取的 Google 私钥格式正确。
+- **Schema 变更检查**: 修改 schema 逻辑后，用 [Rich Results Test](https://search.google.com/test/rich-results) 验证每个页面类型。
 
-## 6. 未来展望 (Future Roadmap)
-- **长期记忆**：引入 Cloudflare KV 存储，实现跨 Session 的个性化问候。
-- **支付集成**：Stripe 端点预留。
-- **全渠道集成**：将现有逻辑封装为 API，接入 WhatsApp 和微信商业版。
+## 6. URL & Domain Governance
+- **唯一权威域名**: `https://dandylanecafe.com`
+- **内部导航**: 一律使用 canonical pretty URL（`/menu`, `/faq`, `/`），不使用 `.html` 后缀
+- **301 重定向**: `pages.dev` → 主域名; 旧路径（`/blog`, `/contact-us`）→ 新路径; `.html` → pretty URL
+- **Canonical 标签**: 首页 `/`，其他 `/{page_id}`
 
-## 7. 数据与业务架构 (Data & Business Architecture - V2)
+### 7. 数据与业务架构 (Data & Business Architecture - V2)
 - **9-Column Master Schema**: 所有的数据库操作（Admin API, AI Chat API, Python Scheduler）均对齐至全新的 9 列数据结构：`Name, Email, Mobile, Group_Size, Date, Time, Timestamp, Status, Source`。这保证了跨端数据读取和重写的绝对安全性。
 - **Tiered Booking Logic (分级预订策略)**:
   1. `1-6 人`: 自动在线确认，写入数据库。
