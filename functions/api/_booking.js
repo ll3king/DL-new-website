@@ -1,0 +1,511 @@
+const SHEET_HEADERS = {
+    Sheet1: [["name", "email", "mobile", "group_size", "date", "time", "created_at", "status", "source", "email_sent_at", "email_type", "email_status", "email_error"]],
+    Guests: [["email_normalized", "email", "name", "mobile", "first_booking_at", "last_booking_at", "booking_count", "last_group_size", "last_booking_date", "last_status"]],
+    GuestEvents: [["event_at", "event_type", "email_normalized", "booking_row", "booking_status", "details"]]
+};
+
+export function buildCorsHeaders(env, methods = "GET, POST, PATCH, OPTIONS") {
+    const origin = env.ALLOWED_ORIGIN || "*";
+
+    return {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": origin,
+        "Access-Control-Allow-Methods": methods,
+        "Access-Control-Allow-Headers": "Content-Type, Authorization"
+    };
+}
+
+export function jsonResponse(env, payload, init = {}) {
+    const headers = {
+        ...buildCorsHeaders(env, init.methods),
+        ...(init.headers || {})
+    };
+
+    return new Response(JSON.stringify(payload), {
+        status: init.status || 200,
+        headers
+    });
+}
+
+export function emptyResponse(env, methods) {
+    return new Response(null, {
+        headers: buildCorsHeaders(env, methods)
+    });
+}
+
+export function normalizeEmail(email) {
+    return String(email || "").trim().toLowerCase();
+}
+
+export function extractRowNumber(updatedRange) {
+    const match = /![A-Z]+(\d+):/i.exec(updatedRange || "");
+    return match ? Number.parseInt(match[1], 10) : null;
+}
+
+export function getEmailFlowType(groupSize) {
+    return Number.parseInt(groupSize, 10) > 6 ? "pending_review" : "confirmed";
+}
+
+export async function requireConfig(env) {
+    if (!env.GOOGLE_SERVICE_ACCOUNT_JSON) {
+        throw new Error("GOOGLE_SERVICE_ACCOUNT_JSON is not configured");
+    }
+    if (!env.SPREADSHEET_ID) {
+        throw new Error("SPREADSHEET_ID is not configured");
+    }
+
+    let serviceAccount;
+    try {
+        serviceAccount = JSON.parse(env.GOOGLE_SERVICE_ACCOUNT_JSON);
+    } catch (error) {
+        throw new Error(`Failed to parse GOOGLE_SERVICE_ACCOUNT_JSON: ${error.message}`);
+    }
+
+    const token = await getGoogleAuthToken(serviceAccount);
+    return {
+        spreadsheetId: env.SPREADSHEET_ID,
+        token
+    };
+}
+
+export async function ensureBookingSheets(config) {
+    const metadata = await fetchSheetMetadata(config);
+    const existingTitles = new Set((metadata.sheets || []).map((sheet) => sheet.properties?.title));
+    const requests = [];
+
+    for (const title of Object.keys(SHEET_HEADERS)) {
+        if (!existingTitles.has(title)) {
+            requests.push({
+                addSheet: {
+                    properties: { title }
+                }
+            });
+        }
+    }
+
+    if (requests.length) {
+        await batchUpdateSpreadsheet(config, requests);
+    }
+
+    await Promise.all(Object.entries(SHEET_HEADERS).map(([title, headers]) => ensureSheetHeader(config, title, headers)));
+}
+
+export async function appendBookingRow(config, booking, status) {
+    const row = [
+        booking.name,
+        booking.email,
+        booking.mobile || "",
+        String(booking.group_size || "1"),
+        booking.date,
+        booking.time,
+        new Date().toISOString(),
+        status,
+        "Website",
+        "",
+        "",
+        "",
+        ""
+    ];
+
+    const result = await appendValues(config, "Sheet1!A:M", [row]);
+    const rowNumber = extractRowNumber(result.updates?.updatedRange);
+    return { rowNumber, row };
+}
+
+export async function fetchBookingRow(config, rowNumber) {
+    const values = await getValues(config, `Sheet1!A${rowNumber}:M${rowNumber}`);
+    const row = values[0] || [];
+
+    return {
+        id: String(rowNumber),
+        name: row[0] || "",
+        email: row[1] || "",
+        mobile: row[2] || "",
+        group_size: row[3] || "",
+        date: row[4] || "",
+        time: row[5] || "",
+        timestamp: row[6] || "",
+        status: row[7] || "",
+        source: row[8] || "",
+        email_sent_at: row[9] || "",
+        email_type: row[10] || "",
+        email_status: row[11] || "",
+        email_error: row[12] || ""
+    };
+}
+
+export async function updateBookingStatus(config, rowNumber, status) {
+    await updateValues(config, `Sheet1!H${rowNumber}:H${rowNumber}`, [[status]]);
+}
+
+export async function updateEmailTracking(config, rowNumber, tracking) {
+    const values = [[
+        tracking.email_sent_at || "",
+        tracking.email_type || "",
+        tracking.email_status || "",
+        tracking.email_error || ""
+    ]];
+
+    await updateValues(config, `Sheet1!J${rowNumber}:M${rowNumber}`, values);
+}
+
+export async function listBookings(config) {
+    const rows = await getValues(config, "Sheet1!A2:M200");
+
+    return rows
+        .map((row, index) => ({
+            id: String(index + 2),
+            name: row[0] || "",
+            email: row[1] || "",
+            mobile: row[2] || "",
+            group_size: row[3] || "",
+            date: row[4] || "",
+            time: row[5] || "",
+            timestamp: row[6] || "",
+            status: row[7] || "",
+            source: row[8] || "",
+            email_sent_at: row[9] || "",
+            email_type: row[10] || "",
+            email_status: row[11] || "",
+            email_error: row[12] || ""
+        }))
+        .filter((booking) => booking.status !== "Archived");
+}
+
+export async function upsertGuest(config, booking, bookingStatus, options = {}) {
+    const normalizedEmail = normalizeEmail(booking.email);
+    const rows = await getValues(config, "Guests!A:J");
+    const existingIndex = rows.findIndex((row, index) => index > 0 && normalizeEmail(row[0]) === normalizedEmail);
+    const now = new Date().toISOString();
+    const incrementBookingCount = options.incrementBookingCount !== false;
+
+    let firstBookingAt = now;
+    let bookingCount = 1;
+
+    if (existingIndex >= 0) {
+        firstBookingAt = rows[existingIndex][4] || now;
+        const previousCount = Number.parseInt(rows[existingIndex][6] || "0", 10);
+        bookingCount = Number.isFinite(previousCount) ? previousCount : 0;
+        bookingCount = incrementBookingCount ? bookingCount + 1 : bookingCount;
+    } else if (!incrementBookingCount) {
+        bookingCount = 0;
+    }
+
+    const guestRow = [
+        normalizedEmail,
+        booking.email,
+        booking.name,
+        booking.mobile || "",
+        firstBookingAt,
+        now,
+        String(bookingCount),
+        String(booking.group_size || ""),
+        `${booking.date} ${booking.time}`.trim(),
+        bookingStatus
+    ];
+
+    if (existingIndex >= 0) {
+        const rowNumber = existingIndex + 1;
+        await updateValues(config, `Guests!A${rowNumber}:J${rowNumber}`, [guestRow]);
+        return { rowNumber, bookingCount };
+    }
+
+    const result = await appendValues(config, "Guests!A:J", [guestRow]);
+    return { rowNumber: extractRowNumber(result.updates?.updatedRange), bookingCount };
+}
+
+export async function appendGuestEvent(config, eventType, booking, bookingRow, bookingStatus) {
+    const details = JSON.stringify({
+        name: booking.name,
+        email: booking.email,
+        date: booking.date,
+        time: booking.time,
+        group_size: booking.group_size
+    });
+
+    await appendValues(config, "GuestEvents!A:F", [[
+        new Date().toISOString(),
+        eventType,
+        normalizeEmail(booking.email),
+        String(bookingRow || ""),
+        bookingStatus,
+        details
+    ]]);
+}
+
+export async function sendBookingEmail(env, booking, emailType) {
+    if (!env.RESEND_API_KEY) {
+        throw new Error("RESEND_API_KEY is not configured");
+    }
+    if (!env.BOOKING_FROM_EMAIL) {
+        throw new Error("BOOKING_FROM_EMAIL is not configured");
+    }
+
+    const subjectMap = {
+        confirmed: "Your Dandy Lane Cafe booking is confirmed",
+        pending_review: "Your Dandy Lane Cafe booking is pending review",
+        approval_confirmed: "Your Dandy Lane Cafe booking is now confirmed"
+    };
+
+    const introMap = {
+        confirmed: "Your booking has been confirmed.",
+        pending_review: "Thanks for your request. Our team will review it shortly.",
+        approval_confirmed: "Your booking request has been approved and confirmed."
+    };
+
+    const statusLineMap = {
+        confirmed: "Status: Confirmed",
+        pending_review: "Status: Pending review",
+        approval_confirmed: "Status: Confirmed after review"
+    };
+
+    const payload = {
+        from: env.BOOKING_FROM_EMAIL,
+        to: [booking.email],
+        subject: subjectMap[emailType] || subjectMap.confirmed,
+        html: renderBookingEmailHtml(booking, introMap[emailType] || introMap.confirmed, statusLineMap[emailType] || statusLineMap.confirmed),
+        text: renderBookingEmailText(booking, introMap[emailType] || introMap.confirmed, statusLineMap[emailType] || statusLineMap.confirmed)
+    };
+
+    if (env.BOOKING_REPLY_TO) {
+        payload.reply_to = env.BOOKING_REPLY_TO;
+    }
+
+    const response = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+    });
+
+    const rawText = await response.text();
+    let data = {};
+
+    try {
+        data = rawText ? JSON.parse(rawText) : {};
+    } catch (error) {
+        data = { raw: rawText };
+    }
+
+    if (!response.ok) {
+        const errorMessage = data?.message || data?.error || rawText || "Unknown resend error";
+        throw new Error(errorMessage);
+    }
+
+    return {
+        email_sent_at: new Date().toISOString(),
+        email_type: emailType,
+        email_status: "sent",
+        email_error: "",
+        resend_id: data.id || ""
+    };
+}
+
+function renderBookingEmailHtml(booking, intro, statusLine) {
+    return `
+        <div style="font-family: Arial, sans-serif; color: #1f2937; line-height: 1.6;">
+            <p>Hi ${escapeHtml(booking.name)},</p>
+            <p>${escapeHtml(intro)}</p>
+            <p>${escapeHtml(statusLine)}</p>
+            <ul>
+                <li>Date: ${escapeHtml(booking.date)}</li>
+                <li>Time: ${escapeHtml(booking.time)}</li>
+                <li>Group size: ${escapeHtml(String(booking.group_size || ""))}</li>
+            </ul>
+            <p>If you need to update your booking, reply to this email.</p>
+            <p>Dandy Lane Cafe</p>
+        </div>
+    `.trim();
+}
+
+function renderBookingEmailText(booking, intro, statusLine) {
+    return [
+        `Hi ${booking.name},`,
+        "",
+        intro,
+        statusLine,
+        "",
+        `Date: ${booking.date}`,
+        `Time: ${booking.time}`,
+        `Group size: ${booking.group_size}`,
+        "",
+        "If you need to update your booking, reply to this email.",
+        "",
+        "Dandy Lane Cafe"
+    ].join("\n");
+}
+
+function escapeHtml(value) {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
+
+async function ensureSheetHeader(config, title, headers) {
+    const existing = await getValues(config, `${title}!1:1`);
+    const expectedHeader = headers[0];
+    const existingHeader = existing[0] || [];
+    const needsUpdate = expectedHeader.some((header, index) => existingHeader[index] !== header);
+
+    if (!existing.length || !existing[0].length || needsUpdate) {
+        await updateValues(config, `${title}!A1:${columnLetter(headers[0].length)}1`, headers);
+    }
+}
+
+async function fetchSheetMetadata(config) {
+    const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${config.spreadsheetId}`, {
+        headers: {
+            "Authorization": `Bearer ${config.token}`
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to fetch spreadsheet metadata: ${await response.text()}`);
+    }
+
+    return response.json();
+}
+
+async function batchUpdateSpreadsheet(config, requests) {
+    const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${config.spreadsheetId}:batchUpdate`, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${config.token}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ requests })
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to update spreadsheet structure: ${await response.text()}`);
+    }
+
+    return response.json();
+}
+
+async function getValues(config, range) {
+    const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${config.spreadsheetId}/values/${range}`, {
+        headers: {
+            "Authorization": `Bearer ${config.token}`
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to read ${range}: ${await response.text()}`);
+    }
+
+    const data = await response.json();
+    return data.values || [];
+}
+
+async function appendValues(config, range, values) {
+    const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${config.spreadsheetId}/values/${range}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${config.token}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            values,
+            majorDimension: "ROWS"
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to append ${range}: ${await response.text()}`);
+    }
+
+    return response.json();
+}
+
+async function updateValues(config, range, values) {
+    const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${config.spreadsheetId}/values/${range}?valueInputOption=USER_ENTERED`, {
+        method: "PUT",
+        headers: {
+            "Authorization": `Bearer ${config.token}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            values,
+            majorDimension: "ROWS"
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to update ${range}: ${await response.text()}`);
+    }
+
+    return response.json();
+}
+
+function columnLetter(columnNumber) {
+    let current = columnNumber;
+    let output = "";
+
+    while (current > 0) {
+        const remainder = (current - 1) % 26;
+        output = String.fromCharCode(65 + remainder) + output;
+        current = Math.floor((current - 1) / 26);
+    }
+
+    return output;
+}
+
+async function getGoogleAuthToken(serviceAccount) {
+    const { client_email, private_key } = serviceAccount;
+    const now = Math.floor(Date.now() / 1000);
+    const header = base64url(JSON.stringify({ alg: "RS256", typ: "JWT" }));
+    const claimSet = base64url(JSON.stringify({
+        iss: client_email,
+        scope: "https://www.googleapis.com/auth/spreadsheets",
+        aud: "https://oauth2.googleapis.com/token",
+        exp: now + 3600,
+        iat: now
+    }));
+
+    const signatureInput = `${header}.${claimSet}`;
+    const signature = await signWithRSA(signatureInput, private_key);
+    const jwt = `${signatureInput}.${signature}`;
+
+    const response = await fetch("https://oauth2.googleapis.com/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`
+    });
+
+    const data = await response.json();
+    if (!response.ok || !data.access_token) {
+        throw new Error(`Token exchange failed: ${data.error_description || data.error || "Unknown error"}`);
+    }
+
+    return data.access_token;
+}
+
+function base64url(str) {
+    return btoa(str).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+}
+
+async function signWithRSA(content, pem) {
+    const pemContents = pem
+        .replace(/\\n/g, "\n")
+        .replace(/-----BEGIN PRIVATE KEY-----/g, "")
+        .replace(/-----END PRIVATE KEY-----/g, "")
+        .replace(/\s/g, "");
+
+    const binaryDer = Uint8Array.from(atob(pemContents), (char) => char.charCodeAt(0));
+    const key = await crypto.subtle.importKey(
+        "pkcs8",
+        binaryDer.buffer,
+        { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+        false,
+        ["sign"]
+    );
+
+    const signature = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", key, new TextEncoder().encode(content));
+    return base64url(String.fromCharCode(...new Uint8Array(signature)));
+}
