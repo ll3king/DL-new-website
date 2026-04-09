@@ -11,16 +11,17 @@
 - `ADMIN_PASSWORD`
 - `ALLOWED_ORIGIN`
 - `RESEND_API_KEY`
-- `BOOKING_FROM_EMAIL`
+- `BOOKING_FROM_EMAIL`：建议配置为 `Dandy Lane Cafe <dandylane-hobart@dandylanecafe.com>`；如果 Resend 项目只接受裸邮箱，可配置为 `dandylane-hobart@dandylanecafe.com`
 
 可选：
 
-- `BOOKING_REPLY_TO`
+- `BOOKING_REPLY_TO`：建议配置为 `dandylane-hobart@dandylanecafe.com`
 
 说明：
 
 - `ADMIN_PASSWORD` 不再有默认值；未配置时管理端接口直接返回 500。
 - `ALLOWED_ORIGIN` 用于 admin 与 booking API 的 CORS 返回头；未配置时 fallback 为 `*`。
+- 使用 Resend 前，需确认 `dandylanecafe.com` 或 Resend 要求的发件身份已经完成验证。
 
 ## 2. Google Sheets 结构
 
