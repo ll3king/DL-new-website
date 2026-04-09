@@ -275,7 +275,8 @@ export async function sendBookingEmail(env, booking, emailType) {
         method: "POST",
         headers: {
             "Authorization": `Bearer ${env.RESEND_API_KEY}`,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "User-Agent": "dandy-lane-bookings/1.0"
         },
         body: JSON.stringify(payload)
     });
