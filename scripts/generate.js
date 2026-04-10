@@ -63,12 +63,39 @@ async function syncAssets(src, dest) {
 
 // Configure Nunjucks to read from layouts and blocks
 const env = nunjucks.configure([LAYOUTS_DIR, BLOCKS_DIR], { autoescape: true });
+const WEEKDAY_ORDER = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 // Add custom filter for string operations not native to Nunjucks
 env.addFilter('endswith', function (str, suffix) {
     if (typeof str !== 'string') return false;
     return str.endsWith(suffix);
 });
+
+function expandDayRange(dayRange) {
+    if (typeof dayRange !== 'string') return [];
+
+    const normalizedRange = dayRange.trim();
+    if (!normalizedRange.includes('-')) {
+        return normalizedRange ? [normalizedRange] : [];
+    }
+
+    const [startDayRaw, endDayRaw] = normalizedRange.split('-').map(part => part.trim());
+    const startIndex = WEEKDAY_ORDER.indexOf(startDayRaw);
+    const endIndex = WEEKDAY_ORDER.indexOf(endDayRaw);
+
+    if (startIndex === -1 || endIndex === -1) {
+        return [];
+    }
+
+    if (startIndex <= endIndex) {
+        return WEEKDAY_ORDER.slice(startIndex, endIndex + 1);
+    }
+
+    return [
+        ...WEEKDAY_ORDER.slice(startIndex),
+        ...WEEKDAY_ORDER.slice(0, endIndex + 1)
+    ];
+}
 
 async function render() {
     console.log("[L3] Starting Site Generation (Nunjucks Engine)...");
@@ -160,9 +187,7 @@ async function render() {
                 },
                 "openingHoursSpecification": siteData.operations.opening_hours.map(h => ({
                     "@type": "OpeningHoursSpecification",
-                    "dayOfWeek": h.days.includes('-') 
-                         ? ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"] 
-                         : [h.days],
+                    "dayOfWeek": expandDayRange(h.days),
                     "opens": h.open,
                     "closes": h.close
                 })),

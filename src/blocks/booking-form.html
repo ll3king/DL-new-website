@@ -149,20 +149,16 @@
     const interval = {{ site.booking.capacity.interval_minutes }};
     const dateInput = document.getElementById('bookingDate');
     const timeSelect = document.getElementById('bookingTime');
+    const weekdayOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
     const HobartDate = new Date().toLocaleDateString("en-CA", { timeZone: "Australia/Hobart" });
     dateInput.setAttribute('min', HobartDate);
 
     dateInput.addEventListener('change', function (e) {
-        const selectedDate = new Date(e.target.value);
+        const selectedDate = parseLocalDate(e.target.value);
         const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
 
-        const match = openingHours.find(h => {
-            if (h.days.includes('-')) {
-                return dayName !== 'Saturday' && dayName !== 'Sunday';
-            }
-            return h.days.includes(dayName);
-        });
+        const match = openingHours.find(h => matchesOpeningHoursDay(h.days, dayName));
 
         timeSelect.innerHTML = '';
 
@@ -184,6 +180,35 @@
             timeSelect.appendChild(opt);
         }
     });
+
+    function parseLocalDate(value) {
+        const [year, month, day] = value.split('-').map(Number);
+        return new Date(year, month - 1, day);
+    }
+
+    function matchesOpeningHoursDay(dayRange, dayName) {
+        if (!dayRange || !dayName) return false;
+
+        const normalizedRange = dayRange.trim();
+        if (!normalizedRange.includes('-')) {
+            return normalizedRange === dayName;
+        }
+
+        const [startDayRaw, endDayRaw] = normalizedRange.split('-').map(part => part.trim());
+        const startIndex = weekdayOrder.indexOf(startDayRaw);
+        const endIndex = weekdayOrder.indexOf(endDayRaw);
+        const dayIndex = weekdayOrder.indexOf(dayName);
+
+        if (startIndex === -1 || endIndex === -1 || dayIndex === -1) {
+            return false;
+        }
+
+        if (startIndex <= endIndex) {
+            return dayIndex >= startIndex && dayIndex <= endIndex;
+        }
+
+        return dayIndex >= startIndex || dayIndex <= endIndex;
+    }
 
     function parseTime(t) {
         const [h, m] = t.split(':').map(Number);
