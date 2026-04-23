@@ -1,4 +1,14 @@
 stories:
+  - slug: "the-little-in-between-moments-at-dandy-lane"
+    title: "The Little In-Between Moments at Dandy Lane"
+    date: "2026-04-23"
+    author: "Dandy Lane Team"
+    summary: "Not every good cafe moment happens at the table. Sometimes it is coffee in hand, a quick chat, a bright corner, and a small pause in the day."
+    content: "At Dandy Lane, not every good cafe moment begins with a full table.<br><br>Sometimes it looks more like coffee in hand, a quick catch-up, a pause between plans, or a few extra minutes spent somewhere that feels easy to stay in. Those in-between moments matter too, and they are part of what gives a cafe its feeling.<br><br>These small corners of colour have quietly become part of that rhythm. A place to perch, chat, wait for a friend, or simply slow down for a moment with a takeaway cup in hand. Nothing overdone. Just a simple detail that makes the space feel a little lighter, a little warmer, and a little more Dandy.<br><br>For us, hospitality is not only about what arrives on the plate. It is also about how a place makes people feel while they are in it: comfortable, welcome, and able to linger for a minute.<br><br>Sometimes that is exactly what a good cafe should offer.<br><br>Drop by for coffee, brunch, and a few good in-between moments in the lane."
+    featured: false
+    cover: "assets/media/chairs hallway.jpg"
+    tags: ["Community", "Cafe Life"]
+
   - slug: "the-pulse-of-the-lane"
     title: "The Pulse of the Lane: A Story of Dandy Lane Cafe"
     date: "2026-04-05"
