@@ -1,7 +1,9 @@
 const SHEET_HEADERS = {
     Sheet1: [["name", "email", "mobile", "group_size", "date", "time", "created_at", "status", "source", "email_sent_at", "email_type", "email_status", "email_error"]],
     Guests: [["email_normalized", "email", "name", "mobile", "first_booking_at", "last_booking_at", "booking_count", "last_group_size", "last_booking_date", "last_status"]],
-    GuestEvents: [["event_at", "event_type", "email_normalized", "booking_row", "booking_status", "details"]]
+    GuestEvents: [["event_at", "event_type", "email_normalized", "booking_row", "booking_status", "details"]],
+    SmsThreads: [["phone_normalized", "display_phone", "guest_name", "guest_email", "current_intent", "state", "group_size", "booking_date", "booking_time", "last_inbound_at", "last_outbound_at", "last_booking_row", "handoff_reason", "last_message", "updated_at"]],
+    SmsMessages: [["message_at", "phone_normalized", "direction", "sender_type", "provider_message_id", "message_text", "intent", "state", "booking_row", "metadata_json"]]
 };
 
 export function buildCorsHeaders(env, methods = "GET, POST, PATCH, OPTIONS") {
@@ -37,6 +39,23 @@ export function normalizeEmail(email) {
     return String(email || "").trim().toLowerCase();
 }
 
+export function normalizePhone(phone) {
+    const digits = String(phone || "").replace(/[^\d+]/g, "");
+    if (!digits) {
+        return "";
+    }
+    if (digits.startsWith("+")) {
+        return digits;
+    }
+    if (digits.startsWith("61")) {
+        return `+${digits}`;
+    }
+    if (digits.startsWith("0")) {
+        return `+61${digits.slice(1)}`;
+    }
+    return `+${digits}`;
+}
+
 export function extractRowNumber(updatedRange) {
     const match = /![A-Z]+(\d+):/i.exec(updatedRange || "");
     return match ? Number.parseInt(match[1], 10) : null;
@@ -44,6 +63,62 @@ export function extractRowNumber(updatedRange) {
 
 export function getEmailFlowType(groupSize) {
     return Number.parseInt(groupSize, 10) > 6 ? "pending_review" : "confirmed";
+}
+
+export function getTodayInHobart() {
+    const formatter = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Australia/Hobart",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    });
+
+    return formatter.format(new Date());
+}
+
+export function evaluateBookingRequest({ booking, existingBookings = [], today = getTodayInHobart() }) {
+    const groupSize = Number.parseInt(booking.group_size || "0", 10);
+    const normalizedDate = String(booking.date || "");
+    const normalizedTime = String(booking.time || "");
+
+    if (normalizedDate === today) {
+        return {
+            booking_status: "Manual_Review",
+            email_type: "pending_review",
+            reply_key: "same_day_review"
+        };
+    }
+
+    if (groupSize > 6) {
+        return {
+            booking_status: "Manual_Review",
+            email_type: "pending_review",
+            reply_key: "large_group_review"
+        };
+    }
+
+    const requestedHour = normalizedTime.split(":")[0];
+    const hourlyPax = existingBookings
+        .filter((existing) => {
+            if (!existing || existing.date !== normalizedDate) return false;
+            if (["Archived", "Cancelled"].includes(existing.status)) return false;
+            return String(existing.time || "").split(":")[0] === requestedHour;
+        })
+        .reduce((sum, existing) => sum + (Number.parseInt(existing.group_size || "0", 10) || 0), 0);
+
+    if (hourlyPax + groupSize > 16) {
+        return {
+            booking_status: "Manual_Review",
+            email_type: "pending_review",
+            reply_key: "capacity_review"
+        };
+    }
+
+    return {
+        booking_status: "Confirmed",
+        email_type: "confirmed",
+        reply_key: "confirmed"
+    };
 }
 
 export async function requireConfig(env) {
@@ -90,7 +165,7 @@ export async function ensureBookingSheets(config) {
     await Promise.all(Object.entries(SHEET_HEADERS).map(([title, headers]) => ensureSheetHeader(config, title, headers)));
 }
 
-export async function appendBookingRow(config, booking, status) {
+export async function appendBookingRow(config, booking, status, source = "Website") {
     const row = [
         booking.name,
         booking.email,
@@ -100,7 +175,7 @@ export async function appendBookingRow(config, booking, status) {
         booking.time,
         new Date().toISOString(),
         status,
-        "Website",
+        source,
         "",
         "",
         "",
@@ -169,11 +244,37 @@ export async function listBookings(config) {
             email_status: row[11] || "",
             email_error: row[12] || ""
         }))
-        .filter((booking) => booking.status !== "Archived");
+        .filter((booking) => booking.status !== "Archived")
+        .sort((left, right) => {
+            const leftKey = `${left.date || "9999-12-31"}T${left.time || "23:59"}`;
+            const rightKey = `${right.date || "9999-12-31"}T${right.time || "23:59"}`;
+            return leftKey.localeCompare(rightKey);
+        });
+}
+
+export async function getBookingsForDate(config, date) {
+    const rows = await getValues(config, "Sheet1!A2:M500");
+    return rows
+        .map((row, index) => ({
+            id: String(index + 2),
+            name: row[0] || "",
+            email: row[1] || "",
+            mobile: row[2] || "",
+            group_size: row[3] || "",
+            date: row[4] || "",
+            time: row[5] || "",
+            status: row[7] || "",
+            source: row[8] || ""
+        }))
+        .filter((booking) => booking.date === date && booking.status !== "Archived");
 }
 
 export async function upsertGuest(config, booking, bookingStatus, options = {}) {
     const normalizedEmail = normalizeEmail(booking.email);
+    if (!normalizedEmail) {
+        return { rowNumber: null, bookingCount: 0 };
+    }
+
     const rows = await getValues(config, "Guests!A:J");
     const existingIndex = rows.findIndex((row, index) => index > 0 && normalizeEmail(row[0]) === normalizedEmail);
     const now = new Date().toISOString();
@@ -234,6 +335,15 @@ export async function appendGuestEvent(config, eventType, booking, bookingRow, b
 }
 
 export async function sendBookingEmail(env, booking, emailType) {
+    if (!booking.email) {
+        return {
+            email_sent_at: "",
+            email_type: emailType,
+            email_status: "skipped",
+            email_error: ""
+        };
+    }
+
     if (!env.RESEND_API_KEY) {
         throw new Error("RESEND_API_KEY is not configured");
     }
@@ -302,6 +412,152 @@ export async function sendBookingEmail(env, booking, emailType) {
         email_error: "",
         resend_id: data.id || ""
     };
+}
+
+export async function fetchSmsThread(config, normalizedPhone) {
+    const rows = await getValues(config, "SmsThreads!A2:O500");
+    const rowIndex = rows.findIndex((row) => normalizePhone(row[0]) === normalizedPhone);
+
+    if (rowIndex === -1) {
+        return null;
+    }
+
+    const row = rows[rowIndex];
+    return {
+        rowNumber: rowIndex + 2,
+        phone_normalized: row[0] || "",
+        display_phone: row[1] || "",
+        guest_name: row[2] || "",
+        guest_email: row[3] || "",
+        current_intent: row[4] || "booking",
+        state: row[5] || "idle",
+        group_size: row[6] || "",
+        booking_date: row[7] || "",
+        booking_time: row[8] || "",
+        last_inbound_at: row[9] || "",
+        last_outbound_at: row[10] || "",
+        last_booking_row: row[11] || "",
+        handoff_reason: row[12] || "",
+        last_message: row[13] || "",
+        updated_at: row[14] || ""
+    };
+}
+
+export async function upsertSmsThread(config, thread) {
+    const normalizedPhone = normalizePhone(thread.phone_normalized || thread.display_phone);
+    const existing = await fetchSmsThread(config, normalizedPhone);
+    const row = [[
+        normalizedPhone,
+        thread.display_phone || normalizedPhone,
+        thread.guest_name || "",
+        thread.guest_email || "",
+        thread.current_intent || "booking",
+        thread.state || "idle",
+        thread.group_size || "",
+        thread.booking_date || "",
+        thread.booking_time || "",
+        thread.last_inbound_at || "",
+        thread.last_outbound_at || "",
+        thread.last_booking_row || "",
+        thread.handoff_reason || "",
+        thread.last_message || "",
+        thread.updated_at || new Date().toISOString()
+    ]];
+
+    if (existing) {
+        await updateValues(config, `SmsThreads!A${existing.rowNumber}:O${existing.rowNumber}`, row);
+        return { rowNumber: existing.rowNumber };
+    }
+
+    const result = await appendValues(config, "SmsThreads!A:O", row);
+    return { rowNumber: extractRowNumber(result.updates?.updatedRange) };
+}
+
+export async function appendSmsMessage(config, message) {
+    const result = await appendValues(config, "SmsMessages!A:J", [[
+        message.message_at || new Date().toISOString(),
+        normalizePhone(message.phone_normalized || message.display_phone),
+        message.direction || "inbound",
+        message.sender_type || "guest",
+        message.provider_message_id || "",
+        message.message_text || "",
+        message.intent || "",
+        message.state || "",
+        message.booking_row || "",
+        JSON.stringify(message.metadata || {})
+    ]]);
+
+    return { rowNumber: extractRowNumber(result.updates?.updatedRange) };
+}
+
+export async function sendSmsMessage(env, payload) {
+    if (!env.SMS_OUTBOUND_WEBHOOK_URL) {
+        return { sms_status: "not_configured", sms_error: "SMS_OUTBOUND_WEBHOOK_URL is not configured" };
+    }
+
+    const headers = {
+        "Content-Type": "application/json",
+        "User-Agent": "dandy-lane-sms/1.0"
+    };
+
+    if (env.SMS_OUTBOUND_AUTH_TOKEN) {
+        headers.Authorization = `Bearer ${env.SMS_OUTBOUND_AUTH_TOKEN}`;
+    }
+
+    const response = await fetch(env.SMS_OUTBOUND_WEBHOOK_URL, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+            to: payload.to,
+            text: payload.text,
+            thread_state: payload.thread_state || "",
+            booking_row: payload.booking_row || "",
+            metadata: payload.metadata || {}
+        })
+    });
+
+    const rawText = await response.text();
+    if (!response.ok) {
+        return {
+            sms_status: "failed",
+            sms_error: rawText || `SMS webhook failed with ${response.status}`
+        };
+    }
+
+    let data = {};
+    try {
+        data = rawText ? JSON.parse(rawText) : {};
+    } catch (error) {
+        data = { raw: rawText };
+    }
+
+    return {
+        sms_status: "sent",
+        sms_error: "",
+        provider_message_id: data.id || data.message_id || ""
+    };
+}
+
+export async function updateBookingRow(config, rowNumber, booking) {
+    const existing = await fetchBookingRow(config, rowNumber);
+    const values = [[
+        booking.name ?? existing.name,
+        booking.email ?? existing.email,
+        booking.mobile ?? existing.mobile,
+        String(booking.group_size ?? existing.group_size ?? ""),
+        booking.date ?? existing.date,
+        booking.time ?? existing.time,
+        booking.created_at ?? existing.timestamp ?? new Date().toISOString(),
+        booking.status ?? existing.status,
+        booking.source ?? existing.source,
+        booking.email_sent_at ?? existing.email_sent_at,
+        booking.email_type ?? existing.email_type,
+        booking.email_status ?? existing.email_status,
+        booking.email_error ?? existing.email_error
+    ]];
+
+    await updateValues(config, `Sheet1!A${rowNumber}:M${rowNumber}`, values);
+    return fetchBookingRow(config, rowNumber);
 }
 
 function renderBookingEmailHtml(booking, intro, statusLine) {

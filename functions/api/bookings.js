@@ -8,7 +8,8 @@ import {
     appendGuestEvent,
     emptyResponse,
     ensureBookingSheets,
-    getEmailFlowType,
+    evaluateBookingRequest,
+    getBookingsForDate,
     jsonResponse,
     requireConfig,
     sendBookingEmail,
@@ -37,8 +38,10 @@ export async function onRequestPost(context) {
         const config = await requireConfig(env);
         await ensureBookingSheets(config);
 
-        const bookingStatus = Number.parseInt(booking.group_size, 10) > 6 ? "Manual_Review" : "Confirmed";
-        const emailType = getEmailFlowType(booking.group_size);
+        const existingBookings = await getBookingsForDate(config, booking.date);
+        const outcome = evaluateBookingRequest({ booking, existingBookings });
+        const bookingStatus = outcome.booking_status;
+        const emailType = outcome.email_type;
         const { rowNumber } = await appendBookingRow(config, booking, bookingStatus);
 
         if (!rowNumber) {
@@ -72,6 +75,7 @@ export async function onRequestPost(context) {
             status: "success",
             message: "Booking received",
             booking_status: bookingStatus,
+            reply_key: outcome.reply_key,
             email_status: emailTracking.email_status,
             email_type: emailTracking.email_type
         });

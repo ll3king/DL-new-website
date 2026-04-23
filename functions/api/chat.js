@@ -3,6 +3,14 @@
  * AI Concierge for Dandy Lane Cafe - Enhanced with Check Booking & Robust Sync
  */
 
+import {
+    appendBookingRow,
+    ensureBookingSheets,
+    evaluateBookingRequest,
+    getBookingsForDate,
+    requireConfig
+} from "./_booking.js";
+
 const SITE_KNOWLEDGE = {
     name: "Dandy Lane Cafe",
     purpose: "A hidden-lane brunch sanctuary in Hobart CBD",
@@ -15,7 +23,7 @@ const SITE_KNOWLEDGE = {
         "Scotch Steak Sandwich - Prime scotch steak, caramelized onion jam"
     ],
     features: "Laptop-friendly, free WiFi, quiet workspace areas, pet-friendly outdoor seating",
-    booking: "Max 16 people per hour. 1-6 people: Online. 7-10 people: Walk-in recommended. >10 people: Manual review. Must book for tomorrow onwards."
+    booking: "Max 16 people per hour for automatic confirmation. 1-6 people can be auto-confirmed. 7+ people go to manual review. Same-day booking requests also go to manual review, and walk-ins are always welcome."
 };
 
 const TOOLS = [
@@ -23,7 +31,7 @@ const TOOLS = [
         function_declarations: [
             {
                 name: "create_booking",
-                description: "Create a new table reservation. Call this ONLY for dates starting from tomorrow.",
+                description: "Create a new table reservation request.",
                 parameters: {
                     type: "object",
                     properties: {
@@ -89,12 +97,13 @@ CORE RULES:
 1. **NEVER** mention prices.
 2. **NEVER** say "I am an AI assistant".
 3. **MEMORY**: Use conversation history.
-4. **DATE LOGIC**: Today is: ${hobartTime}. Online bookings are for TOMORROW onwards. Suggest walk-in for today.
+4. **DATE LOGIC**: Today is: ${hobartTime}. Same-day bookings are allowed as manual review only. Encourage walk-ins for today.
 5. **CAPACITY (STRICT)**: 16 people per hour max. 
 6. **TIERED GROUPS**:
-   - 1-6: Standard booking.
-   - 7-10: If tool returns FAILED_WALK_IN_RECOMMENDED, say online bookings are full but we love walk-ins!
-   - >10: If tool returns FAILED_MANUAL_REVIEW, say you've alerted the manager but walk-ins are welcome.
+   - 1-6 on future dates: Standard booking.
+   - 7+ people: Manual review. Tell guests we have received the request and walk-ins are welcome.
+   - Same-day bookings: Manual review. Tell guests confirmation may take time and walk-ins are welcome.
+   - Capacity limit: Manual review. Tell guests walk-ins are welcome.
 7. **LANGUAGE MIRRORING**: Reply in the customer's language.
 
 Knowledge:
@@ -172,39 +181,34 @@ Knowledge:
 }
 
 async function handleCreate(args, env) {
-    const requestedPax = parseInt(args.group_size) || 0;
-    const date = args.date;
-    const time = args.time;
+    const booking = {
+        name: args.name,
+        email: args.email || "",
+        mobile: args.mobile || "",
+        group_size: args.group_size || "1",
+        date: args.date,
+        time: args.time
+    };
 
-    // 1. Tier Check
-    if (requestedPax > 10) {
-        await handleNotify({
-            customer_name: args.name,
-            contact: args.email || args.mobile,
-            details: `Large group (${requestedPax}) requested for ${date} at ${time}.`
-        }, env);
-        return "FAILED_MANUAL_REVIEW";
-    }
-    if (requestedPax > 6) return "FAILED_WALK_IN_RECOMMENDED";
+    const config = await requireConfig(env);
+    await ensureBookingSheets(config);
+    const existingBookings = await getBookingsForDate(config, booking.date);
+    const outcome = evaluateBookingRequest({ booking, existingBookings });
+    await appendBookingRow(config, booking, outcome.booking_status, "AI_Concierge");
 
-    // 2. Capacity Check (16/hr)
-    const result = await sheetOperation('GET', null, env);
-    if (!result.error) {
-        const rows = result.values || [];
-        const hourlyPax = rows.filter(r => {
-            const rDate = r[4];
-            const rTime = r[5];
-            const rStatus = r[7];
-            if (rDate !== date || rStatus === 'Archived') return false;
-            // Simple hour match (e.g. 09:15 and 09:45 are same hour)
-            return rTime.split(':')[0] === time.split(':')[0];
-        }).reduce((sum, r) => sum + (parseInt(r[3]) || 0), 0);
-
-        if (hourlyPax + requestedPax > 16) return "FAILED_WALK_IN_RECOMMENDED";
+    if (outcome.reply_key === "same_day_review") {
+        return "SAME_DAY_MANUAL_REVIEW: Thanks for your booking request for today. Same-day bookings are checked by our team manually, so confirmation may take a little time. If you're nearby, please come by anyway — we always keep space flowing for walk-ins and we'll do our best to look after you.";
     }
 
-    const val = [args.name, args.email, args.mobile, args.group_size, args.date, args.time, new Date().toISOString(), "AI_Confirmed", "AI_Concierge"];
-    return await sheetOperation('APPEND', val, env);
+    if (outcome.reply_key === "large_group_review") {
+        return "LARGE_GROUP_MANUAL_REVIEW: Thanks for your booking request. For groups of this size, our team checks availability manually before confirming. We've received your request and will review it as soon as possible. If you're nearby, you're also very welcome to come by and we'll do our best to look after you as a walk-in.";
+    }
+
+    if (outcome.reply_key === "capacity_review") {
+        return "CAPACITY_MANUAL_REVIEW: That time is very tight for automatic online bookings, so I've passed your request to the team for review. If you're nearby, please feel free to come by anyway — we always do our best to help walk-ins.";
+    }
+
+    return `BOOKING_CONFIRMED: Booking confirmed for ${booking.date} at ${booking.time} for ${booking.group_size}.`;
 }
 
 async function handleCheck(args, env) {

@@ -5,6 +5,7 @@
 
 import {
     appendGuestEvent,
+    appendBookingRow,
     emptyResponse,
     ensureBookingSheets,
     fetchBookingRow,
@@ -12,6 +13,7 @@ import {
     listBookings,
     requireConfig,
     sendBookingEmail,
+    updateBookingRow,
     updateBookingStatus,
     updateEmailTracking,
     upsertGuest
@@ -70,12 +72,13 @@ export async function onRequestPatch(context) {
     }
 
     try {
-        const { id, action } = await request.json();
+        const payload = await request.json();
+        const { id, action } = payload;
         if (!id || !action) {
             return jsonResponse(env, { error: "id and action required" }, { status: 400 });
         }
-        if (!["approve", "archive"].includes(action)) {
-            return jsonResponse(env, { error: "action must be approve or archive" }, { status: 400 });
+        if (!["approve", "cancel", "edit"].includes(action)) {
+            return jsonResponse(env, { error: "action must be approve, cancel or edit" }, { status: 400 });
         }
 
         const rowNumber = Number.parseInt(id, 10);
@@ -87,17 +90,15 @@ export async function onRequestPatch(context) {
         await ensureBookingSheets(config);
 
         let status = "Pending";
-        if (action === "approve") status = "Confirmed";
-        if (action === "archive") status = "Archived";
-
-        await updateBookingStatus(config, rowNumber, status);
-
-        const booking = await fetchBookingRow(config, rowNumber);
-        booking.status = status;
+        let booking = await fetchBookingRow(config, rowNumber);
 
         let emailTracking = null;
 
         if (action === "approve") {
+            status = "Confirmed";
+            await updateBookingStatus(config, rowNumber, status);
+            booking.status = status;
+
             try {
                 emailTracking = await sendBookingEmail(env, booking, "approval_confirmed");
             } catch (error) {
@@ -115,6 +116,34 @@ export async function onRequestPatch(context) {
             await appendGuestEvent(config, "booking_confirmed", booking, rowNumber, status);
         }
 
+        if (action === "cancel") {
+            status = "Cancelled";
+            await updateBookingStatus(config, rowNumber, status);
+            booking.status = status;
+            await upsertGuest(config, booking, status, { incrementBookingCount: false });
+            await appendGuestEvent(config, "booking_cancelled", booking, rowNumber, status);
+        }
+
+        if (action === "edit") {
+            const updated = {
+                name: payload.name,
+                email: payload.email,
+                mobile: payload.mobile,
+                group_size: payload.group_size,
+                date: payload.date,
+                time: payload.time
+            };
+
+            booking = await updateBookingRow(config, rowNumber, updated);
+            await upsertGuest(config, booking, booking.status || "Confirmed", { incrementBookingCount: false });
+            await appendGuestEvent(config, "booking_updated", booking, rowNumber, booking.status || "Confirmed");
+            return jsonResponse(env, {
+                message: "Updated",
+                status: booking.status,
+                booking
+            });
+        }
+
         const refreshedBooking = await fetchBookingRow(config, rowNumber);
 
         return jsonResponse(env, {
@@ -128,6 +157,49 @@ export async function onRequestPatch(context) {
     }
 }
 
+export async function onRequestPost(context) {
+    const { request, env } = context;
+
+    if (!checkAuth(request, env)) {
+        return getAuthErrorResponse(env);
+    }
+
+    try {
+        const body = await request.json();
+        const booking = {
+            name: body.name,
+            email: body.email || "",
+            mobile: body.mobile || "",
+            group_size: body.group_size || "",
+            date: body.date,
+            time: body.time
+        };
+
+        if (!booking.name || !booking.mobile || !booking.group_size || !booking.date || !booking.time) {
+            return jsonResponse(env, { error: "name, mobile, group_size, date and time are required" }, { status: 400 });
+        }
+
+        const config = await requireConfig(env);
+        await ensureBookingSheets(config);
+        const { rowNumber } = await appendBookingRow(config, booking, "Confirmed", "Admin");
+
+        if (!rowNumber) {
+            throw new Error("Failed to create booking");
+        }
+
+        await upsertGuest(config, booking, "Confirmed");
+        await appendGuestEvent(config, "booking_created_admin", booking, rowNumber, "Confirmed");
+
+        return jsonResponse(env, {
+            message: "Created",
+            booking: await fetchBookingRow(config, rowNumber)
+        }, { status: 201 });
+    } catch (error) {
+        console.error("Admin POST Error:", error.message);
+        return jsonResponse(env, { error: error.message }, { status: 500 });
+    }
+}
+
 export async function onRequestOptions(context) {
-    return emptyResponse(context.env, "GET, PATCH, OPTIONS");
+    return emptyResponse(context.env, "GET, POST, PATCH, OPTIONS");
 }

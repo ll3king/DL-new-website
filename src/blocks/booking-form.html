@@ -244,11 +244,17 @@
             const result = await response.json();
 
             if (response.ok) {
+                const isManualReview = result.booking_status === 'Manual_Review';
+                const title = isManualReview ? 'Request Received!' : 'Booking Confirmed!';
+                const message = isManualReview
+                    ? `Thanks, ${payload.name}. We've received your booking request for ${payload.date} at ${payload.time}. Our team will review it shortly. If you're nearby, please come by anyway — we always do our best to help walk-ins.`
+                    : `Cheers, ${payload.name}! Your booking is confirmed for ${payload.date} at ${payload.time}. We look forward to welcoming you.`;
+
                 form.innerHTML = `
                         <div style="text-align: center; padding: 2rem;">
                             <div style="font-size: 4rem; margin-bottom: 1.5rem;">✨</div>
-                            <h3 style="color: var(--primary); font-size: 1.8rem;">Booking Received!</h3>
-                            <p style="color: var(--secondary); margin-bottom: 2rem; line-height: 1.6;">Cheers, ${payload.name}! We've received your request for ${payload.date} at ${payload.time}. We'll confirm via email shortly.</p>
+                            <h3 style="color: var(--primary); font-size: 1.8rem;">${title}</h3>
+                            <p style="color: var(--secondary); margin-bottom: 2rem; line-height: 1.6;">${message}</p>
                             <button onclick="window.location.reload()" class="btn" style="padding: 1rem 2rem; border-radius: 4px;">Back</button>
                         </div>
                     `;

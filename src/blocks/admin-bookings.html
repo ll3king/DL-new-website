@@ -2,10 +2,10 @@
 <section class="admin-dashboard" style="padding: 4rem 0; min-height: 80vh; background: #f4f6f8;">
     <div class="container">
         <div class="admin-header"
-            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem;">
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; gap: 1rem; flex-wrap: wrap;">
             <div>
                 <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">{{ site.admin.dashboard_title }}</h1>
-                <p style="color: var(--secondary);">Manage your lane sanctuary's reservations and capacity limits.</p>
+                <p style="color: var(--secondary);">Manage bookings, same-day reviews, and staff entries in one place.</p>
             </div>
             <div class="view-toggles"
                 style="display: flex; gap: 0.5rem; background: white; padding: 0.5rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
@@ -18,33 +18,64 @@
             </div>
         </div>
 
-        <!-- Dashboard Content Container -->
         <div id="dashboard-content"
             style="background: white; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); padding: 2rem; overflow: hidden; border: 1px solid #eee;">
-            <!-- List View -->
+            <div
+                style="display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr auto auto; gap: 0.75rem; align-items: end; margin-bottom: 1.5rem;">
+                <div>
+                    <label style="display: block; font-size: 0.75rem; font-weight: 700; color: #7f8c8d; text-transform: uppercase; margin-bottom: 0.35rem;">Search</label>
+                    <input id="search-input" type="text" placeholder="Name, phone or email"
+                        style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.75rem; font-weight: 700; color: #7f8c8d; text-transform: uppercase; margin-bottom: 0.35rem;">Date</label>
+                    <input id="date-filter" type="date"
+                        style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.75rem; font-weight: 700; color: #7f8c8d; text-transform: uppercase; margin-bottom: 0.35rem;">Status</label>
+                    <select id="status-filter"
+                        style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
+                        <option value="">All Statuses</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Manual_Review">Manual Review</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.75rem; font-weight: 700; color: #7f8c8d; text-transform: uppercase; margin-bottom: 0.35rem;">Source</label>
+                    <select id="source-filter"
+                        style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
+                        <option value="">All Sources</option>
+                        <option value="Website">Website</option>
+                        <option value="AI_Concierge">AI Chat</option>
+                        <option value="SMS">SMS</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                </div>
+                <button id="today-filter-btn" class="btn"
+                    style="border: none; cursor: pointer; padding: 0.8rem 1rem; border-radius: 6px;">Today</button>
+                <button id="new-booking-btn"
+                    style="background: var(--primary); color: white; border: none; cursor: pointer; padding: 0.8rem 1rem; border-radius: 6px; font-weight: 700;">New
+                    Booking</button>
+            </div>
+
             <div id="list-view">
                 <table style="width: 100%; border-collapse: collapse; text-align: left;">
                     <thead style="background: #f8f9fa;">
                         <tr>
-                            <th style="padding: 1.2rem; font-size: 0.8rem; text-transform: uppercase; color: #7f8c8d;">
-                                Status</th>
-                            <th style="padding: 1.2rem; font-size: 0.8rem; text-transform: uppercase; color: #7f8c8d;">
-                                Guest</th>
-                            <th style="padding: 1.2rem; font-size: 0.8rem; text-transform: uppercase; color: #7f8c8d;">
-                                Date/Time</th>
-                            <th style="padding: 1.2rem; font-size: 0.8rem; text-transform: uppercase; color: #7f8c8d;">
-                                Size</th>
-                            <th style="padding: 1.2rem; font-size: 0.8rem; text-transform: uppercase; color: #7f8c8d;">
-                                Actions</th>
+                            <th style="padding: 1rem; font-size: 0.8rem; text-transform: uppercase; color: #7f8c8d;">Status</th>
+                            <th style="padding: 1rem; font-size: 0.8rem; text-transform: uppercase; color: #7f8c8d;">Guest</th>
+                            <th style="padding: 1rem; font-size: 0.8rem; text-transform: uppercase; color: #7f8c8d;">Date/Time</th>
+                            <th style="padding: 1rem; font-size: 0.8rem; text-transform: uppercase; color: #7f8c8d;">Size</th>
+                            <th style="padding: 1rem; font-size: 0.8rem; text-transform: uppercase; color: #7f8c8d;">Source</th>
+                            <th style="padding: 1rem; font-size: 0.8rem; text-transform: uppercase; color: #7f8c8d;">Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="bookings-list-body">
-                        <!-- Dynamic Loading -->
-                    </tbody>
+                    <tbody id="bookings-list-body"></tbody>
                 </table>
             </div>
 
-            <!-- Calendar View -->
             <div id="calendar-view" style="display: none;">
                 <div class="calendar-controls"
                     style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
@@ -52,44 +83,38 @@
                         style="background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">&larr;
                         Prev</button>
                     <h2 id="current-month-display"
-                        style="margin: 0; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 0.1em;">
-                        Loading...</h2>
+                        style="margin: 0; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 0.1em;">Loading...</h2>
                     <button id="next-month"
                         style="background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">Next
                         &rarr;</button>
                 </div>
                 <div
                     style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #eee; border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
-                    <!-- Calendar Grid Header -->
-                    <div
-                        style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.7rem; color: #7f8c8d;">
-                        MON</div>
-                    <div
-                        style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.7rem; color: #7f8c8d;">
-                        TUE</div>
-                    <div
-                        style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.7rem; color: #7f8c8d;">
-                        WED</div>
-                    <div
-                        style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.7rem; color: #7f8c8d;">
-                        THU</div>
-                    <div
-                        style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.7rem; color: #7f8c8d;">
-                        FRI</div>
-                    <div
-                        style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.7rem; color: #7f8c8d;">
-                        SAT</div>
-                    <div
-                        style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.7rem; color: #7f8c8d;">
-                        SUN</div>
-
-                    <!-- Days -->
+                    <div style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.7rem; color: #7f8c8d;">MON</div>
+                    <div style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.7rem; color: #7f8c8d;">TUE</div>
+                    <div style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.7rem; color: #7f8c8d;">WED</div>
+                    <div style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.7rem; color: #7f8c8d;">THU</div>
+                    <div style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.7rem; color: #7f8c8d;">FRI</div>
+                    <div style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.7rem; color: #7f8c8d;">SAT</div>
+                    <div style="background: #f8f9fa; padding: 1rem; text-align: center; font-weight: 700; font-size: 0.7rem; color: #7f8c8d;">SUN</div>
                     <div id="calendar-days-grid" style="display: contents;"></div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+<div id="admin-modal"
+    style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 2100; align-items: center; justify-content: center; padding: 1.5rem; box-sizing: border-box;">
+    <div
+        style="background: white; width: min(760px, 100%); max-height: 90vh; overflow: auto; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.2);">
+        <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+            <h3 id="modal-title" style="margin: 0; font-size: 1.2rem;">Booking Details</h3>
+            <button id="close-modal-btn" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+        </div>
+        <div id="modal-body" style="padding: 1.5rem;"></div>
+    </div>
+</div>
 
 <script>
     document.addEventListener('DOMContentLoaded', async function () {
@@ -111,14 +136,58 @@
         const passInput = document.getElementById('admin-pass');
         const loginBtn = document.getElementById('login-btn');
         const errorMsg = document.getElementById('login-error');
+        const modal = document.getElementById('admin-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const listView = document.getElementById('list-view');
+        const calView = document.getElementById('calendar-view');
+        const listBtn = document.getElementById('view-list-btn');
+        const calBtn = document.getElementById('view-cal-btn');
+        const prevBtn = document.getElementById('prev-month');
+        const nextBtn = document.getElementById('next-month');
+        const monthDisplay = document.getElementById('current-month-display');
+        const searchInput = document.getElementById('search-input');
+        const dateFilter = document.getElementById('date-filter');
+        const statusFilter = document.getElementById('status-filter');
+        const sourceFilter = document.getElementById('source-filter');
+        const todayFilterBtn = document.getElementById('today-filter-btn');
+        const newBookingBtn = document.getElementById('new-booking-btn');
 
         let adminKey = localStorage.getItem('dandy_admin_key');
+        let bookings = [];
+        let filteredBookings = [];
+        let calendarDate = new Date();
+
         if (adminKey) {
             checkAccess(adminKey);
         }
 
         loginBtn.addEventListener('click', () => checkAccess(passInput.value));
         passInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAccess(passInput.value); });
+        closeModalBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+        searchInput.addEventListener('input', applyFilters);
+        dateFilter.addEventListener('change', applyFilters);
+        statusFilter.addEventListener('change', applyFilters);
+        sourceFilter.addEventListener('change', applyFilters);
+        todayFilterBtn.addEventListener('click', () => {
+            dateFilter.value = getTodayInHobart();
+            applyFilters();
+        });
+        newBookingBtn.addEventListener('click', openCreateModal);
+
+        listBtn.addEventListener('click', () => toggleView('list'));
+        calBtn.addEventListener('click', () => toggleView('calendar'));
+        prevBtn.addEventListener('click', () => {
+            calendarDate.setMonth(calendarDate.getMonth() - 1);
+            renderCalendar();
+        });
+        nextBtn.addEventListener('click', () => {
+            calendarDate.setMonth(calendarDate.getMonth() + 1);
+            renderCalendar();
+        });
 
         async function checkAccess(key) {
             try {
@@ -129,7 +198,7 @@
                     localStorage.setItem('dandy_admin_key', key);
                     adminKey = key;
                     loginOverlay.style.display = 'none';
-                    loadBookings();
+                    await loadBookings();
                 } else {
                     throw new Error();
                 }
@@ -139,8 +208,6 @@
             }
         }
 
-        let bookings = [];
-
         async function loadBookings() {
             try {
                 const res = await fetch('/api/admin/bookings', {
@@ -148,109 +215,74 @@
                 });
                 const data = await res.json();
                 bookings = data.bookings || [];
-                renderList();
+                applyFilters();
             } catch (e) {
                 console.error("Load Failed:", e);
             }
         }
 
-        async function updateStatus(id, action) {
-            if (!confirm(`Confirm ${action} for this reservation?`)) return;
-            try {
-                const res = await fetch('/api/admin/bookings', {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${adminKey}`
-                    },
-                    body: JSON.stringify({ id, action })
-                });
-                if (res.ok) loadBookings();
-            } catch (e) {
-                alert("Operation failed");
-            }
+        function applyFilters() {
+            const search = searchInput.value.trim().toLowerCase();
+            const selectedDate = dateFilter.value;
+            const selectedStatus = statusFilter.value;
+            const selectedSource = sourceFilter.value;
+
+            filteredBookings = bookings.filter((booking) => {
+                const haystack = [booking.name, booking.mobile, booking.email].join(' ').toLowerCase();
+                if (search && !haystack.includes(search)) return false;
+                if (selectedDate && booking.date !== selectedDate) return false;
+                if (selectedStatus && booking.status !== selectedStatus) return false;
+                if (selectedSource && booking.source !== selectedSource) return false;
+                return true;
+            });
+
+            renderList();
+            renderCalendar();
         }
 
-        // --- View Logic ---
-        const listView = document.getElementById('list-view');
-        const calView = document.getElementById('calendar-view');
-        const listBtn = document.getElementById('view-list-btn');
-        const calBtn = document.getElementById('view-cal-btn');
-        const prevBtn = document.getElementById('prev-month');
-        const nextBtn = document.getElementById('next-month');
-        const monthDisplay = document.getElementById('current-month-display');
-
-        let calendarDate = new Date();
-
-        listBtn.addEventListener('click', () => {
-            listView.style.display = 'block';
-            calView.style.display = 'none';
-            listBtn.style.background = 'var(--accent)';
-            listBtn.style.color = 'white';
-            calBtn.style.background = 'transparent';
-            calBtn.style.color = 'var(--primary)';
-        });
-
-        calBtn.addEventListener('click', () => {
-            listView.style.display = 'none';
-            calView.style.display = 'block';
-            calBtn.style.background = 'var(--accent)';
-            calBtn.style.color = 'white';
-            listBtn.style.background = 'transparent';
-            listBtn.style.color = 'var(--primary)';
-            renderCalendar();
-        });
-
-        prevBtn.addEventListener('click', () => {
-            calendarDate.setMonth(calendarDate.getMonth() - 1);
-            renderCalendar();
-        });
-
-        nextBtn.addEventListener('click', () => {
-            calendarDate.setMonth(calendarDate.getMonth() + 1);
-            renderCalendar();
-        });
+        function toggleView(view) {
+            const isList = view === 'list';
+            listView.style.display = isList ? 'block' : 'none';
+            calView.style.display = isList ? 'none' : 'block';
+            listBtn.style.background = isList ? 'var(--accent)' : 'transparent';
+            listBtn.style.color = isList ? 'white' : 'var(--primary)';
+            calBtn.style.background = isList ? 'transparent' : 'var(--accent)';
+            calBtn.style.color = isList ? 'var(--primary)' : 'white';
+            if (!isList) renderCalendar();
+        }
 
         function renderList() {
             const body = document.getElementById('bookings-list-body');
-            if (bookings.length === 0) {
-                body.innerHTML = '<tr><td colspan="5" style="padding: 3rem; text-align: center; color: var(--secondary);">No active reservations found. All clear!</td></tr>';
+            if (filteredBookings.length === 0) {
+                body.innerHTML = '<tr><td colspan="6" style="padding: 3rem; text-align: center; color: var(--secondary);">No bookings found for the current filter.</td></tr>';
                 return;
             }
-            body.innerHTML = bookings.map(b => `
-            <tr style="border-bottom: 1px solid #f0f0f0;">
-                <td style="padding: 1.2rem;">
-                    <span style="padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700; ${getStatusStyle(b.status)}">
-                        ${(b.status || 'Pending').replace('_', ' ')}
-                    </span>
-                </td>
-                <td style="padding: 1.2rem;">
-                    <strong>${b.name}</strong><br>
-                    <span style="font-size: 0.8rem; color: #7f8c8d;">${b.email || ''} ${b.mobile ? `(${b.mobile})` : ''}</span>
-                </td>
-                <td style="padding: 1.2rem;">
-                    ${b.date}<br>
-                    <span style="font-size: 0.8rem; font-weight: 600;">${b.time}</span>
-                </td>
-                <td style="padding: 1.2rem;">${b.group_size || '?'} People</td>
-                <td style="padding: 1.2rem;">
-                    <button onclick="updateStatus('${b.id}', 'archive')" style="background: #34495e; color: white; border: none; padding: 0.5rem; border-radius: 4px; font-size: 0.7rem; cursor: pointer;">Archive</button>
-                    ${(b.status || '').includes('Review') ? `<button onclick="updateStatus('${b.id}', 'approve')" style="background: #27ae60; color: white; border: none; padding: 0.5rem; border-radius: 4px; font-size: 0.7rem; cursor: pointer; margin-left: 0.2rem;">Approve</button>` : ''}
-                </td>
-            </tr>
-        `).join('');
 
-            // Also update calendar if visible
-            if (calView.style.display === 'block') renderCalendar();
+            body.innerHTML = filteredBookings.map((booking) => `
+                <tr style="border-bottom: 1px solid #f0f0f0;">
+                    <td style="padding: 1rem;">
+                        <span style="padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700; ${getStatusStyle(booking.status)}">
+                            ${(booking.status || 'Pending').replace('_', ' ')}
+                        </span>
+                    </td>
+                    <td style="padding: 1rem;">
+                        <strong>${escapeHtml(booking.name || 'Guest')}</strong><br>
+                        <span style="font-size: 0.8rem; color: #7f8c8d;">${escapeHtml(booking.mobile || '')}${booking.email ? ` · ${escapeHtml(booking.email)}` : ''}</span>
+                    </td>
+                    <td style="padding: 1rem;">${escapeHtml(booking.date)}<br><span style="font-size: 0.8rem; font-weight: 600;">${escapeHtml(booking.time)}</span></td>
+                    <td style="padding: 1rem;">${escapeHtml(booking.group_size || '?')}</td>
+                    <td style="padding: 1rem;">${escapeHtml(booking.source || '')}</td>
+                    <td style="padding: 1rem; display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                        ${booking.status === 'Manual_Review' ? `<button data-action="approve" data-id="${booking.id}" style="${actionButtonStyle('#27ae60')}">Confirm</button>` : ''}
+                        ${booking.status !== 'Cancelled' ? `<button data-action="edit" data-id="${booking.id}" style="${actionButtonStyle('#34495e')}">Edit</button>` : ''}
+                        ${booking.status !== 'Cancelled' ? `<button data-action="cancel" data-id="${booking.id}" style="${actionButtonStyle('#c0392b')}">Cancel</button>` : ''}
+                    </td>
+                </tr>
+            `).join('');
 
-            // Expose updateStatus to window for onclick
-            window.updateStatus = updateStatus;
-        }
-
-        function getStatusStyle(status) {
-            if (status === 'Confirmed') return 'background: #e6f7ee; color: #27ae60;';
-            if (status?.includes('Review')) return 'background: #fff8e1; color: #f39c12;';
-            return 'background: #fdf2f2; color: #e74c3c;';
+            body.querySelectorAll('button[data-action]').forEach((button) => {
+                button.addEventListener('click', () => handleListAction(button.dataset.action, button.dataset.id));
+            });
         }
 
         function renderCalendar() {
@@ -259,49 +291,233 @@
 
             const year = calendarDate.getFullYear();
             const month = calendarDate.getMonth();
-
-            // Display Month Year
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             monthDisplay.innerText = `${monthNames[month]} ${year}`;
 
-            // Get first day of month and total days
-            const firstDay = new Date(year, month, 1).getDay(); // 0 is Sunday, 1 is Monday
+            const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-            // Adjust first day to start from Monday (0: Mon, 6: Sun)
             const startOffset = firstDay === 0 ? 6 : firstDay - 1;
 
-            // Empty cells for offset
             for (let i = 0; i < startOffset; i++) {
                 const empty = document.createElement('div');
-                empty.style.cssText = `background: #fdfdfd; min-height: 120px; border-bottom: 1px solid #eee; border-left: 1px solid #eee;`;
+                empty.style.cssText = 'background: #fdfdfd; min-height: 120px; border-bottom: 1px solid #eee; border-left: 1px solid #eee;';
                 grid.appendChild(empty);
             }
 
             for (let i = 1; i <= daysInMonth; i++) {
-                const dayStr = i.toString().padStart(2, '0');
-                const monthStr = (month + 1).toString().padStart(2, '0');
-                const isoDate = `${year}-${monthStr}-${dayStr}`;
+                const isoDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                const dayBookings = bookings.filter((booking) => booking.date === isoDate);
+                const totalPax = dayBookings.reduce((sum, booking) => sum + (parseInt(booking.group_size || 0, 10) || 0), 0);
+                const hasBookings = dayBookings.length > 0;
 
-                const dayBookings = bookings.filter(b => b.date === isoDate);
-                const totalPax = dayBookings.reduce((sum, b) => sum + parseInt(b.group_size || 0), 0);
-
-                const div = document.createElement('div');
-                div.style.cssText = `background: white; min-height: 120px; padding: 1rem; border-bottom: 1px solid #eee; border-left: 1px solid #eee; position: relative; transition: background 0.2s;`;
-                div.onmouseover = () => div.style.background = '#fcfcfc';
-                div.onmouseout = () => div.style.background = 'white';
-
-                div.innerHTML = `
-                <div style="font-size: 0.9rem; font-weight: 700; color: #bdc3c7; margin-bottom: 0.5rem;">${i}</div>
-                ${dayBookings.length > 0 ? `
-                    <div style="background: var(--accent); color: white; padding: 0.4rem; border-radius: 4px; font-size: 0.7rem; font-weight: 700; box-shadow: 0 2px 5px rgba(214, 48, 49, 0.2);">
-                        ${dayBookings.length} RES / ${totalPax} PAX
-                    </div>
-                ` : ''}
-                ${totalPax >= 16 ? `<div style="font-size: 0.6rem; color: var(--accent); font-weight: 800; margin-top: 0.3rem;">⚠️ AT CAPACITY</div>` : ''}
-            `;
-                grid.appendChild(div);
+                const day = document.createElement('button');
+                day.type = 'button';
+                day.style.cssText = `background: white; min-height: 120px; padding: 1rem; border: none; border-bottom: 1px solid #eee; border-left: 1px solid #eee; text-align: left; cursor: ${hasBookings ? 'pointer' : 'default'};`;
+                day.disabled = !hasBookings;
+                day.innerHTML = `
+                    <div style="font-size: 0.95rem; font-weight: 700; color: #95a5a6; margin-bottom: 0.5rem;">${i}</div>
+                    ${hasBookings ? `<div style="background: var(--accent); color: white; padding: 0.4rem; border-radius: 4px; font-size: 0.7rem; font-weight: 700;">${dayBookings.length} RES / ${totalPax} PAX</div>` : ''}
+                    ${totalPax >= 16 ? `<div style="font-size: 0.65rem; color: var(--accent); font-weight: 800; margin-top: 0.4rem;">AT AUTO LIMIT</div>` : ''}
+                `;
+                if (hasBookings) {
+                    day.addEventListener('click', () => openDayModal(isoDate));
+                }
+                grid.appendChild(day);
             }
         }
+
+        async function handleListAction(action, id) {
+            const booking = bookings.find((item) => item.id === id);
+            if (!booking) return;
+
+            if (action === 'edit') {
+                openEditModal(booking);
+                return;
+            }
+
+            if (!confirm(`Confirm ${action} for this booking?`)) return;
+            await submitAdminAction({ id, action });
+        }
+
+        async function submitAdminAction(payload) {
+            try {
+                const res = await fetch('/api/admin/bookings', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${adminKey}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Operation failed');
+                closeModal();
+                await loadBookings();
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        function openDayModal(date) {
+            const dayBookings = bookings.filter((booking) => booking.date === date);
+            modalTitle.textContent = `Bookings for ${date}`;
+            modalBody.innerHTML = dayBookings.length
+                ? dayBookings.map((booking) => `
+                    <div style="border: 1px solid #eee; border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem;">
+                        <div style="display: flex; justify-content: space-between; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                            <div>
+                                <strong>${escapeHtml(booking.time)} · ${escapeHtml(booking.name || 'Guest')}</strong>
+                                <div style="font-size: 0.9rem; color: #7f8c8d; margin-top: 0.25rem;">
+                                    ${escapeHtml(booking.group_size || '?')} pax · ${escapeHtml(booking.mobile || '')}${booking.email ? ` · ${escapeHtml(booking.email)}` : ''}
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                                ${booking.status === 'Manual_Review' ? `<button data-action="approve" data-id="${booking.id}" style="${actionButtonStyle('#27ae60')}">Confirm</button>` : ''}
+                                ${booking.status !== 'Cancelled' ? `<button data-action="edit" data-id="${booking.id}" style="${actionButtonStyle('#34495e')}">Edit</button>` : ''}
+                                ${booking.status !== 'Cancelled' ? `<button data-action="cancel" data-id="${booking.id}" style="${actionButtonStyle('#c0392b')}">Cancel</button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `).join('')
+                : '<p style="margin: 0; color: var(--secondary);">No bookings on this date.</p>';
+
+            modal.style.display = 'flex';
+            modalBody.querySelectorAll('button[data-action]').forEach((button) => {
+                button.addEventListener('click', () => handleListAction(button.dataset.action, button.dataset.id));
+            });
+        }
+
+        function openCreateModal() {
+            modalTitle.textContent = 'New Booking';
+            modalBody.innerHTML = bookingFormMarkup({
+                submitLabel: 'Create Booking',
+                mode: 'create',
+                booking: {
+                    name: '',
+                    email: '',
+                    mobile: '',
+                    group_size: '2',
+                    date: getTodayInHobart(),
+                    time: '09:00'
+                }
+            });
+            bindBookingFormSubmit('create');
+            modal.style.display = 'flex';
+        }
+
+        function openEditModal(booking) {
+            modalTitle.textContent = 'Edit Booking';
+            modalBody.innerHTML = bookingFormMarkup({
+                submitLabel: 'Save Changes',
+                mode: 'edit',
+                booking
+            });
+            bindBookingFormSubmit('edit', booking.id);
+            modal.style.display = 'flex';
+        }
+
+        function bindBookingFormSubmit(mode, bookingId = '') {
+            const form = document.getElementById('admin-booking-form');
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const formData = new FormData(form);
+                const payload = Object.fromEntries(formData.entries());
+
+                try {
+                    const res = await fetch('/api/admin/bookings', {
+                        method: mode === 'create' ? 'POST' : 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${adminKey}`
+                        },
+                        body: JSON.stringify(mode === 'create' ? payload : { ...payload, id: bookingId, action: 'edit' })
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error || 'Unable to save booking');
+                    closeModal();
+                    await loadBookings();
+                } catch (error) {
+                    alert(error.message);
+                }
+            });
+        }
+
+        function bookingFormMarkup({ submitLabel, booking }) {
+            return `
+                <form id="admin-booking-form" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div style="grid-column: span 2;">
+                        <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.4rem;">Name</label>
+                        <input name="name" value="${escapeAttribute(booking.name || '')}" required style="${fieldStyle()}">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.4rem;">Mobile</label>
+                        <input name="mobile" value="${escapeAttribute(booking.mobile || '')}" required style="${fieldStyle()}">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.4rem;">Email</label>
+                        <input name="email" type="email" value="${escapeAttribute(booking.email || '')}" style="${fieldStyle()}">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.4rem;">Group Size</label>
+                        <input name="group_size" type="number" min="1" value="${escapeAttribute(String(booking.group_size || '2'))}" required style="${fieldStyle()}">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.4rem;">Date</label>
+                        <input name="date" type="date" value="${escapeAttribute(booking.date || '')}" required style="${fieldStyle()}">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.4rem;">Time</label>
+                        <input name="time" type="time" value="${escapeAttribute(booking.time || '')}" required style="${fieldStyle()}">
+                    </div>
+                    <div style="grid-column: span 2; display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 0.5rem;">
+                        <button type="button" id="modal-cancel-btn" style="background: #ecf0f1; color: #2c3e50; border: none; padding: 0.85rem 1rem; border-radius: 6px; cursor: pointer;">Close</button>
+                        <button type="submit" class="btn" style="border: none; cursor: pointer; padding: 0.85rem 1rem; border-radius: 6px;">${submitLabel}</button>
+                    </div>
+                </form>
+            `;
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+            modalBody.innerHTML = '';
+        }
+
+        function getStatusStyle(status) {
+            if (status === 'Confirmed') return 'background: #e6f7ee; color: #27ae60;';
+            if (status === 'Cancelled') return 'background: #fdf2f2; color: #c0392b;';
+            if (status === 'Manual_Review') return 'background: #fff8e1; color: #f39c12;';
+            return 'background: #eef2f7; color: #34495e;';
+        }
+
+        function actionButtonStyle(background) {
+            return `background: ${background}; color: white; border: none; padding: 0.45rem 0.65rem; border-radius: 4px; font-size: 0.72rem; cursor: pointer;`;
+        }
+
+        function fieldStyle() {
+            return 'width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;';
+        }
+
+        function getTodayInHobart() {
+            return new Date().toLocaleDateString('en-CA', { timeZone: 'Australia/Hobart' });
+        }
+
+        function escapeHtml(value) {
+            return String(value || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function escapeAttribute(value) {
+            return escapeHtml(value);
+        }
+
+        document.addEventListener('click', (event) => {
+            if (event.target && event.target.id === 'modal-cancel-btn') {
+                closeModal();
+            }
+        });
     });
 </script>
