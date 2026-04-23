@@ -120,6 +120,20 @@ export async function onRequestPatch(context) {
             status = "Cancelled";
             await updateBookingStatus(config, rowNumber, status);
             booking.status = status;
+
+            try {
+                emailTracking = await sendBookingEmail(env, booking, "cancelled");
+            } catch (error) {
+                console.error("Cancellation email send failed:", error.message);
+                emailTracking = {
+                    email_sent_at: "",
+                    email_type: "cancelled",
+                    email_status: "failed",
+                    email_error: error.message
+                };
+            }
+
+            await updateEmailTracking(config, rowNumber, emailTracking);
             await upsertGuest(config, booking, status, { incrementBookingCount: false });
             await appendGuestEvent(config, "booking_cancelled", booking, rowNumber, status);
         }

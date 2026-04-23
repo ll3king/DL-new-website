@@ -354,19 +354,22 @@ export async function sendBookingEmail(env, booking, emailType) {
     const subjectMap = {
         confirmed: "Your Dandy Lane Cafe booking is confirmed",
         pending_review: "Your Dandy Lane Cafe booking is pending review",
-        approval_confirmed: "Your Dandy Lane Cafe booking is now confirmed"
+        approval_confirmed: "Your Dandy Lane Cafe booking is now confirmed",
+        cancelled: "Your Dandy Lane Cafe booking has been cancelled"
     };
 
     const introMap = {
         confirmed: "Thanks, your booking is confirmed. We look forward to welcoming you to Dandy Lane.",
         pending_review: "Thanks for your booking request. Our team will review it as soon as possible. If you're nearby, please come by anyway — we always keep space flowing for walk-ins and we'll do our best to look after you.",
-        approval_confirmed: "Your booking request has now been reviewed and confirmed. We look forward to welcoming you to Dandy Lane."
+        approval_confirmed: "Your booking request has now been reviewed and confirmed. We look forward to welcoming you to Dandy Lane.",
+        cancelled: "Your booking has been cancelled. Thank you for letting us know, and we hope to welcome you another time."
     };
 
     const statusLineMap = {
         confirmed: "Status: Confirmed",
         pending_review: "Status: Pending review",
-        approval_confirmed: "Status: Confirmed after review"
+        approval_confirmed: "Status: Confirmed after review",
+        cancelled: "Status: Cancelled"
     };
 
     const payload = {
