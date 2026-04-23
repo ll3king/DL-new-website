@@ -358,9 +358,9 @@ export async function sendBookingEmail(env, booking, emailType) {
     };
 
     const introMap = {
-        confirmed: "Your booking has been confirmed.",
-        pending_review: "Thanks for your request. Our team will review it shortly.",
-        approval_confirmed: "Your booking request has been approved and confirmed."
+        confirmed: "Thanks, your booking is confirmed. We look forward to welcoming you to Dandy Lane.",
+        pending_review: "Thanks for your booking request. Our team will review it as soon as possible. If you're nearby, please come by anyway — we always keep space flowing for walk-ins and we'll do our best to look after you.",
+        approval_confirmed: "Your booking request has now been reviewed and confirmed. We look forward to welcoming you to Dandy Lane."
     };
 
     const statusLineMap = {

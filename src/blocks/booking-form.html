@@ -247,7 +247,7 @@
                 const isManualReview = result.booking_status === 'Manual_Review';
                 const title = isManualReview ? 'Request Received!' : 'Booking Confirmed!';
                 const message = isManualReview
-                    ? `Thanks, ${payload.name}. We've received your booking request for ${payload.date} at ${payload.time}. Our team will review it shortly. If you're nearby, please come by anyway — we always do our best to help walk-ins.`
+                    ? `Thanks for your booking request, ${payload.name}. Our team will review it as soon as possible. If you're nearby, please come by anyway — we always keep space flowing for walk-ins and we'll do our best to look after you.`
                     : `Cheers, ${payload.name}! Your booking is confirmed for ${payload.date} at ${payload.time}. We look forward to welcoming you.`;
 
                 form.innerHTML = `
