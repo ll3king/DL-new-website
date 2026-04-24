@@ -46,6 +46,7 @@ export async function onRequestPost(context) {
         const body = await request.json();
         const channel = String(body.channel || "chat").trim().toLowerCase() || "chat";
         const messageText = String(body.message_text || body.message || "").trim();
+        const incomingMobile = normalizePhone(body.from_phone || body.mobile || "");
         const history = normalizeHistory(body.history);
         const threadContext = normalizeThreadContext(body.thread_context);
         const previousBookingContext = normalizeBookingContext(body.booking_context);
@@ -61,7 +62,8 @@ export async function onRequestPost(context) {
             history,
             threadContext,
             previousBookingContext,
-            guestCoreInfo
+            guestCoreInfo,
+            incomingMobile
         });
         const isBookingIntent = determineBookingIntent({
             channel,
@@ -139,7 +141,6 @@ function normalizeThreadContext(threadContext) {
     return {
         recent_messages: Array.isArray(threadContext?.recent_messages) ? threadContext.recent_messages.slice(-6) : [],
         known_guest_name: String(threadContext?.known_guest_name || "").trim(),
-        known_mobile: normalizePhone(threadContext?.known_mobile || ""),
         known_group_size: String(threadContext?.known_group_size || "").trim(),
         known_booking_date: String(threadContext?.known_booking_date || "").trim(),
         known_booking_time: String(threadContext?.known_booking_time || "").trim()
@@ -168,7 +169,6 @@ async function resolveGuestCoreInfo(env, body, history, threadContext) {
     const email = String(body?.booking_context?.known_fields?.email || body?.email || "").trim();
     const mobile = normalizePhone(
         body?.booking_context?.known_fields?.mobile
-        || threadContext?.known_mobile
         || body?.mobile
         || body?.from_phone
         || ""
@@ -188,41 +188,44 @@ async function resolveGuestCoreInfo(env, body, history, threadContext) {
     }
 }
 
-function buildBookingState({ channel, messageText, history, threadContext, previousBookingContext, guestCoreInfo }) {
+function buildBookingState({ channel, messageText, history, threadContext, previousBookingContext, guestCoreInfo, incomingMobile }) {
     const promptedField = inferPromptedField(history, previousBookingContext);
     const extracted = extractBookingDetails(messageText, promptedField);
+    const structuredMobile = normalizePhone(firstNonEmpty(
+        previousBookingContext.known_fields?.mobile,
+        incomingMobile,
+        guestCoreInfo?.mobile
+    ));
     const merged = {
         name: firstNonEmpty(
+            previousBookingContext.known_fields?.name,
             extracted.name,
             threadContext.known_guest_name,
-            previousBookingContext.known_fields?.name,
             guestCoreInfo?.name
         ),
         email: firstNonEmpty(
-            extracted.email,
             previousBookingContext.known_fields?.email,
+            extracted.email,
             guestCoreInfo?.email
         ),
         mobile: normalizePhone(firstNonEmpty(
-            extracted.mobile,
-            threadContext.known_mobile,
-            previousBookingContext.known_fields?.mobile,
-            guestCoreInfo?.mobile
+            structuredMobile,
+            extracted.mobile
         )),
         group_size: firstNonEmpty(
-            extracted.group_size,
+            previousBookingContext.known_fields?.group_size,
             threadContext.known_group_size,
-            previousBookingContext.known_fields?.group_size
+            extracted.group_size
         ),
         date: firstNonEmpty(
-            extracted.date,
+            previousBookingContext.known_fields?.date,
             threadContext.known_booking_date,
-            previousBookingContext.known_fields?.date
+            extracted.date
         ),
         time: firstNonEmpty(
-            extracted.time,
+            previousBookingContext.known_fields?.time,
             threadContext.known_booking_time,
-            previousBookingContext.known_fields?.time
+            extracted.time
         )
     };
 
@@ -262,7 +265,13 @@ function determineBookingIntent({ channel, messageText, history, threadContext, 
         return true;
     }
 
-    if (threadContext.known_guest_name || threadContext.known_group_size || threadContext.known_booking_date || threadContext.known_booking_time) {
+    if (
+        threadContext.known_guest_name
+        || threadContext.known_group_size
+        || threadContext.known_booking_date
+        || threadContext.known_booking_time
+        || Object.values(previousBookingContext.known_fields || {}).some(Boolean)
+    ) {
         return true;
     }
 
