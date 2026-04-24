@@ -46,7 +46,8 @@ function normalizeInboundPayload(payload) {
 }
 
 const BOOKING_KEYWORD_PATTERN = /\b(book|booking|reserve|reservation|table)\b/i;
-const PEOPLE_PATTERN = /\b(for|of|party of)?\s*(\d{1,2})\s*(people|persons|pax|guests)?\b/i;
+const EXPLICIT_PARTY_PATTERN = /\b(?:for|of|party of)\s*(\d{1,2})\b/i;
+const PEOPLE_NOUN_PATTERN = /\b(\d{1,2})\s*(people|persons|pax|guests)\b/i;
 const TIME_PATTERN = /\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b/i;
 const WEEKDAY_PATTERN = /\b(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i;
 const RELATIVE_DAY_PATTERN = /\b(today|tonight|tomorrow)\b/i;
@@ -73,7 +74,7 @@ function validateInboundEvent(payload) {
 }
 
 function hasBookingStructure(text) {
-    const hasParty = PEOPLE_PATTERN.test(text);
+    const hasParty = EXPLICIT_PARTY_PATTERN.test(text) || PEOPLE_NOUN_PATTERN.test(text);
     const hasTime = TIME_PATTERN.test(text);
     const hasDateSignal = WEEKDAY_PATTERN.test(text) || RELATIVE_DAY_PATTERN.test(text) || DATE_PATTERN.test(text);
 
@@ -114,9 +115,12 @@ function extractKnownFields(text, threadContext) {
         known_booking_time: threadContext?.known_booking_time || ""
     };
 
-    const peopleMatch = String(text || "").match(PEOPLE_PATTERN);
-    if (peopleMatch) {
-        nextKnown.known_group_size = peopleMatch[2] || nextKnown.known_group_size;
+    const explicitPartyMatch = String(text || "").match(EXPLICIT_PARTY_PATTERN);
+    const peopleNounMatch = String(text || "").match(PEOPLE_NOUN_PATTERN);
+    if (explicitPartyMatch) {
+        nextKnown.known_group_size = explicitPartyMatch[1] || nextKnown.known_group_size;
+    } else if (peopleNounMatch) {
+        nextKnown.known_group_size = peopleNounMatch[1] || nextKnown.known_group_size;
     }
 
     const timeMatch = String(text || "").match(TIME_PATTERN);
