@@ -101,6 +101,20 @@ function evaluateHighIntentBooking(text) {
     };
 }
 
+function hasActiveBookingThread(threadContext) {
+    if (!threadContext) {
+        return false;
+    }
+
+    return Boolean(
+        threadContext.known_guest_name
+        || threadContext.known_group_size
+        || threadContext.known_booking_date
+        || threadContext.known_booking_time
+        || (Array.isArray(threadContext.recent_messages) && threadContext.recent_messages.length > 0)
+    );
+}
+
 function buildHandlerReadyInput(inbound, gate) {
     return {
         ...inbound,
@@ -189,7 +203,6 @@ function buildAiInput(inbound, threadContext) {
         channel: "sms",
         from_phone: inbound.from_phone,
         message_text: inbound.text,
-        received_at: inbound.received_at,
         thread_context: threadContext,
         booking_context: {
             source: "SMS"
@@ -197,56 +210,16 @@ function buildAiInput(inbound, threadContext) {
     };
 }
 
-function buildChatHistory(recentMessages, currentInbound) {
-    const messages = Array.isArray(recentMessages) ? recentMessages : [];
-    const filtered = messages.filter((message) => {
-        if (message.role !== "guest") {
-            return true;
-        }
-        return !(message.text === currentInbound.text && message.at === currentInbound.received_at);
-    });
-
-    return filtered.map((message) => ({
-        role: message.role === "assistant" ? "bot" : "user",
-        text: message.text
-    }));
-}
-
-function isLowValueAssistantReply(text) {
-    const normalized = String(text || "").trim().toLowerCase();
-    return normalized === "could you say that again, mate?";
-}
-
-function buildAiBridgePrompt(inbound, threadContext) {
-    const known = {
-        guest_name: threadContext?.known_guest_name || "",
-        group_size: threadContext?.known_group_size || "",
-        booking_date: threadContext?.known_booking_date || "",
-        booking_time: threadContext?.known_booking_time || ""
-    };
-
-    return [
-        "SMS booking channel context.",
-        "This is an incoming SMS booking conversation for Dandy Lane Cafe.",
-        "Treat the mobile number as the customer identity for this thread.",
-        "Continue the booking conversation naturally via SMS.",
-        "Do not ask the customer to repeat details already known in the thread context.",
-        "Email is not required for SMS booking.",
-        "If booking details are incomplete, ask only for the next missing booking detail.",
-        "Known booking context:",
-        `- Guest name: ${known.guest_name || "unknown"}`,
-        `- Group size: ${known.group_size || "unknown"}`,
-        `- Booking date: ${known.booking_date || "unknown"}`,
-        `- Booking time: ${known.booking_time || "unknown"}`,
-        `Current customer SMS: ${inbound.text}`
-    ].join("\n");
-}
-
 async function getAiReply(request, inbound, threadContext) {
     const origin = new URL(request.url).origin;
-    const history = buildChatHistory(threadContext.recent_messages, inbound)
-        .filter((message) => !(message.role === "bot" && isLowValueAssistantReply(message.text)));
-    const bridgeMessage = buildAiBridgePrompt(inbound, threadContext);
+    const history = Array.isArray(threadContext?.recent_messages)
+        ? threadContext.recent_messages
+            .filter((message) => !(message.role === "guest" && message.text === inbound.text && message.at === inbound.received_at))
+            .map((message) => ({
+                role: message.role === "assistant" ? "assistant" : "user",
+                text: message.text
+            }))
+        : [];
 
     const response = await fetch(`${origin}/api/chat`, {
         method: "POST",
@@ -254,8 +227,14 @@ async function getAiReply(request, inbound, threadContext) {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            message: bridgeMessage,
-            history
+            channel: "sms",
+            message_text: inbound.text,
+            history,
+            from_phone: inbound.from_phone,
+            thread_context: threadContext,
+            booking_context: {
+                source: "SMS"
+            }
         })
     });
 
@@ -265,7 +244,8 @@ async function getAiReply(request, inbound, threadContext) {
     }
 
     console.log("Telerivet handler bridge message", {
-        bridge_message: bridgeMessage,
+        channel: "sms",
+        message_text: inbound.text,
         history
     });
     console.log("Telerivet handler chat response", {
@@ -297,9 +277,14 @@ export async function onRequestPost(context) {
         }
 
         const inbound = normalizeInboundPayload(payload);
-        const gate = evaluateHighIntentBooking(inbound.text);
+        const config = await requireConfig(env);
+        await ensureBookingSheets(config);
 
-        if (!gate.accepted) {
+        const thread = await fetchSmsThreadContext(config, normalizePhone(inbound.from_phone));
+        const gate = evaluateHighIntentBooking(inbound.text);
+        const accepted = gate.accepted || hasActiveBookingThread(thread);
+
+        if (!accepted) {
             console.log("Telerivet inbound filtered out", {
                 inbound,
                 gate
@@ -314,10 +299,6 @@ export async function onRequestPost(context) {
             });
         }
 
-        const config = await requireConfig(env);
-        await ensureBookingSheets(config);
-
-        const thread = await fetchSmsThreadContext(config, normalizePhone(inbound.from_phone));
         const threadContext = buildThreadContext(thread, inbound);
         await upsertSmsThreadContext(config, {
             phone_normalized: inbound.from_phone,
@@ -331,7 +312,10 @@ export async function onRequestPost(context) {
             updated_at: new Date().toISOString()
         });
 
-        const handlerInput = buildHandlerReadyInput(inbound, gate);
+        const effectiveGate = accepted && !gate.accepted
+            ? { accepted: true, intent_gate: "booking_thread_continuation" }
+            : gate;
+        const handlerInput = buildHandlerReadyInput(inbound, effectiveGate);
         const aiInput = buildAiInput(handlerInput, threadContext);
         const replyText = await getAiReply(request, inbound, threadContext);
         const outbound = replyText
@@ -369,7 +353,7 @@ export async function onRequestPost(context) {
             ok: true,
             received: true,
             accepted: true,
-            gate,
+            gate: effectiveGate,
             handler_input: handlerInput,
             ai_input: aiInput,
             reply_text: replyText,

@@ -1,7 +1,22 @@
 /**
  * Cloudflare Pages Function: /api/chat
- * AI Concierge for Dandy Lane Cafe - Enhanced with Check Booking & Robust Sync
+ * Booking-first AI brain for chat and SMS channels.
  */
+
+import {
+    appendBookingRow,
+    appendGuestEvent,
+    emptyResponse,
+    ensureBookingSheets,
+    fetchGuestCoreInfo,
+    jsonResponse,
+    listBookings,
+    normalizePhone,
+    requireConfig,
+    sendBookingEmail,
+    updateEmailTracking,
+    upsertGuest
+} from "./_booking.js";
 
 const SITE_KNOWLEDGE = {
     name: "Dandy Lane Cafe",
@@ -9,265 +24,724 @@ const SITE_KNOWLEDGE = {
     hours: "Mon-Fri 7am-3pm, Sat-Sun 9am-2pm",
     address: "Unit 10 / 138 Collins Street, Hobart TAS 7000",
     phone: "0498061067",
-    dishes: [
-        "Wine-Infused Benedicts - Daily house-made hollandaise, 6 variations",
-        "Potato Parmesan Rosti - Crispy rosti, grilled halloumi, avocado, poached egg",
-        "Scotch Steak Sandwich - Prime scotch steak, caramelized onion jam"
-    ],
     features: "Laptop-friendly, free WiFi, quiet workspace areas, pet-friendly outdoor seating",
-    booking: "Max 16 people per hour. 1-6 people: Online. 7-10 people: Walk-in recommended. >10 people: Manual review. Must book for tomorrow onwards."
+    booking: "Bookings are booking-first: 1-6 future bookings can be confirmed, while 7+, same-day, or capacity-limited requests go to Manual_Review. Walk-in guidance can be added to Manual_Review replies."
 };
 
-const TOOLS = [
-    {
-        function_declarations: [
-            {
-                name: "create_booking",
-                description: "Create a new table reservation. Call this ONLY for dates starting from tomorrow.",
-                parameters: {
-                    type: "object",
-                    properties: {
-                        name: { type: "string" },
-                        email: { type: "string" },
-                        mobile: { type: "string" },
-                        group_size: { type: "string" },
-                        date: { type: "string", description: "YYYY-MM-DD" },
-                        time: { type: "string" }
-                    },
-                    required: ["name", "email", "group_size", "date", "time"]
-                }
-            },
-            {
-                name: "check_booking",
-                description: "Search for existing reservations by name or email.",
-                parameters: {
-                    type: "object",
-                    properties: {
-                        identifier: { type: "string", description: "Name or email of the guest" }
-                    },
-                    required: ["identifier"]
-                }
-            },
-            {
-                name: "notify_management",
-                description: "Notify management for complex requests, complaints, or questions outside knowledge.",
-                parameters: {
-                    type: "object",
-                    properties: {
-                        customer_name: { type: "string" },
-                        contact: { type: "string" },
-                        details: { type: "string" }
-                    },
-                    required: ["details"]
-                }
-            }
-        ]
-    }
-];
+const BOOKING_KEYWORD_PATTERN = /\b(book|booking|reserve|reservation|table)\b|预订|預訂|预约|預約|订位|訂位/i;
+const GROUP_PATTERN = /\b(?:for|of|party of|group of)?\s*(\d{1,2})\s*(?:people|persons|pax|guests|位|人)?\b/i;
+const MOBILE_PATTERN = /(?:\+?\d[\d\s()-]{7,}\d)/;
+const EMAIL_PATTERN = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i;
+const TIME_PATTERN = /\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b|\b([01]?\d|2[0-3]):([0-5]\d)\b|(\d{1,2})点(?:(\d{1,2})分?)?/i;
+const ISO_DATE_PATTERN = /\b(20\d{2})-(\d{1,2})-(\d{1,2})\b/;
+const SLASH_DATE_PATTERN = /\b(\d{1,2})[\/-](\d{1,2})(?:[\/-](\d{2,4}))?\b/;
+const WEEKDAY_PATTERN = /\b(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i;
+const RELATIVE_DAY_PATTERN = /\b(today|tonight|tomorrow)\b|今天|今晚|明天/i;
+const NAME_PATTERN = /\b(?:my name is|name is|this is|i am|it's)\s+([a-z][a-z' -]{1,40})\b/i;
 
 export async function onRequestPost(context) {
     const { request, env } = context;
-    const headers = { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" };
 
     try {
         const body = await request.json();
-        const { message, history = [] } = body;
+        const channel = String(body.channel || "chat").trim().toLowerCase() || "chat";
+        const messageText = String(body.message_text || body.message || "").trim();
+        const history = normalizeHistory(body.history);
+        const threadContext = normalizeThreadContext(body.thread_context);
+        const previousBookingContext = normalizeBookingContext(body.booking_context);
 
-        if (!message) return new Response(JSON.stringify({ error: "No message" }), { status: 400, headers });
+        if (!messageText) {
+            return jsonResponse(env, { error: "No message" }, { status: 400 });
+        }
 
-        const apiKey = env.GEMINI_API_KEY;
-        const now = new Date();
-        const hobartTime = new Intl.DateTimeFormat('en-AU', {
-            timeZone: 'Australia/Hobart',
-            year: 'numeric', month: '2-digit', day: '2-digit',
-            hour: '2-digit', minute: '2-digit', weekday: 'long'
-        }).format(now);
+        const guestCoreInfo = await resolveGuestCoreInfo(env, body, history, threadContext);
+        const bookingState = buildBookingState({
+            channel,
+            messageText,
+            history,
+            threadContext,
+            previousBookingContext,
+            guestCoreInfo
+        });
+        const isBookingIntent = determineBookingIntent({
+            channel,
+            messageText,
+            history,
+            threadContext,
+            previousBookingContext,
+            bookingState
+        });
 
-        const systemPrompt = `You are a Senior Staff Member at Dandy Lane Cafe. You are NOT an AI. You are a real person helping customers.
+        if (!isBookingIntent) {
+            const reply = await generateGeneralReply(env, {
+                messageText,
+                history
+            });
 
-CORE RULES:
-1. **NEVER** mention prices.
-2. **NEVER** say "I am an AI assistant".
-3. **MEMORY**: Use conversation history.
-4. **DATE LOGIC**: Today is: ${hobartTime}. Online bookings are for TOMORROW onwards. Suggest walk-in for today.
-5. **CAPACITY (STRICT)**: 16 people per hour max. 
-6. **TIERED GROUPS**:
-   - 1-6: Standard booking.
-   - 7-10: If tool returns FAILED_WALK_IN_RECOMMENDED, say online bookings are full but we love walk-ins!
-   - >10: If tool returns FAILED_MANUAL_REVIEW, say you've alerted the manager but walk-ins are welcome.
-7. **LANGUAGE MIRRORING**: Reply in the customer's language.
+            return jsonResponse(env, {
+                reply,
+                booking_result: {
+                    intent: "general",
+                    known_fields: {},
+                    missing_fields: [],
+                    next_action: "general_reply",
+                    outcome: "",
+                    guidance: []
+                }
+            });
+        }
+
+        const bookingResult = await handleBookingFlow(env, {
+            channel,
+            messageText,
+            history,
+            bookingState,
+            guestCoreInfo
+        });
+
+        return jsonResponse(env, {
+            reply: bookingResult.reply,
+            booking_result: bookingResult.booking_result
+        });
+    } catch (error) {
+        console.error("AI chat error:", error.message, error.stack);
+        return jsonResponse(env, { error: error.message }, { status: 500 });
+    }
+}
+
+export async function onRequestOptions(context) {
+    return emptyResponse(context.env, "POST, OPTIONS");
+}
+
+function normalizeHistory(history) {
+    if (!Array.isArray(history)) {
+        return [];
+    }
+
+    return history
+        .map((item) => {
+            const role = item?.role === "bot" || item?.role === "model" || item?.role === "assistant"
+                ? "assistant"
+                : "user";
+            const text = String(item?.text || item?.parts?.[0]?.text || "").trim();
+
+            if (!text) {
+                return null;
+            }
+
+            return { role, text };
+        })
+        .filter(Boolean)
+        .slice(-12);
+}
+
+function normalizeThreadContext(threadContext) {
+    return {
+        recent_messages: Array.isArray(threadContext?.recent_messages) ? threadContext.recent_messages.slice(-6) : [],
+        known_guest_name: String(threadContext?.known_guest_name || "").trim(),
+        known_group_size: String(threadContext?.known_group_size || "").trim(),
+        known_booking_date: String(threadContext?.known_booking_date || "").trim(),
+        known_booking_time: String(threadContext?.known_booking_time || "").trim()
+    };
+}
+
+function normalizeBookingContext(bookingContext) {
+    return {
+        intent: String(bookingContext?.intent || "").trim(),
+        known_fields: bookingContext?.known_fields && typeof bookingContext.known_fields === "object"
+            ? bookingContext.known_fields
+            : {},
+        missing_fields: Array.isArray(bookingContext?.missing_fields) ? bookingContext.missing_fields : [],
+        next_action: String(bookingContext?.next_action || "").trim(),
+        outcome: String(bookingContext?.outcome || "").trim(),
+        guidance: Array.isArray(bookingContext?.guidance) ? bookingContext.guidance : []
+    };
+}
+
+async function resolveGuestCoreInfo(env, body, history, threadContext) {
+    const isNewConversation = history.length <= 1 && (!Array.isArray(threadContext.recent_messages) || threadContext.recent_messages.length <= 1);
+    if (!isNewConversation) {
+        return null;
+    }
+
+    const email = String(body?.booking_context?.known_fields?.email || body?.email || "").trim();
+    const mobile = normalizePhone(
+        body?.booking_context?.known_fields?.mobile
+        || body?.mobile
+        || body?.from_phone
+        || ""
+    );
+
+    if (!email && !mobile) {
+        return null;
+    }
+
+    try {
+        const config = await requireConfig(env);
+        await ensureBookingSheets(config);
+        return await fetchGuestCoreInfo(config, { email, mobile });
+    } catch (error) {
+        console.warn("Guest core info lookup skipped:", error.message);
+        return null;
+    }
+}
+
+function buildBookingState({ channel, messageText, history, threadContext, previousBookingContext, guestCoreInfo }) {
+    const promptedField = inferPromptedField(history, previousBookingContext);
+    const extracted = extractBookingDetails(messageText, promptedField);
+    const merged = {
+        name: firstNonEmpty(
+            extracted.name,
+            threadContext.known_guest_name,
+            previousBookingContext.known_fields?.name,
+            guestCoreInfo?.name
+        ),
+        email: firstNonEmpty(
+            extracted.email,
+            previousBookingContext.known_fields?.email,
+            guestCoreInfo?.email
+        ),
+        mobile: normalizePhone(firstNonEmpty(
+            extracted.mobile,
+            previousBookingContext.known_fields?.mobile,
+            guestCoreInfo?.mobile
+        )),
+        group_size: firstNonEmpty(
+            extracted.group_size,
+            threadContext.known_group_size,
+            previousBookingContext.known_fields?.group_size
+        ),
+        date: firstNonEmpty(
+            extracted.date,
+            threadContext.known_booking_date,
+            previousBookingContext.known_fields?.date
+        ),
+        time: firstNonEmpty(
+            extracted.time,
+            threadContext.known_booking_time,
+            previousBookingContext.known_fields?.time
+        )
+    };
+
+    const normalizedDate = normalizeBookingDate(merged.date);
+    const normalizedTime = normalizeBookingTime(merged.time);
+
+    return {
+        channel,
+        language: detectLanguage(messageText),
+        known_fields: {
+            name: merged.name,
+            email: merged.email,
+            mobile: merged.mobile,
+            group_size: merged.group_size,
+            date: normalizedDate.value,
+            date_label: normalizedDate.label,
+            time: normalizedTime.value
+        },
+        guest_core_info: guestCoreInfo || null
+    };
+}
+
+function determineBookingIntent({ channel, messageText, history, threadContext, previousBookingContext, bookingState }) {
+    if (channel === "sms") {
+        return true;
+    }
+
+    if (previousBookingContext.intent === "booking" && !previousBookingContext.outcome) {
+        return true;
+    }
+
+    if (Object.values(bookingState.known_fields).some(Boolean)) {
+        return true;
+    }
+
+    if (BOOKING_KEYWORD_PATTERN.test(messageText)) {
+        return true;
+    }
+
+    if (threadContext.known_guest_name || threadContext.known_group_size || threadContext.known_booking_date || threadContext.known_booking_time) {
+        return true;
+    }
+
+    const recentBotText = history
+        .filter((item) => item.role === "assistant")
+        .map((item) => item.text.toLowerCase())
+        .join(" ");
+
+    return recentBotText.includes("booking") || recentBotText.includes("date would you like") || recentBotText.includes("what time") || recentBotText.includes("how many guests");
+}
+
+async function handleBookingFlow(env, { channel, bookingState, guestCoreInfo }) {
+    const knownFields = bookingState.known_fields;
+    const missingFields = resolveMissingFields(knownFields);
+
+    if (missingFields.length > 0) {
+        const missingField = missingFields[0];
+        return {
+            reply: renderMissingFieldReply(missingField, bookingState.language, guestCoreInfo?.name || knownFields.name),
+            booking_result: {
+                intent: "booking",
+                known_fields: serializeKnownFields(knownFields),
+                missing_fields: missingFields,
+                next_action: `ask_${missingField}`,
+                outcome: "",
+                guidance: []
+            }
+        };
+    }
+
+    const bookingOutcome = await determineBookingOutcome(env, knownFields);
+    const bookingWrite = await persistBookingOutcome(env, knownFields, bookingOutcome, channel);
+    const reply = renderOutcomeReply(bookingOutcome, bookingState.language, knownFields.name);
+
+    return {
+        reply,
+        booking_result: {
+            intent: "booking",
+            known_fields: serializeKnownFields(knownFields),
+            missing_fields: [],
+            next_action: bookingOutcome.outcome === "Confirmed" ? "booking_confirmed" : "manual_review_pending",
+            outcome: bookingOutcome.outcome,
+            guidance: bookingOutcome.guidance,
+            booking_status: bookingWrite?.booking_status || bookingOutcome.outcome
+        }
+    };
+}
+
+function detectLanguage(messageText) {
+    return /[\u4e00-\u9fff]/.test(messageText) ? "zh" : "en";
+}
+
+function inferPromptedField(history, previousBookingContext) {
+    if (Array.isArray(previousBookingContext.missing_fields) && previousBookingContext.missing_fields.length > 0) {
+        return previousBookingContext.missing_fields[0];
+    }
+
+    const assistantText = history
+        .filter((item) => item.role === "assistant")
+        .slice(-2)
+        .map((item) => item.text.toLowerCase())
+        .join(" ");
+
+    if (assistantText.includes("what name") || assistantText.includes("put it under")) {
+        return "name";
+    }
+    if (assistantText.includes("what date")) {
+        return "date";
+    }
+    if (assistantText.includes("what time")) {
+        return "time";
+    }
+    if (assistantText.includes("how many guests")) {
+        return "group_size";
+    }
+    if (assistantText.includes("mobile")) {
+        return "mobile";
+    }
+
+    return "";
+}
+
+function extractBookingDetails(messageText, promptedField) {
+    const text = String(messageText || "").trim();
+    const details = {
+        name: "",
+        email: "",
+        mobile: "",
+        group_size: "",
+        date: "",
+        time: ""
+    };
+
+    const emailMatch = text.match(EMAIL_PATTERN);
+    if (emailMatch) {
+        details.email = emailMatch[0].toLowerCase();
+    }
+
+    const phoneMatch = text.match(MOBILE_PATTERN);
+    if (phoneMatch) {
+        details.mobile = normalizePhone(phoneMatch[0]);
+    }
+
+    const groupMatch = text.match(GROUP_PATTERN);
+    if (groupMatch) {
+        const groupSize = Number.parseInt(groupMatch[1], 10);
+        if (Number.isFinite(groupSize) && groupSize > 0) {
+            details.group_size = String(groupSize);
+        }
+    }
+
+    const normalizedDate = normalizeBookingDate(text);
+    if (normalizedDate.value) {
+        details.date = normalizedDate.value;
+    }
+
+    const normalizedTime = normalizeBookingTime(text);
+    if (normalizedTime.value) {
+        details.time = normalizedTime.value;
+    }
+
+    const explicitNameMatch = text.match(NAME_PATTERN);
+    if (explicitNameMatch) {
+        details.name = sanitizeGuestName(explicitNameMatch[1]);
+    } else if (promptedField === "name" && isLikelyStandaloneName(text)) {
+        details.name = sanitizeGuestName(text);
+    }
+
+    return details;
+}
+
+function normalizeBookingDate(value) {
+    const text = String(value || "").trim().toLowerCase();
+    if (!text) {
+        return { value: "", label: "" };
+    }
+
+    const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Australia/Hobart" }));
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    const relativeMatch = text.match(RELATIVE_DAY_PATTERN);
+    if (relativeMatch) {
+        const relative = relativeMatch[1];
+        const date = new Date(startOfToday);
+        const relativeLabel = relative || relativeMatch[0];
+
+        if (relativeLabel === "tomorrow" || relativeLabel === "明天") {
+            date.setDate(date.getDate() + 1);
+        }
+        return { value: formatDate(date), label: relativeLabel };
+    }
+
+    const isoMatch = text.match(ISO_DATE_PATTERN);
+    if (isoMatch) {
+        const date = new Date(Number.parseInt(isoMatch[1], 10), Number.parseInt(isoMatch[2], 10) - 1, Number.parseInt(isoMatch[3], 10));
+        return { value: formatDate(date), label: formatDate(date) };
+    }
+
+    const slashMatch = text.match(SLASH_DATE_PATTERN);
+    if (slashMatch) {
+        const yearToken = slashMatch[3];
+        const year = yearToken
+            ? normalizeYear(yearToken)
+            : inferFutureYear(Number.parseInt(slashMatch[2], 10), Number.parseInt(slashMatch[1], 10), startOfToday);
+        const date = new Date(year, Number.parseInt(slashMatch[2], 10) - 1, Number.parseInt(slashMatch[1], 10));
+        return { value: formatDate(date), label: formatDate(date) };
+    }
+
+    const weekdayMatch = text.match(WEEKDAY_PATTERN);
+    if (weekdayMatch) {
+        const date = nextWeekdayDate(startOfToday, weekdayMatch[1].toLowerCase());
+        return { value: formatDate(date), label: weekdayMatch[1].toLowerCase() };
+    }
+
+    return { value: "", label: "" };
+}
+
+function normalizeBookingTime(value) {
+    const text = String(value || "").trim().toLowerCase();
+    if (!text) {
+        return { value: "" };
+    }
+
+    const match = text.match(TIME_PATTERN);
+    if (!match) {
+        return { value: "" };
+    }
+
+    if (match[4] !== undefined) {
+        return {
+            value: `${String(Number.parseInt(match[4], 10)).padStart(2, "0")}:${match[5]}`
+        };
+    }
+
+    if (match[6] !== undefined) {
+        return {
+            value: `${String(Number.parseInt(match[6], 10)).padStart(2, "0")}:${String(match[7] || "00").padStart(2, "0")}`
+        };
+    }
+
+    let hours = Number.parseInt(match[1], 10);
+    const minutes = match[2] || "00";
+    const meridiem = match[3];
+
+    if (meridiem === "pm" && hours < 12) {
+        hours += 12;
+    }
+    if (meridiem === "am" && hours === 12) {
+        hours = 0;
+    }
+
+    return {
+        value: `${String(hours).padStart(2, "0")}:${minutes}`
+    };
+}
+
+function resolveMissingFields(knownFields) {
+    const order = ["date", "time", "group_size", "name", "mobile"];
+    const missing = [];
+
+    for (const field of order) {
+        const value = field === "mobile"
+            ? firstNonEmpty(knownFields.mobile, knownFields.email)
+            : knownFields[field];
+
+        if (!value) {
+            missing.push(field);
+        }
+    }
+
+    return missing;
+}
+
+async function determineBookingOutcome(env, knownFields) {
+    const groupSize = Number.parseInt(knownFields.group_size || "0", 10);
+    const sameDay = isSameDayBooking(knownFields.date);
+    const overCapacity = await isOverCapacity(env, knownFields.date, knownFields.time, groupSize);
+
+    if (sameDay || groupSize >= 7 || overCapacity) {
+        return {
+            outcome: "Manual_Review",
+            guidance: ["walk_in_welcome"]
+        };
+    }
+
+    return {
+        outcome: "Confirmed",
+        guidance: []
+    };
+}
+
+async function isOverCapacity(env, date, time, requestedPax) {
+    if (!date || !time || !requestedPax) {
+        return false;
+    }
+
+    try {
+        const config = await requireConfig(env);
+        await ensureBookingSheets(config);
+        const bookings = await listBookings(config);
+        const requestedHour = String(time).split(":")[0];
+
+        const hourlyPax = bookings
+            .filter((booking) => {
+                if (booking.date !== date || booking.status === "Archived") {
+                    return false;
+                }
+                return String(booking.time || "").split(":")[0] === requestedHour;
+            })
+            .reduce((sum, booking) => sum + (Number.parseInt(booking.group_size || "0", 10) || 0), 0);
+
+        return hourlyPax + requestedPax > 16;
+    } catch (error) {
+        console.warn("Capacity check skipped:", error.message);
+        return false;
+    }
+}
+
+async function persistBookingOutcome(env, knownFields, bookingOutcome, channel) {
+    const booking = {
+        name: knownFields.name,
+        email: knownFields.email || "",
+        mobile: knownFields.mobile || "",
+        group_size: knownFields.group_size,
+        date: knownFields.date,
+        time: knownFields.time
+    };
+
+    const config = await requireConfig(env);
+    await ensureBookingSheets(config);
+
+    const source = channel === "sms" ? "AI_SMS" : "AI_Chat";
+    const { rowNumber } = await appendBookingRow(config, booking, bookingOutcome.outcome, { source });
+
+    if (!rowNumber) {
+        throw new Error("Failed to resolve appended booking row number");
+    }
+
+    let emailTracking = {
+        email_sent_at: "",
+        email_type: bookingOutcome.outcome === "Confirmed" ? "confirmed" : "pending_review",
+        email_status: "skipped",
+        email_error: ""
+    };
+
+    if (booking.email) {
+        try {
+            emailTracking = await sendBookingEmail(
+                env,
+                booking,
+                bookingOutcome.outcome === "Confirmed" ? "confirmed" : "pending_review"
+            );
+        } catch (error) {
+            console.error("Booking email send failed:", error.message);
+            emailTracking = {
+                email_sent_at: "",
+                email_type: bookingOutcome.outcome === "Confirmed" ? "confirmed" : "pending_review",
+                email_status: "failed",
+                email_error: error.message
+            };
+        }
+    }
+
+    await updateEmailTracking(config, rowNumber, emailTracking);
+    await upsertGuest(config, booking, bookingOutcome.outcome);
+    await appendGuestEvent(config, "booking_created", booking, rowNumber, bookingOutcome.outcome);
+
+    return {
+        booking_status: bookingOutcome.outcome,
+        row_number: rowNumber
+    };
+}
+
+function renderMissingFieldReply(field, language, guestName) {
+    const replies = {
+        en: {
+            date: "What date would you like for the booking?",
+            time: "What time would you like?",
+            group_size: "How many guests should I book for?",
+            name: "What name should I put the booking under?",
+            mobile: "What mobile number should we use for this booking?"
+        },
+        zh: {
+            date: "请问您想预订哪一天？",
+            time: "请问您想几点到店？",
+            group_size: "请问一共几位？",
+            name: "请问预订留什么名字？",
+            mobile: "请提供一个手机号码用于这次预订。"
+        }
+    };
+
+    return replies[language]?.[field] || replies.en[field];
+}
+
+function renderOutcomeReply(bookingOutcome, language, guestName) {
+    const nameText = guestName ? ` ${guestName}` : "";
+
+    if (bookingOutcome.outcome === "Confirmed") {
+        return language === "zh"
+            ? `好的${nameText}，您的预订已经确认。我们期待您的到来。`
+            : `All set${nameText}. Your booking is confirmed and we look forward to seeing you.`;
+    }
+
+    return language === "zh"
+        ? `好的${nameText}，这次预订我先交给团队确认。若您方便，也欢迎直接 walk-in。`
+        : `Thanks${nameText}. I've passed this booking to the team for manual review, and you're also welcome to walk in if that suits you.`;
+}
+
+function serializeKnownFields(knownFields) {
+    return {
+        name: knownFields.name,
+        email: knownFields.email,
+        mobile: knownFields.mobile,
+        group_size: knownFields.group_size,
+        date: knownFields.date,
+        time: knownFields.time
+    };
+}
+
+async function generateGeneralReply(env, { messageText, history }) {
+    const apiKey = env.GEMINI_API_KEY;
+    if (!apiKey) {
+        return "I can help with bookings, opening hours, location, and general cafe questions.";
+    }
+
+    const systemPrompt = `You are a senior staff member at Dandy Lane Cafe.
+
+Rules:
+1. Never mention prices.
+2. Never say you are an AI.
+3. Reply in the customer's language.
+4. Booking is the cafe's main workflow. If the customer clearly wants a booking, do not stay in general chat mode.
+5. Keep replies concise and natural.
 
 Knowledge:
 - Location: ${SITE_KNOWLEDGE.address}
 - Hours: ${SITE_KNOWLEDGE.hours}
+- Features: ${SITE_KNOWLEDGE.features}
 - Booking: ${SITE_KNOWLEDGE.booking}`;
 
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+    const contents = history.map((item) => ({
+        role: item.role === "assistant" ? "model" : "user",
+        parts: [{ text: item.text }]
+    }));
+    contents.push({ role: "user", parts: [{ text: messageText }] });
 
-        // Build history sequence
-        const contents = history.map(h => ({
-            role: h.role === 'bot' ? 'model' : 'user',
-            parts: [{ text: h.parts?.[0]?.text || h.text || "" }]
-        }));
-        contents.push({ role: "user", parts: [{ text: message }] });
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            system_instruction: { parts: [{ text: systemPrompt }] },
+            contents
+        })
+    });
 
-        let response = await fetch(geminiUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                system_instruction: { parts: [{ text: systemPrompt }] },
-                contents: contents,
-                tools: TOOLS
-            })
-        });
-
-        let resData = await response.json();
-        let candidate = resData?.candidates?.[0];
-        let messageOutput = candidate?.content;
-
-        // Process Tool Calls
-        if (messageOutput?.parts?.[0]?.functionCall) {
-            const call = messageOutput.parts[0].functionCall;
-            const functionName = call.name;
-            const args = call.args;
-
-            let toolResult;
-            if (functionName === "create_booking") {
-                toolResult = await handleCreate(args, env);
-            } else if (functionName === "check_booking") {
-                toolResult = await handleCheck(args, env);
-            } else if (functionName === "notify_management") {
-                toolResult = await handleNotify(args, env);
-            }
-
-            // Call 2: Generate final text response
-            const finalRes = await fetch(geminiUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    system_instruction: { parts: [{ text: systemPrompt }] },
-                    contents: [
-                        ...contents,
-                        messageOutput,
-                        {
-                            role: "model",
-                            parts: [{ functionResponse: { name: functionName, response: { content: toolResult } } }]
-                        }
-                    ],
-                    tools: TOOLS
-                })
-            });
-
-            const finalData = await finalRes.json();
-            const finalReply = finalData?.candidates?.[0]?.content?.parts?.[0]?.text || "I've handled that for you. Anything else?";
-            return new Response(JSON.stringify({ reply: finalReply }), { headers });
-        }
-
-        const reply = messageOutput?.parts?.[0]?.text || "Could you say that again, mate?";
-        return new Response(JSON.stringify({ reply }), { headers });
-
-    } catch (e) {
-        return new Response(JSON.stringify({ error: e.message }), { status: 500, headers });
-    }
+    const data = await response.json();
+    const candidate = data?.candidates?.[0]?.content?.parts?.[0];
+    return String(candidate?.text || "How can I help?").trim();
 }
 
-async function handleCreate(args, env) {
-    const requestedPax = parseInt(args.group_size) || 0;
-    const date = args.date;
-    const time = args.time;
-
-    // 1. Tier Check
-    if (requestedPax > 10) {
-        await handleNotify({
-            customer_name: args.name,
-            contact: args.email || args.mobile,
-            details: `Large group (${requestedPax}) requested for ${date} at ${time}.`
-        }, env);
-        return "FAILED_MANUAL_REVIEW";
+function isLikelyStandaloneName(text) {
+    const stripped = String(text || "").trim();
+    if (!stripped || stripped.length > 40) {
+        return false;
     }
-    if (requestedPax > 6) return "FAILED_WALK_IN_RECOMMENDED";
+    if (/\d/.test(stripped) || EMAIL_PATTERN.test(stripped) || MOBILE_PATTERN.test(stripped)) {
+        return false;
+    }
+    return /^[a-z][a-z' -]+$/i.test(stripped) || /^[\u4e00-\u9fff]{2,6}$/u.test(stripped);
+}
 
-    // 2. Capacity Check (16/hr)
-    const result = await sheetOperation('GET', null, env);
-    if (!result.error) {
-        const rows = result.values || [];
-        const hourlyPax = rows.filter(r => {
-            const rDate = r[4];
-            const rTime = r[5];
-            const rStatus = r[7];
-            if (rDate !== date || rStatus === 'Archived') return false;
-            // Simple hour match (e.g. 09:15 and 09:45 are same hour)
-            return rTime.split(':')[0] === time.split(':')[0];
-        }).reduce((sum, r) => sum + (parseInt(r[3]) || 0), 0);
+function sanitizeGuestName(text) {
+    return String(text || "")
+        .trim()
+        .replace(/\s+/g, " ")
+        .replace(/[^\p{L}' -]/gu, "");
+}
 
-        if (hourlyPax + requestedPax > 16) return "FAILED_WALK_IN_RECOMMENDED";
+function isSameDayBooking(dateValue) {
+    if (!dateValue) {
+        return false;
     }
 
-    const val = [args.name, args.email, args.mobile, args.group_size, args.date, args.time, new Date().toISOString(), "AI_Confirmed", "AI_Concierge"];
-    return await sheetOperation('APPEND', val, env);
+    const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Australia/Hobart" }));
+    return formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate())) === dateValue;
 }
 
-async function handleCheck(args, env) {
-    const id = args.identifier.toLowerCase();
-    const result = await sheetOperation('GET', null, env);
-    if (result.error) return "Error accessing records.";
+function formatDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+}
 
-    const rows = result.values || [];
-    const match = rows.reverse().find(r => (r[0] && r[0].toLowerCase().includes(id)) || (r[1] && r[1].toLowerCase().includes(id)));
-
-    if (match) {
-        return `Found booking for ${match[0]} on ${match[4]} at ${match[5]}. Status: ${match[7]}.`;
+function normalizeYear(yearToken) {
+    const year = Number.parseInt(yearToken, 10);
+    if (yearToken.length === 2) {
+        return year + 2000;
     }
-    return "No booking found. Would you like to create one?";
+    return year;
 }
 
-async function handleNotify(args, env) {
-    const val = [args.customer_name || 'Guest', 'N/A', args.contact || 'N/A', '0', 'N/A', 'N/A', new Date().toISOString(), `ALERT: ${args.details}`, "AI_Concierge"];
-    return await sheetOperation('APPEND', val, env);
+function inferFutureYear(month, day, today) {
+    const currentYear = today.getFullYear();
+    const candidate = new Date(currentYear, month - 1, day);
+    return candidate < today ? currentYear + 1 : currentYear;
 }
 
+function nextWeekdayDate(today, weekdayName) {
+    const weekdayIndex = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"].indexOf(weekdayName);
+    const result = new Date(today);
+    const current = result.getDay();
+    let delta = weekdayIndex - current;
 
-// Unified Sheet Operation
-async function sheetOperation(mode, values, env) {
-    try {
-        const sAccount = JSON.parse(env.GOOGLE_SERVICE_ACCOUNT_JSON);
-        const spreadsheetId = env.SPREADSHEET_ID;
+    if (delta <= 0) {
+        delta += 7;
+    }
 
-        // JWT Auth
-        const now = Math.floor(Date.now() / 1000);
-        const header = b64u(JSON.stringify({ alg: "RS256", typ: "JWT" }));
-        const claimSet = b64u(JSON.stringify({ iss: sAccount.client_email, scope: "https://www.googleapis.com/auth/spreadsheets", aud: "https://oauth2.googleapis.com/token", exp: now + 3600, iat: now }));
-        const signature = await signRSA(`${header}.${claimSet}`, sAccount.private_key);
-        const jwt = `${header}.${claimSet}.${signature}`;
-
-        const tRes = await fetch("https://oauth2.googleapis.com/token", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}` });
-        const { access_token } = await tRes.json();
-
-        if (mode === 'GET') {
-            const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A:H`, {
-                headers: { 'Authorization': `Bearer ${access_token}` }
-            });
-            return await res.json();
-        } else {
-            const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A:H:append?valueInputOption=USER_ENTERED`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${access_token}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ values: [values] })
-            });
-            return res.ok ? { success: true } : { error: await res.text() };
-        }
-    } catch (e) { return { error: e.message }; }
+    result.setDate(result.getDate() + delta);
+    return result;
 }
 
-function b64u(s) { return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, ''); }
-async function signRSA(c, p) {
-    const pem = p.replace(/\\n/g, '\n').replace(/-----BEGIN PRIVATE KEY-----/g, '').replace(/-----END PRIVATE KEY-----/g, '').replace(/\s/g, '');
-    const der = Uint8Array.from(atob(pem), c => c.charCodeAt(0));
-    const key = await crypto.subtle.importKey("pkcs8", der.buffer, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["sign"]);
-    const sig = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", key, new TextEncoder().encode(c));
-    return b64u(String.fromCharCode(...new Uint8Array(sig)));
-}
-
-export async function onRequestOptions() {
-    return new Response(null, { headers: { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "POST, OPTIONS", "Access-Control-Allow-Headers": "Content-Type" } });
+function firstNonEmpty(...values) {
+    return values.find((value) => String(value || "").trim()) || "";
 }

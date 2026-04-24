@@ -38,6 +38,16 @@ export function normalizeEmail(email) {
     return String(email || "").trim().toLowerCase();
 }
 
+function buildGuestKey(booking) {
+    const normalizedEmail = normalizeEmail(booking.email);
+    if (normalizedEmail) {
+        return normalizedEmail;
+    }
+
+    const normalizedMobile = normalizePhone(booking.mobile);
+    return normalizedMobile ? `phone:${normalizedMobile}` : "";
+}
+
 export function normalizePhone(phone) {
     const digits = String(phone || "").replace(/[^\d+]/g, "");
     if (!digits) {
@@ -108,7 +118,7 @@ export async function ensureBookingSheets(config) {
     await Promise.all(Object.entries(SHEET_HEADERS).map(([title, headers]) => ensureSheetHeader(config, title, headers)));
 }
 
-export async function appendBookingRow(config, booking, status) {
+export async function appendBookingRow(config, booking, status, options = {}) {
     const row = [
         booking.name,
         booking.email,
@@ -118,7 +128,7 @@ export async function appendBookingRow(config, booking, status) {
         booking.time,
         new Date().toISOString(),
         status,
-        "Website",
+        options.source || "Website",
         "",
         "",
         "",
@@ -190,10 +200,49 @@ export async function listBookings(config) {
         .filter((booking) => booking.status !== "Archived");
 }
 
+export async function fetchGuestCoreInfo(config, identifiers = {}) {
+    const normalizedEmail = normalizeEmail(identifiers.email);
+    const normalizedMobile = normalizePhone(identifiers.mobile || identifiers.phone);
+
+    if (!normalizedEmail && !normalizedMobile) {
+        return null;
+    }
+
+    const rows = await getValues(config, "Guests!A2:J500");
+    const match = rows.find((row) => {
+        const rowEmail = normalizeEmail(row[0] || row[1] || "");
+        const rowMobile = normalizePhone(row[3] || "");
+
+        if (normalizedEmail && rowEmail === normalizedEmail) {
+            return true;
+        }
+
+        if (normalizedMobile && rowMobile === normalizedMobile) {
+            return true;
+        }
+
+        return false;
+    });
+
+    if (!match) {
+        return null;
+    }
+
+    return {
+        email: match[1] || "",
+        name: match[2] || "",
+        mobile: match[3] || "",
+        booking_count: match[6] || "",
+        last_group_size: match[7] || "",
+        last_booking_date: match[8] || "",
+        last_status: match[9] || ""
+    };
+}
+
 export async function upsertGuest(config, booking, bookingStatus, options = {}) {
-    const normalizedEmail = normalizeEmail(booking.email);
+    const guestKey = buildGuestKey(booking);
     const rows = await getValues(config, "Guests!A:J");
-    const existingIndex = rows.findIndex((row, index) => index > 0 && normalizeEmail(row[0]) === normalizedEmail);
+    const existingIndex = rows.findIndex((row, index) => index > 0 && String(row[0] || "").trim() === guestKey);
     const now = new Date().toISOString();
     const incrementBookingCount = options.incrementBookingCount !== false;
 
@@ -210,7 +259,7 @@ export async function upsertGuest(config, booking, bookingStatus, options = {}) 
     }
 
     const guestRow = [
-        normalizedEmail,
+        guestKey,
         booking.email,
         booking.name,
         booking.mobile || "",
@@ -244,7 +293,7 @@ export async function appendGuestEvent(config, eventType, booking, bookingRow, b
     await appendValues(config, "GuestEvents!A:F", [[
         new Date().toISOString(),
         eventType,
-        normalizeEmail(booking.email),
+        buildGuestKey(booking),
         String(bookingRow || ""),
         bookingStatus,
         details
