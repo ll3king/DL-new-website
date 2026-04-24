@@ -2,7 +2,7 @@ const SHEET_HEADERS = {
     Sheet1: [["name", "email", "mobile", "group_size", "date", "time", "created_at", "status", "source", "email_sent_at", "email_type", "email_status", "email_error"]],
     Guests: [["email_normalized", "email", "name", "mobile", "first_booking_at", "last_booking_at", "booking_count", "last_group_size", "last_booking_date", "last_status"]],
     GuestEvents: [["event_at", "event_type", "email_normalized", "booking_row", "booking_status", "details"]],
-    SmsThreads: [["phone_normalized", "display_phone", "known_guest_name", "known_group_size", "known_booking_date", "known_booking_time", "recent_messages_json", "last_inbound_at", "updated_at"]]
+    SmsThreads: [["phone_normalized", "display_phone", "known_guest_name", "known_mobile", "known_group_size", "known_booking_date", "known_booking_time", "recent_messages_json", "last_inbound_at", "updated_at"]]
 };
 
 export function buildCorsHeaders(env, methods = "GET, POST, PATCH, OPTIONS") {
@@ -302,7 +302,7 @@ export async function appendGuestEvent(config, eventType, booking, bookingRow, b
 
 export async function fetchSmsThreadContext(config, phone) {
     const normalizedPhone = normalizePhone(phone);
-    const rows = await getValues(config, "SmsThreads!A2:I500");
+    const rows = await getValues(config, "SmsThreads!A2:J500");
     const rowIndex = rows.findIndex((row) => normalizePhone(row[0]) === normalizedPhone);
 
     if (rowIndex === -1) {
@@ -323,12 +323,13 @@ export async function fetchSmsThreadContext(config, phone) {
         phone_normalized: row[0] || "",
         display_phone: row[1] || "",
         known_guest_name: row[2] || "",
-        known_group_size: row[3] || "",
-        known_booking_date: row[4] || "",
-        known_booking_time: row[5] || "",
+        known_mobile: row[3] || "",
+        known_group_size: row[4] || "",
+        known_booking_date: row[5] || "",
+        known_booking_time: row[6] || "",
         recent_messages: Array.isArray(recentMessages) ? recentMessages : [],
-        last_inbound_at: row[7] || "",
-        updated_at: row[8] || ""
+        last_inbound_at: row[8] || "",
+        updated_at: row[9] || ""
     };
 }
 
@@ -339,6 +340,7 @@ export async function upsertSmsThreadContext(config, thread) {
         normalizedPhone,
         thread.display_phone || normalizedPhone,
         thread.known_guest_name || "",
+        normalizePhone(thread.known_mobile || normalizedPhone),
         thread.known_group_size || "",
         thread.known_booking_date || "",
         thread.known_booking_time || "",
@@ -348,11 +350,11 @@ export async function upsertSmsThreadContext(config, thread) {
     ]];
 
     if (existing) {
-        await updateValues(config, `SmsThreads!A${existing.rowNumber}:I${existing.rowNumber}`, row);
+        await updateValues(config, `SmsThreads!A${existing.rowNumber}:J${existing.rowNumber}`, row);
         return { rowNumber: existing.rowNumber };
     }
 
-    const result = await appendValues(config, "SmsThreads!A:I", row);
+    const result = await appendValues(config, "SmsThreads!A:J", row);
     return { rowNumber: extractRowNumber(result.updates?.updatedRange) };
 }
 

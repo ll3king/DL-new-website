@@ -139,6 +139,7 @@ function normalizeThreadContext(threadContext) {
     return {
         recent_messages: Array.isArray(threadContext?.recent_messages) ? threadContext.recent_messages.slice(-6) : [],
         known_guest_name: String(threadContext?.known_guest_name || "").trim(),
+        known_mobile: normalizePhone(threadContext?.known_mobile || ""),
         known_group_size: String(threadContext?.known_group_size || "").trim(),
         known_booking_date: String(threadContext?.known_booking_date || "").trim(),
         known_booking_time: String(threadContext?.known_booking_time || "").trim()
@@ -167,6 +168,7 @@ async function resolveGuestCoreInfo(env, body, history, threadContext) {
     const email = String(body?.booking_context?.known_fields?.email || body?.email || "").trim();
     const mobile = normalizePhone(
         body?.booking_context?.known_fields?.mobile
+        || threadContext?.known_mobile
         || body?.mobile
         || body?.from_phone
         || ""
@@ -203,6 +205,7 @@ function buildBookingState({ channel, messageText, history, threadContext, previ
         ),
         mobile: normalizePhone(firstNonEmpty(
             extracted.mobile,
+            threadContext.known_mobile,
             previousBookingContext.known_fields?.mobile,
             guestCoreInfo?.mobile
         )),
