@@ -1,3 +1,11 @@
+import {
+    ensureBookingSheets,
+    fetchSmsThreadContext,
+    normalizePhone,
+    requireConfig,
+    upsertSmsThreadContext
+} from "../_booking.js";
+
 function buildHeaders() {
     return {
         "Content-Type": "application/json",
@@ -98,6 +106,82 @@ function buildHandlerReadyInput(inbound, gate) {
     };
 }
 
+function extractKnownFields(text, threadContext) {
+    const nextKnown = {
+        known_guest_name: threadContext?.known_guest_name || "",
+        known_group_size: threadContext?.known_group_size || "",
+        known_booking_date: threadContext?.known_booking_date || "",
+        known_booking_time: threadContext?.known_booking_time || ""
+    };
+
+    const peopleMatch = String(text || "").match(PEOPLE_PATTERN);
+    if (peopleMatch) {
+        nextKnown.known_group_size = peopleMatch[2] || nextKnown.known_group_size;
+    }
+
+    const timeMatch = String(text || "").match(TIME_PATTERN);
+    if (timeMatch) {
+        const hours = Number.parseInt(timeMatch[1], 10);
+        const minutes = timeMatch[2] || "00";
+        const meridiem = String(timeMatch[3] || "").toLowerCase();
+        let normalizedHours = hours;
+
+        if (meridiem === "pm" && normalizedHours < 12) normalizedHours += 12;
+        if (meridiem === "am" && normalizedHours === 12) normalizedHours = 0;
+
+        nextKnown.known_booking_time = `${String(normalizedHours).padStart(2, "0")}:${minutes}`;
+    }
+
+    const weekdayMatch = String(text || "").match(WEEKDAY_PATTERN);
+    const relativeDayMatch = String(text || "").match(RELATIVE_DAY_PATTERN);
+    const dateMatch = String(text || "").match(DATE_PATTERN);
+    if (weekdayMatch) {
+        nextKnown.known_booking_date = weekdayMatch[1];
+    } else if (relativeDayMatch) {
+        nextKnown.known_booking_date = relativeDayMatch[1];
+    } else if (dateMatch) {
+        nextKnown.known_booking_date = dateMatch[0];
+    }
+
+    return nextKnown;
+}
+
+function buildRecentMessages(previousMessages, inbound) {
+    const recentMessages = Array.isArray(previousMessages) ? [...previousMessages] : [];
+    recentMessages.push({
+        role: "guest",
+        text: inbound.text,
+        at: inbound.received_at
+    });
+    return recentMessages.slice(-6);
+}
+
+function buildThreadContext(threadContext, inbound) {
+    const knownFields = extractKnownFields(inbound.text, threadContext);
+    const recentMessages = buildRecentMessages(threadContext?.recent_messages, inbound);
+
+    return {
+        recent_messages: recentMessages,
+        known_guest_name: knownFields.known_guest_name,
+        known_group_size: knownFields.known_group_size,
+        known_booking_date: knownFields.known_booking_date,
+        known_booking_time: knownFields.known_booking_time
+    };
+}
+
+function buildAiInput(inbound, threadContext) {
+    return {
+        channel: "sms",
+        from_phone: inbound.from_phone,
+        message_text: inbound.text,
+        received_at: inbound.received_at,
+        thread_context: threadContext,
+        booking_context: {
+            source: "SMS"
+        }
+    };
+}
+
 export async function onRequestPost(context) {
     const { request, env } = context;
 
@@ -136,16 +220,36 @@ export async function onRequestPost(context) {
             });
         }
 
+        const config = await requireConfig(env);
+        await ensureBookingSheets(config);
+
+        const thread = await fetchSmsThreadContext(config, normalizePhone(inbound.from_phone));
+        const threadContext = buildThreadContext(thread, inbound);
+        await upsertSmsThreadContext(config, {
+            phone_normalized: inbound.from_phone,
+            display_phone: inbound.from_phone,
+            known_guest_name: threadContext.known_guest_name,
+            known_group_size: threadContext.known_group_size,
+            known_booking_date: threadContext.known_booking_date,
+            known_booking_time: threadContext.known_booking_time,
+            recent_messages: threadContext.recent_messages,
+            last_inbound_at: inbound.received_at,
+            updated_at: new Date().toISOString()
+        });
+
         const handlerInput = buildHandlerReadyInput(inbound, gate);
+        const aiInput = buildAiInput(handlerInput, threadContext);
 
         console.log("Telerivet inbound accepted for handler", handlerInput);
+        console.log("Telerivet handler prepared AI input", aiInput);
 
         return jsonResponse({
             ok: true,
             received: true,
             accepted: true,
             gate,
-            handler_input: handlerInput
+            handler_input: handlerInput,
+            ai_input: aiInput
         });
     } catch (error) {
         console.error("Telerivet inbound error:", error.message);

@@ -1,7 +1,8 @@
 const SHEET_HEADERS = {
     Sheet1: [["name", "email", "mobile", "group_size", "date", "time", "created_at", "status", "source", "email_sent_at", "email_type", "email_status", "email_error"]],
     Guests: [["email_normalized", "email", "name", "mobile", "first_booking_at", "last_booking_at", "booking_count", "last_group_size", "last_booking_date", "last_status"]],
-    GuestEvents: [["event_at", "event_type", "email_normalized", "booking_row", "booking_status", "details"]]
+    GuestEvents: [["event_at", "event_type", "email_normalized", "booking_row", "booking_status", "details"]],
+    SmsThreads: [["phone_normalized", "display_phone", "known_guest_name", "known_group_size", "known_booking_date", "known_booking_time", "recent_messages_json", "last_inbound_at", "updated_at"]]
 };
 
 export function buildCorsHeaders(env, methods = "GET, POST, PATCH, OPTIONS") {
@@ -35,6 +36,23 @@ export function emptyResponse(env, methods) {
 
 export function normalizeEmail(email) {
     return String(email || "").trim().toLowerCase();
+}
+
+export function normalizePhone(phone) {
+    const digits = String(phone || "").replace(/[^\d+]/g, "");
+    if (!digits) {
+        return "";
+    }
+    if (digits.startsWith("+")) {
+        return digits;
+    }
+    if (digits.startsWith("61")) {
+        return `+${digits}`;
+    }
+    if (digits.startsWith("0")) {
+        return `+61${digits.slice(1)}`;
+    }
+    return `+${digits}`;
 }
 
 export function extractRowNumber(updatedRange) {
@@ -231,6 +249,62 @@ export async function appendGuestEvent(config, eventType, booking, bookingRow, b
         bookingStatus,
         details
     ]]);
+}
+
+export async function fetchSmsThreadContext(config, phone) {
+    const normalizedPhone = normalizePhone(phone);
+    const rows = await getValues(config, "SmsThreads!A2:I500");
+    const rowIndex = rows.findIndex((row) => normalizePhone(row[0]) === normalizedPhone);
+
+    if (rowIndex === -1) {
+        return null;
+    }
+
+    const row = rows[rowIndex];
+    let recentMessages = [];
+
+    try {
+        recentMessages = row[6] ? JSON.parse(row[6]) : [];
+    } catch (error) {
+        recentMessages = [];
+    }
+
+    return {
+        rowNumber: rowIndex + 2,
+        phone_normalized: row[0] || "",
+        display_phone: row[1] || "",
+        known_guest_name: row[2] || "",
+        known_group_size: row[3] || "",
+        known_booking_date: row[4] || "",
+        known_booking_time: row[5] || "",
+        recent_messages: Array.isArray(recentMessages) ? recentMessages : [],
+        last_inbound_at: row[7] || "",
+        updated_at: row[8] || ""
+    };
+}
+
+export async function upsertSmsThreadContext(config, thread) {
+    const normalizedPhone = normalizePhone(thread.phone_normalized || thread.display_phone);
+    const existing = await fetchSmsThreadContext(config, normalizedPhone);
+    const row = [[
+        normalizedPhone,
+        thread.display_phone || normalizedPhone,
+        thread.known_guest_name || "",
+        thread.known_group_size || "",
+        thread.known_booking_date || "",
+        thread.known_booking_time || "",
+        JSON.stringify(thread.recent_messages || []),
+        thread.last_inbound_at || "",
+        thread.updated_at || new Date().toISOString()
+    ]];
+
+    if (existing) {
+        await updateValues(config, `SmsThreads!A${existing.rowNumber}:I${existing.rowNumber}`, row);
+        return { rowNumber: existing.rowNumber };
+    }
+
+    const result = await appendValues(config, "SmsThreads!A:I", row);
+    return { rowNumber: extractRowNumber(result.updates?.updatedRange) };
 }
 
 export async function sendBookingEmail(env, booking, emailType) {
