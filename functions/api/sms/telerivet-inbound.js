@@ -264,6 +264,15 @@ async function getAiReply(request, inbound, threadContext) {
         throw new Error(data?.error || "AI chat request failed");
     }
 
+    console.log("Telerivet handler bridge message", {
+        bridge_message: bridgeMessage,
+        history
+    });
+    console.log("Telerivet handler chat response", {
+        has_reply: Boolean(data?.reply),
+        reply_preview: String(data?.reply || "").slice(0, 160)
+    });
+
     return String(data.reply || "").trim();
 }
 
