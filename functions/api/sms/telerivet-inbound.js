@@ -212,9 +212,41 @@ function buildChatHistory(recentMessages, currentInbound) {
     }));
 }
 
+function isLowValueAssistantReply(text) {
+    const normalized = String(text || "").trim().toLowerCase();
+    return normalized === "could you say that again, mate?";
+}
+
+function buildAiBridgePrompt(inbound, threadContext) {
+    const known = {
+        guest_name: threadContext?.known_guest_name || "",
+        group_size: threadContext?.known_group_size || "",
+        booking_date: threadContext?.known_booking_date || "",
+        booking_time: threadContext?.known_booking_time || ""
+    };
+
+    return [
+        "SMS booking channel context.",
+        "This is an incoming SMS booking conversation for Dandy Lane Cafe.",
+        "Treat the mobile number as the customer identity for this thread.",
+        "Continue the booking conversation naturally via SMS.",
+        "Do not ask the customer to repeat details already known in the thread context.",
+        "Email is not required for SMS booking.",
+        "If booking details are incomplete, ask only for the next missing booking detail.",
+        "Known booking context:",
+        `- Guest name: ${known.guest_name || "unknown"}`,
+        `- Group size: ${known.group_size || "unknown"}`,
+        `- Booking date: ${known.booking_date || "unknown"}`,
+        `- Booking time: ${known.booking_time || "unknown"}`,
+        `Current customer SMS: ${inbound.text}`
+    ].join("\n");
+}
+
 async function getAiReply(request, inbound, threadContext) {
     const origin = new URL(request.url).origin;
-    const history = buildChatHistory(threadContext.recent_messages, inbound);
+    const history = buildChatHistory(threadContext.recent_messages, inbound)
+        .filter((message) => !(message.role === "bot" && isLowValueAssistantReply(message.text)));
+    const bridgeMessage = buildAiBridgePrompt(inbound, threadContext);
 
     const response = await fetch(`${origin}/api/chat`, {
         method: "POST",
@@ -222,7 +254,7 @@ async function getAiReply(request, inbound, threadContext) {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            message: inbound.text,
+            message: bridgeMessage,
             history
         })
     });
