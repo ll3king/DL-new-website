@@ -3,6 +3,7 @@ import {
     fetchSmsThreadContext,
     normalizePhone,
     requireConfig,
+    sendSmsMessage,
     upsertSmsThreadContext
 } from "../_booking.js";
 
@@ -160,6 +161,16 @@ function buildRecentMessages(previousMessages, inbound) {
     return recentMessages.slice(-6);
 }
 
+function appendAssistantMessage(previousMessages, replyText, timestamp) {
+    const recentMessages = Array.isArray(previousMessages) ? [...previousMessages] : [];
+    recentMessages.push({
+        role: "assistant",
+        text: replyText,
+        at: timestamp
+    });
+    return recentMessages.slice(-6);
+}
+
 function buildThreadContext(threadContext, inbound) {
     const knownFields = extractKnownFields(inbound.text, threadContext);
     const recentMessages = buildRecentMessages(threadContext?.recent_messages, inbound);
@@ -184,6 +195,44 @@ function buildAiInput(inbound, threadContext) {
             source: "SMS"
         }
     };
+}
+
+function buildChatHistory(recentMessages, currentInbound) {
+    const messages = Array.isArray(recentMessages) ? recentMessages : [];
+    const filtered = messages.filter((message) => {
+        if (message.role !== "guest") {
+            return true;
+        }
+        return !(message.text === currentInbound.text && message.at === currentInbound.received_at);
+    });
+
+    return filtered.map((message) => ({
+        role: message.role === "assistant" ? "bot" : "user",
+        text: message.text
+    }));
+}
+
+async function getAiReply(request, inbound, threadContext) {
+    const origin = new URL(request.url).origin;
+    const history = buildChatHistory(threadContext.recent_messages, inbound);
+
+    const response = await fetch(`${origin}/api/chat`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            message: inbound.text,
+            history
+        })
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data?.error || "AI chat request failed");
+    }
+
+    return String(data.reply || "").trim();
 }
 
 export async function onRequestPost(context) {
@@ -243,9 +292,37 @@ export async function onRequestPost(context) {
 
         const handlerInput = buildHandlerReadyInput(inbound, gate);
         const aiInput = buildAiInput(handlerInput, threadContext);
+        const replyText = await getAiReply(request, inbound, threadContext);
+        const outbound = replyText
+            ? await sendSmsMessage(env, {
+                to: inbound.from_phone,
+                text: replyText
+            })
+            : null;
+        const nextRecentMessages = replyText
+            ? appendAssistantMessage(threadContext.recent_messages, replyText, new Date().toISOString())
+            : threadContext.recent_messages;
+
+        if (replyText) {
+            await upsertSmsThreadContext(config, {
+                phone_normalized: inbound.from_phone,
+                display_phone: inbound.from_phone,
+                known_guest_name: threadContext.known_guest_name,
+                known_group_size: threadContext.known_group_size,
+                known_booking_date: threadContext.known_booking_date,
+                known_booking_time: threadContext.known_booking_time,
+                recent_messages: nextRecentMessages,
+                last_inbound_at: inbound.received_at,
+                updated_at: new Date().toISOString()
+            });
+        }
 
         console.log("Telerivet inbound accepted for handler", handlerInput);
         console.log("Telerivet handler prepared AI input", aiInput);
+        console.log("Telerivet handler AI reply", {
+            reply_text: replyText,
+            outbound
+        });
 
         return jsonResponse({
             ok: true,
@@ -253,7 +330,9 @@ export async function onRequestPost(context) {
             accepted: true,
             gate,
             handler_input: handlerInput,
-            ai_input: aiInput
+            ai_input: aiInput,
+            reply_text: replyText,
+            outbound
         });
     } catch (error) {
         console.error("Telerivet inbound error:", error.message);

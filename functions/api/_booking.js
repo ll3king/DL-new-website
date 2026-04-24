@@ -307,6 +307,52 @@ export async function upsertSmsThreadContext(config, thread) {
     return { rowNumber: extractRowNumber(result.updates?.updatedRange) };
 }
 
+export async function sendSmsMessage(env, payload) {
+    if (!env.TELERIVET_API_KEY) {
+        throw new Error("TELERIVET_API_KEY is not configured");
+    }
+    if (!env.TELERIVET_PROJECT_ID) {
+        throw new Error("TELERIVET_PROJECT_ID is not configured");
+    }
+
+    const body = {
+        content: payload.text,
+        to_number: payload.to
+    };
+
+    if (env.TELERIVET_ROUTE_ID) {
+        body.route_id = env.TELERIVET_ROUTE_ID;
+    }
+
+    const response = await fetch(`https://api.telerivet.com/v1/projects/${env.TELERIVET_PROJECT_ID}/messages/send`, {
+        method: "POST",
+        headers: {
+            "Authorization": `Basic ${btoa(`${env.TELERIVET_API_KEY}:`)}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+    });
+
+    const rawText = await response.text();
+    let data = {};
+
+    try {
+        data = rawText ? JSON.parse(rawText) : {};
+    } catch (error) {
+        data = { raw: rawText };
+    }
+
+    if (!response.ok) {
+        const errorMessage = data?.message || data?.error || rawText || "Unknown Telerivet send error";
+        throw new Error(errorMessage);
+    }
+
+    return {
+        provider_message_id: data.id || "",
+        status: data.status || "queued"
+    };
+}
+
 export async function sendBookingEmail(env, booking, emailType) {
     if (!env.RESEND_API_KEY) {
         throw new Error("RESEND_API_KEY is not configured");
