@@ -195,6 +195,7 @@ async function resolveGuestCoreInfo(env, body, history, threadContext) {
 function buildBookingState({ channel, messageText, history, threadContext, previousBookingContext, guestCoreInfo, incomingMobile }) {
     const promptedField = inferPromptedField(history, previousBookingContext);
     const extracted = extractBookingDetails(messageText, promptedField);
+    const historyDerived = buildHistoryDerivedFields(history);
     const structuredMobile = normalizePhone(firstNonEmpty(
         previousBookingContext.known_fields?.mobile,
         incomingMobile,
@@ -219,17 +220,20 @@ function buildBookingState({ channel, messageText, history, threadContext, previ
         group_size: firstNonEmpty(
             previousBookingContext.known_fields?.group_size,
             threadContext.known_group_size,
-            extracted.group_size
+            extracted.group_size,
+            historyDerived.group_size
         ),
         date: firstNonEmpty(
             previousBookingContext.known_fields?.date,
             threadContext.known_booking_date,
-            extracted.date
+            extracted.date,
+            historyDerived.date
         ),
         time: firstNonEmpty(
             previousBookingContext.known_fields?.time,
             threadContext.known_booking_time,
-            extracted.time
+            extracted.time,
+            historyDerived.time
         )
     };
 
@@ -405,7 +409,7 @@ function extractBookingDetails(messageText, promptedField) {
         details.date = normalizedDate.value;
     }
 
-    const normalizedTime = normalizeBookingTime(text);
+    const normalizedTime = normalizeBookingTime(text, promptedField);
     if (normalizedTime.value) {
         details.time = normalizedTime.value;
     }
@@ -418,6 +422,34 @@ function extractBookingDetails(messageText, promptedField) {
     }
 
     return details;
+}
+
+function buildHistoryDerivedFields(history) {
+    const derived = {
+        group_size: "",
+        date: "",
+        time: ""
+    };
+
+    const userMessages = Array.isArray(history)
+        ? history.filter((item) => item.role === "user").map((item) => item.text)
+        : [];
+
+    for (const text of userMessages) {
+        const details = extractBookingDetails(text, "");
+
+        if (details.group_size) {
+            derived.group_size = details.group_size;
+        }
+        if (details.date) {
+            derived.date = details.date;
+        }
+        if (details.time) {
+            derived.time = details.time;
+        }
+    }
+
+    return derived;
 }
 
 function normalizeBookingDate(value) {
@@ -466,7 +498,7 @@ function normalizeBookingDate(value) {
     return { value: "", label: "" };
 }
 
-function normalizeBookingTime(value) {
+function normalizeBookingTime(value, promptedField = "") {
     const text = String(value || "").trim().toLowerCase();
     if (!text) {
         return { value: "" };
@@ -487,6 +519,15 @@ function normalizeBookingTime(value) {
         return {
             value: `${String(Number.parseInt(match[6], 10)).padStart(2, "0")}:${String(match[7] || "00").padStart(2, "0")}`
         };
+    }
+
+    if (promptedField === "time" && /^\d{1,2}$/.test(text)) {
+        const hours = Number.parseInt(text, 10);
+        if (hours >= 0 && hours <= 23) {
+            return {
+                value: `${String(hours).padStart(2, "0")}:00`
+            };
+        }
     }
 
     let hours = Number.parseInt(match[1], 10);

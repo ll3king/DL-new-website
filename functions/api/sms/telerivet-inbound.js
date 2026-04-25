@@ -248,10 +248,7 @@ async function getAiReply(request, inbound, threadContext) {
         reply_preview: String(data?.reply || "").slice(0, 160)
     });
 
-    return {
-        reply: String(data.reply || "").trim(),
-        booking_result: data?.booking_result || null
-    };
+    return String(data.reply || "").trim();
 }
 
 function isLowValueAssistantReply(text) {
@@ -348,8 +345,7 @@ export async function onRequestPost(context) {
             : gate;
         const handlerInput = buildHandlerReadyInput(inbound, effectiveGate);
         const aiInput = buildAiInput(handlerInput, threadContext);
-        const aiReply = await getAiReply(request, inbound, threadContext);
-        const replyText = aiReply.reply;
+        const replyText = await getAiReply(request, inbound, threadContext);
         const outbound = replyText
             ? await sendSmsMessage(env, {
                 to: inbound.from_phone,
