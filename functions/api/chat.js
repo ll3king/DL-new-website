@@ -30,6 +30,7 @@ const SITE_KNOWLEDGE = {
 
 const BOOKING_KEYWORD_PATTERN = /\b(book|booking|reserve|reservation|table)\b|预订|預訂|预约|預約|订位|訂位/i;
 const GROUP_PATTERN = /\b(?:for|of|party of|group of)?\s*(\d{1,2})\s*(?:people|persons|pax|guests|位|人)?\b/i;
+const EXPLICIT_GROUP_SIZE_PATTERN = /\b(?:table\s+for|book(?:ing)?\s+for|for|party of|group of)\s*(\d{1,2})\b|\b(\d{1,2})\s*(?:people|persons|pax|guests)\b/i;
 const MOBILE_PATTERN = /(?:\+?\d[\d\s()-]{7,}\d)/;
 const EMAIL_PATTERN = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i;
 const TIME_PATTERN = /\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b|\b([01]?\d|2[0-3]):([0-5]\d)\b|(\d{1,2})点(?:(\d{1,2})分?)?/i;
@@ -207,6 +208,10 @@ async function buildBookingState({ channel, messageText, history, threadContext,
     const promptedField = inferPromptedField(history, previousBookingContext);
     const extracted = normalizeLlmExtractedFields(llmExtraction, promptedField);
     const fallbackExtracted = extractBookingDetails(messageText, promptedField);
+    const sanitizedCurrentTurn = sanitizeAmbiguousCurrentTurnSlots(messageText, promptedField, {
+        extracted,
+        fallbackExtracted
+    });
     const historyDerived = buildHistoryDerivedFields(history);
     const structuredMobile = normalizePhone(firstNonEmpty(
         previousBookingContext.known_fields?.mobile,
@@ -235,22 +240,22 @@ async function buildBookingState({ channel, messageText, history, threadContext,
         group_size: firstNonEmpty(
             previousBookingContext.known_fields?.group_size,
             threadContext.known_group_size,
-            extracted.group_size,
-            fallbackExtracted.group_size,
+            sanitizedCurrentTurn.extracted.group_size,
+            sanitizedCurrentTurn.fallbackExtracted.group_size,
             historyDerived.group_size
         ),
         date: firstNonEmpty(
             previousBookingContext.known_fields?.date,
             threadContext.known_booking_date,
-            extracted.date,
-            fallbackExtracted.date,
+            sanitizedCurrentTurn.extracted.date,
+            sanitizedCurrentTurn.fallbackExtracted.date,
             historyDerived.date
         ),
         time: firstNonEmpty(
             previousBookingContext.known_fields?.time,
             threadContext.known_booking_time,
-            extracted.time,
-            fallbackExtracted.time,
+            sanitizedCurrentTurn.extracted.time,
+            sanitizedCurrentTurn.fallbackExtracted.time,
             historyDerived.time
         )
     };
@@ -470,6 +475,8 @@ async function extractBookingSignals(env, { channel, messageText, history, threa
         "For SMS, mobile is already known if provided.",
         "Infer booking intent, but do not invent missing fields.",
         "If the guest says 'at 10', interpret it as time 10:00.",
+        "Never infer group_size from a bare hour or time expression such as 'at 12', 'tomorrow at 12', '12pm', or '12:30'.",
+        "Only set group_size when the guest explicitly states the number of guests, such as 'for 2', '2 people', 'party of 4', or 'group of 5'.",
         "If a field is not clearly present, return an empty string for it.",
         "Use keys: intent, name, mobile, group_size, date, time, confidence.",
         "intent must be one of: booking, general.",
@@ -611,8 +618,26 @@ function normalizeBookingTime(value, promptedField = "") {
         return { value: "" };
     }
 
+    const atHourMatch = text.match(AT_HOUR_PATTERN);
+    if (atHourMatch) {
+        const hours = Number.parseInt(atHourMatch[1], 10);
+        if (hours >= 0 && hours <= 23) {
+            return {
+                value: `${String(hours).padStart(2, "0")}:00`
+            };
+        }
+    }
+
     const match = text.match(TIME_PATTERN);
     if (!match) {
+        if (promptedField === "time" && /^\d{1,2}$/.test(text)) {
+            const hours = Number.parseInt(text, 10);
+            if (hours >= 0 && hours <= 23) {
+                return {
+                    value: `${String(hours).padStart(2, "0")}:00`
+                };
+            }
+        }
         return { value: "" };
     }
 
@@ -626,25 +651,6 @@ function normalizeBookingTime(value, promptedField = "") {
         return {
             value: `${String(Number.parseInt(match[6], 10)).padStart(2, "0")}:${String(match[7] || "00").padStart(2, "0")}`
         };
-    }
-
-    const atHourMatch = text.match(AT_HOUR_PATTERN);
-    if (atHourMatch) {
-        const hours = Number.parseInt(atHourMatch[1], 10);
-        if (hours >= 0 && hours <= 23) {
-            return {
-                value: `${String(hours).padStart(2, "0")}:00`
-            };
-        }
-    }
-
-    if (promptedField === "time" && /^\d{1,2}$/.test(text)) {
-        const hours = Number.parseInt(text, 10);
-        if (hours >= 0 && hours <= 23) {
-            return {
-                value: `${String(hours).padStart(2, "0")}:00`
-            };
-        }
     }
 
     let hours = Number.parseInt(match[1], 10);
@@ -661,6 +667,38 @@ function normalizeBookingTime(value, promptedField = "") {
     return {
         value: `${String(hours).padStart(2, "0")}:${minutes}`
     };
+}
+
+function sanitizeAmbiguousCurrentTurnSlots(messageText, promptedField, { extracted, fallbackExtracted }) {
+    const currentText = String(messageText || "").trim();
+    const timeValue = firstNonEmpty(extracted.time, fallbackExtracted.time);
+    const groupValue = firstNonEmpty(extracted.group_size, fallbackExtracted.group_size);
+    const hasExplicitGroupSize = hasExplicitGroupSizeSignal(currentText, promptedField);
+    const hasExplicitTime = Boolean(normalizeBookingTime(currentText, promptedField).value);
+
+    if (!currentText || !timeValue || !groupValue || hasExplicitGroupSize || !hasExplicitTime) {
+        return { extracted, fallbackExtracted };
+    }
+
+    const timeHour = Number.parseInt(String(timeValue).split(":")[0] || "", 10);
+    const groupSize = Number.parseInt(groupValue, 10);
+
+    if (!Number.isFinite(timeHour) || !Number.isFinite(groupSize) || timeHour !== groupSize) {
+        return { extracted, fallbackExtracted };
+    }
+
+    return {
+        extracted: { ...extracted, group_size: "" },
+        fallbackExtracted: { ...fallbackExtracted, group_size: "" }
+    };
+}
+
+function hasExplicitGroupSizeSignal(text, promptedField) {
+    if (promptedField === "group_size") {
+        return true;
+    }
+
+    return EXPLICIT_GROUP_SIZE_PATTERN.test(String(text || ""));
 }
 
 function resolveMissingFields(knownFields) {
