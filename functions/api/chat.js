@@ -131,6 +131,10 @@ function normalizeHistory(history) {
                 return null;
             }
 
+             if (role === "assistant" && isLowValueAssistantReply(text)) {
+                return null;
+            }
+
             return { role, text };
         })
         .filter(Boolean)
@@ -229,6 +233,14 @@ function buildBookingState({ channel, messageText, history, threadContext, previ
         )
     };
 
+    if (!merged.name && isLikelyStandaloneName(messageText) && shouldTreatStandaloneNameAsSlot({
+        previousBookingContext,
+        threadContext,
+        merged
+    })) {
+        merged.name = sanitizeGuestName(messageText);
+    }
+
     const normalizedDate = normalizeBookingDate(merged.date);
     const normalizedTime = normalizeBookingTime(merged.time);
 
@@ -322,6 +334,11 @@ async function handleBookingFlow(env, { channel, bookingState, guestCoreInfo }) 
 
 function detectLanguage(messageText) {
     return /[\u4e00-\u9fff]/.test(messageText) ? "zh" : "en";
+}
+
+function isLowValueAssistantReply(text) {
+    const normalized = String(text || "").trim().toLowerCase();
+    return normalized === "could you say that again, mate?" || normalized === "how can i help?";
 }
 
 function inferPromptedField(history, previousBookingContext) {
@@ -701,6 +718,20 @@ function isLikelyStandaloneName(text) {
         return false;
     }
     return /^[a-z][a-z' -]+$/i.test(stripped) || /^[\u4e00-\u9fff]{2,6}$/u.test(stripped);
+}
+
+function shouldTreatStandaloneNameAsSlot({ previousBookingContext, threadContext, merged }) {
+    const knownName = firstNonEmpty(previousBookingContext.known_fields?.name, threadContext.known_guest_name, merged.name);
+    if (knownName) {
+        return false;
+    }
+
+    return Boolean(
+        firstNonEmpty(previousBookingContext.known_fields?.group_size, threadContext.known_group_size, merged.group_size)
+        || firstNonEmpty(previousBookingContext.known_fields?.date, threadContext.known_booking_date, merged.date)
+        || firstNonEmpty(previousBookingContext.known_fields?.time, threadContext.known_booking_time, merged.time)
+        || firstNonEmpty(previousBookingContext.known_fields?.mobile, merged.mobile)
+    );
 }
 
 function sanitizeGuestName(text) {
