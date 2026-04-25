@@ -313,7 +313,7 @@ export async function fetchSmsThreadContext(config, phone) {
     let recentMessages = [];
 
     try {
-        recentMessages = row[6] ? JSON.parse(row[6]) : [];
+        recentMessages = row[7] ? JSON.parse(row[7]) : [];
     } catch (error) {
         recentMessages = [];
     }

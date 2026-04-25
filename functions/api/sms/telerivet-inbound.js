@@ -127,8 +127,7 @@ function extractKnownFields(text, threadContext) {
     const nextKnown = {
         known_guest_name: threadContext?.known_guest_name || "",
         known_group_size: threadContext?.known_group_size || "",
-        known_booking_date: threadContext?.known_booking_date || "",
-        known_booking_time: threadContext?.known_booking_time || ""
+        known_mobile: normalizePhone(threadContext?.known_mobile || "")
     };
 
     const explicitNameMatch = String(text || "").match(EXPLICIT_NAME_PATTERN);
@@ -144,30 +143,6 @@ function extractKnownFields(text, threadContext) {
         nextKnown.known_group_size = explicitPartyMatch[1] || nextKnown.known_group_size;
     } else if (peopleNounMatch) {
         nextKnown.known_group_size = peopleNounMatch[1] || nextKnown.known_group_size;
-    }
-
-    const timeMatch = String(text || "").match(TIME_PATTERN);
-    if (timeMatch) {
-        const hours = Number.parseInt(timeMatch[1], 10);
-        const minutes = timeMatch[2] || "00";
-        const meridiem = String(timeMatch[3] || "").toLowerCase();
-        let normalizedHours = hours;
-
-        if (meridiem === "pm" && normalizedHours < 12) normalizedHours += 12;
-        if (meridiem === "am" && normalizedHours === 12) normalizedHours = 0;
-
-        nextKnown.known_booking_time = `${String(normalizedHours).padStart(2, "0")}:${minutes}`;
-    }
-
-    const weekdayMatch = String(text || "").match(WEEKDAY_PATTERN);
-    const relativeDayMatch = String(text || "").match(RELATIVE_DAY_PATTERN);
-    const dateMatch = String(text || "").match(DATE_PATTERN);
-    if (weekdayMatch) {
-        nextKnown.known_booking_date = weekdayMatch[1];
-    } else if (relativeDayMatch) {
-        nextKnown.known_booking_date = relativeDayMatch[1];
-    } else if (dateMatch) {
-        nextKnown.known_booking_date = dateMatch[0];
     }
 
     return nextKnown;
@@ -201,8 +176,9 @@ function buildThreadContext(threadContext, inbound) {
         recent_messages: recentMessages,
         known_guest_name: knownFields.known_guest_name,
         known_group_size: knownFields.known_group_size,
-        known_booking_date: knownFields.known_booking_date,
-        known_booking_time: knownFields.known_booking_time
+        known_mobile: knownFields.known_mobile || normalizePhone(inbound.from_phone),
+        known_booking_date: "",
+        known_booking_time: ""
     };
 }
 
@@ -216,10 +192,8 @@ function buildAiInput(inbound, threadContext) {
             source: "SMS",
             known_fields: {
                 name: threadContext.known_guest_name || "",
-                mobile: normalizePhone(inbound.from_phone),
-                group_size: threadContext.known_group_size || "",
-                date: threadContext.known_booking_date || "",
-                time: threadContext.known_booking_time || ""
+                mobile: normalizePhone(threadContext.known_mobile || inbound.from_phone),
+                group_size: threadContext.known_group_size || ""
             }
         }
     };
@@ -252,10 +226,8 @@ async function getAiReply(request, inbound, threadContext) {
                 source: "SMS",
                 known_fields: {
                     name: threadContext.known_guest_name || "",
-                    mobile: normalizePhone(inbound.from_phone),
-                    group_size: threadContext.known_group_size || "",
-                    date: threadContext.known_booking_date || "",
-                    time: threadContext.known_booking_time || ""
+                    mobile: normalizePhone(threadContext.known_mobile || inbound.from_phone),
+                    group_size: threadContext.known_group_size || ""
                 }
             }
         })
@@ -362,6 +334,7 @@ export async function onRequestPost(context) {
             phone_normalized: inbound.from_phone,
             display_phone: inbound.from_phone,
             known_guest_name: threadContext.known_guest_name,
+            known_mobile: normalizePhone(threadContext.known_mobile || inbound.from_phone),
             known_group_size: threadContext.known_group_size,
             known_booking_date: threadContext.known_booking_date,
             known_booking_time: threadContext.known_booking_time,
@@ -392,6 +365,7 @@ export async function onRequestPost(context) {
                 phone_normalized: inbound.from_phone,
                 display_phone: inbound.from_phone,
                 known_guest_name: threadContext.known_guest_name,
+                known_mobile: normalizePhone(threadContext.known_mobile || inbound.from_phone),
                 known_group_size: threadContext.known_group_size,
                 known_booking_date: threadContext.known_booking_date,
                 known_booking_time: threadContext.known_booking_time,
