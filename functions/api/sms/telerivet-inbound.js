@@ -53,6 +53,7 @@ const TIME_PATTERN = /\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b/i;
 const WEEKDAY_PATTERN = /\b(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i;
 const RELATIVE_DAY_PATTERN = /\b(today|tonight|tomorrow)\b/i;
 const DATE_PATTERN = /\b(\d{1,2})[\/-](\d{1,2})([\/-]\d{2,4})?\b/;
+const EXPLICIT_NAME_PATTERN = /\b(?:my name is|name is)\s+([a-z][a-z' -]{1,40})\b/i;
 
 function parseFormBody(rawBody) {
     return Object.fromEntries(new URLSearchParams(rawBody).entries());
@@ -129,6 +130,13 @@ function extractKnownFields(text, threadContext) {
         known_booking_date: threadContext?.known_booking_date || "",
         known_booking_time: threadContext?.known_booking_time || ""
     };
+
+    const explicitNameMatch = String(text || "").match(EXPLICIT_NAME_PATTERN);
+    if (explicitNameMatch) {
+        nextKnown.known_guest_name = sanitizeGuestName(explicitNameMatch[1]) || nextKnown.known_guest_name;
+    } else if (shouldTreatAsStandaloneName(text, threadContext)) {
+        nextKnown.known_guest_name = sanitizeGuestName(text) || nextKnown.known_guest_name;
+    }
 
     const explicitPartyMatch = String(text || "").match(EXPLICIT_PARTY_PATTERN);
     const peopleNounMatch = String(text || "").match(PEOPLE_NOUN_PATTERN);
@@ -222,6 +230,7 @@ async function getAiReply(request, inbound, threadContext) {
     const history = Array.isArray(threadContext?.recent_messages)
         ? threadContext.recent_messages
             .filter((message) => !(message.role === "guest" && message.text === inbound.text && message.at === inbound.received_at))
+            .filter((message) => !(message.role === "assistant" && isLowValueAssistantReply(message.text)))
             .map((message) => ({
                 role: message.role === "assistant" ? "assistant" : "user",
                 text: message.text
@@ -273,16 +282,36 @@ async function getAiReply(request, inbound, threadContext) {
     };
 }
 
-function mergeThreadContextWithBookingResult(threadContext, bookingResult, inbound) {
-    const knownFields = bookingResult?.known_fields || {};
+function isLowValueAssistantReply(text) {
+    const normalized = String(text || "").trim().toLowerCase();
+    return normalized === "could you say that again, mate?" || normalized === "how can i help?";
+}
 
-    return {
-        recent_messages: threadContext.recent_messages,
-        known_guest_name: String(knownFields.name || threadContext.known_guest_name || "").trim(),
-        known_group_size: String(knownFields.group_size || threadContext.known_group_size || "").trim(),
-        known_booking_date: String(knownFields.date || threadContext.known_booking_date || "").trim(),
-        known_booking_time: String(knownFields.time || threadContext.known_booking_time || "").trim()
-    };
+function shouldTreatAsStandaloneName(text, threadContext) {
+    const stripped = String(text || "").trim();
+    if (!stripped || stripped.length > 40 || /\d/.test(stripped)) {
+        return false;
+    }
+    if (!/^[a-z][a-z' -]{1,40}$/i.test(stripped)) {
+        return false;
+    }
+
+    const recentAssistantText = Array.isArray(threadContext?.recent_messages)
+        ? threadContext.recent_messages
+            .filter((message) => message.role === "assistant")
+            .slice(-2)
+            .map((message) => String(message.text || "").toLowerCase())
+            .join(" ")
+        : "";
+
+    return recentAssistantText.includes("what name") || recentAssistantText.includes("put the booking under");
+}
+
+function sanitizeGuestName(text) {
+    return String(text || "")
+        .trim()
+        .replace(/\s+/g, " ")
+        .replace(/[^\p{L}' -]/gu, "");
 }
 
 export async function onRequestPost(context) {
@@ -357,20 +386,16 @@ export async function onRequestPost(context) {
         const nextRecentMessages = replyText
             ? appendAssistantMessage(threadContext.recent_messages, replyText, new Date().toISOString())
             : threadContext.recent_messages;
-        const nextThreadContext = mergeThreadContextWithBookingResult({
-            ...threadContext,
-            recent_messages: nextRecentMessages
-        }, aiReply.booking_result, inbound);
 
         if (replyText) {
             await upsertSmsThreadContext(config, {
                 phone_normalized: inbound.from_phone,
                 display_phone: inbound.from_phone,
-                known_guest_name: nextThreadContext.known_guest_name,
-                known_group_size: nextThreadContext.known_group_size,
-                known_booking_date: nextThreadContext.known_booking_date,
-                known_booking_time: nextThreadContext.known_booking_time,
-                recent_messages: nextThreadContext.recent_messages,
+                known_guest_name: threadContext.known_guest_name,
+                known_group_size: threadContext.known_group_size,
+                known_booking_date: threadContext.known_booking_date,
+                known_booking_time: threadContext.known_booking_time,
+                recent_messages: nextRecentMessages,
                 last_inbound_at: inbound.received_at,
                 updated_at: new Date().toISOString()
             });
