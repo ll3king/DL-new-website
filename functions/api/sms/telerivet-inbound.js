@@ -346,37 +346,56 @@ export async function onRequestPost(context) {
         const handlerInput = buildHandlerReadyInput(inbound, effectiveGate);
         const aiInput = buildAiInput(handlerInput, threadContext);
         const replyText = await getAiReply(request, inbound, threadContext);
-        const outbound = replyText
-            ? await sendSmsMessage(env, {
-                to: inbound.from_phone,
-                text: replyText
-            })
-            : null;
         const nextRecentMessages = replyText
             ? appendAssistantMessage(threadContext.recent_messages, replyText, new Date().toISOString())
             : threadContext.recent_messages;
-
-        if (replyText) {
-            await upsertSmsThreadContext(config, {
-                phone_normalized: inbound.from_phone,
-                display_phone: inbound.from_phone,
-                known_guest_name: threadContext.known_guest_name,
-                known_mobile: normalizePhone(threadContext.known_mobile || inbound.from_phone),
-                known_group_size: threadContext.known_group_size,
-                known_booking_date: threadContext.known_booking_date,
-                known_booking_time: threadContext.known_booking_time,
-                recent_messages: nextRecentMessages,
-                last_inbound_at: inbound.received_at,
-                updated_at: new Date().toISOString()
-            });
-        }
 
         console.log("Telerivet inbound accepted for handler", handlerInput);
         console.log("Telerivet handler prepared AI input", aiInput);
         console.log("Telerivet handler AI reply", {
             reply_text: replyText,
-            outbound
+            outbound: replyText ? { status: "scheduled" } : null
         });
+
+        const tailWork = [];
+
+        if (replyText) {
+            tailWork.push(
+                sendSmsMessage(env, {
+                    to: inbound.from_phone,
+                    text: replyText
+                })
+                    .then((outbound) => {
+                        console.log("Telerivet handler outbound completed", outbound);
+                    })
+                    .catch((error) => {
+                        console.error("Telerivet handler outbound failed:", error.message);
+                    })
+            );
+
+            tailWork.push(
+                upsertSmsThreadContext(config, {
+                    phone_normalized: inbound.from_phone,
+                    display_phone: inbound.from_phone,
+                    known_guest_name: threadContext.known_guest_name,
+                    known_mobile: normalizePhone(threadContext.known_mobile || inbound.from_phone),
+                    known_group_size: threadContext.known_group_size,
+                    known_booking_date: threadContext.known_booking_date,
+                    known_booking_time: threadContext.known_booking_time,
+                    recent_messages: nextRecentMessages,
+                    last_inbound_at: inbound.received_at,
+                    updated_at: new Date().toISOString()
+                }).catch((error) => {
+                    console.error("Telerivet handler thread update failed:", error.message);
+                })
+            );
+        }
+
+        if (tailWork.length && typeof context.waitUntil === "function") {
+            context.waitUntil(Promise.allSettled(tailWork));
+        } else if (tailWork.length) {
+            await Promise.allSettled(tailWork);
+        }
 
         return jsonResponse({
             ok: true,
@@ -386,7 +405,7 @@ export async function onRequestPost(context) {
             handler_input: handlerInput,
             ai_input: aiInput,
             reply_text: replyText,
-            outbound
+            outbound: replyText ? { status: "scheduled" } : null
         });
     } catch (error) {
         console.error("Telerivet inbound error:", error.message);
