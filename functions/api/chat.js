@@ -1,14 +1,21 @@
-/**
+﻿/**
  * Cloudflare Pages Function: /api/chat
- * AI Concierge for Dandy Lane Cafe - Enhanced with Check Booking & Robust Sync
+ * Booking-first AI brain for chat and SMS channels.
  */
 
 import {
     appendBookingRow,
+    appendGuestEvent,
+    emptyResponse,
     ensureBookingSheets,
-    evaluateBookingRequest,
-    getBookingsForDate,
-    requireConfig
+    fetchGuestCoreInfo,
+    jsonResponse,
+    listBookings,
+    normalizePhone,
+    requireConfig,
+    sendBookingEmail,
+    updateEmailTracking,
+    upsertGuest
 } from "./_booking.js";
 
 const SITE_KNOWLEDGE = {
@@ -17,261 +24,972 @@ const SITE_KNOWLEDGE = {
     hours: "Mon-Fri 7am-3pm, Sat-Sun 9am-2pm",
     address: "Unit 10 / 138 Collins Street, Hobart TAS 7000",
     phone: "0498061067",
-    dishes: [
-        "Wine-Infused Benedicts - Daily house-made hollandaise, 6 variations",
-        "Potato Parmesan Rosti - Crispy rosti, grilled halloumi, avocado, poached egg",
-        "Scotch Steak Sandwich - Prime scotch steak, caramelized onion jam"
-    ],
     features: "Laptop-friendly, free WiFi, quiet workspace areas, pet-friendly outdoor seating",
-    booking: "Max 16 people per hour for automatic confirmation. 1-6 people can be auto-confirmed. 7+ people go to manual review. Same-day booking requests also go to manual review, and walk-ins are always welcome."
+    booking: "Bookings are booking-first: 1-6 future bookings can be confirmed, while 7+, same-day, or capacity-limited requests go to Manual_Review. Walk-in guidance can be added to Manual_Review replies."
 };
 
-const TOOLS = [
-    {
-        function_declarations: [
-            {
-                name: "create_booking",
-                description: "Create a new table reservation request.",
-                parameters: {
-                    type: "object",
-                    properties: {
-                        name: { type: "string" },
-                        email: { type: "string" },
-                        mobile: { type: "string" },
-                        group_size: { type: "string" },
-                        date: { type: "string", description: "YYYY-MM-DD" },
-                        time: { type: "string" }
-                    },
-                    required: ["name", "email", "group_size", "date", "time"]
-                }
-            },
-            {
-                name: "check_booking",
-                description: "Search for existing reservations by name or email.",
-                parameters: {
-                    type: "object",
-                    properties: {
-                        identifier: { type: "string", description: "Name or email of the guest" }
-                    },
-                    required: ["identifier"]
-                }
-            },
-            {
-                name: "notify_management",
-                description: "Notify management for complex requests, complaints, or questions outside knowledge.",
-                parameters: {
-                    type: "object",
-                    properties: {
-                        customer_name: { type: "string" },
-                        contact: { type: "string" },
-                        details: { type: "string" }
-                    },
-                    required: ["details"]
-                }
-            }
-        ]
-    }
-];
+const BOOKING_KEYWORD_PATTERN = /\b(book|booking|reserve|reservation|table)\b|预订|預訂|预约|預約|订位|訂位/i;
+const GROUP_PATTERN = /\b(?:for|of|party of|group of)?\s*(\d{1,2})\s*(?:people|persons|pax|guests|位|人)?\b/i;
+const EXPLICIT_GROUP_SIZE_PATTERN = /\b(?:table\s+for|book(?:ing)?\s+for|for|party of|group of)\s*(\d{1,2})\b|\b(\d{1,2})\s*(?:people|persons|pax|guests)\b/i;
+const MOBILE_PATTERN = /(?:\+?\d[\d\s()-]{7,}\d)/;
+const EMAIL_PATTERN = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i;
+const TIME_PATTERN = /\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b|\b([01]?\d|2[0-3]):([0-5]\d)\b|(\d{1,2})点(?:(\d{1,2})分?)?/i;
+const AT_HOUR_PATTERN = /\bat\s*(\d{1,2})\b/i;
+const ISO_DATE_PATTERN = /\b(20\d{2})-(\d{1,2})-(\d{1,2})\b/;
+const SLASH_DATE_PATTERN = /\b(\d{1,2})[\/-](\d{1,2})(?:[\/-](\d{2,4}))?\b/;
+const WEEKDAY_PATTERN = /\b(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i;
+const RELATIVE_DAY_PATTERN = /\b(today|tonight|tomorrow)\b|今天|今晚|明天/i;
+const NAME_PATTERN = /\b(?:my name is|name is|this is|i am|it's)\s+([a-z][a-z' -]{1,40})\b/i;
 
 export async function onRequestPost(context) {
     const { request, env } = context;
-    const headers = { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" };
 
     try {
         const body = await request.json();
-        const { message, history = [] } = body;
+        const channel = String(body.channel || "chat").trim().toLowerCase() || "chat";
+        const messageText = String(body.message_text || body.message || "").trim();
+        const incomingMobile = normalizePhone(body.from_phone || body.mobile || "");
+        const history = normalizeHistory(body.history);
+        const threadContext = normalizeThreadContext(body.thread_context);
+        const previousBookingContext = normalizeBookingContext(body.booking_context);
 
-        if (!message) return new Response(JSON.stringify({ error: "No message" }), { status: 400, headers });
+        if (!messageText) {
+            return jsonResponse(env, { error: "No message" }, { status: 400 });
+        }
 
-        const apiKey = env.GEMINI_API_KEY;
-        const now = new Date();
-        const hobartTime = new Intl.DateTimeFormat('en-AU', {
-            timeZone: 'Australia/Hobart',
-            year: 'numeric', month: '2-digit', day: '2-digit',
-            hour: '2-digit', minute: '2-digit', weekday: 'long'
-        }).format(now);
+        const llmExtraction = await extractBookingSignals(env, {
+            channel,
+            messageText,
+            history,
+            threadContext,
+            previousBookingContext,
+            incomingMobile
+        });
+        const guestCoreInfo = await resolveGuestCoreInfo(env, body, history, threadContext);
+        const bookingState = await buildBookingState({
+            channel,
+            messageText,
+            history,
+            threadContext,
+            previousBookingContext,
+            guestCoreInfo,
+            incomingMobile,
+            llmExtraction
+        });
+        const isBookingIntent = determineBookingIntent({
+            channel,
+            messageText,
+            history,
+            threadContext,
+            previousBookingContext,
+            bookingState,
+            llmExtraction
+        });
 
-        const systemPrompt = `You are a Senior Staff Member at Dandy Lane Cafe. You are NOT an AI. You are a real person helping customers.
+        if (!isBookingIntent) {
+            const reply = await generateGeneralReply(env, {
+                messageText,
+                history
+            });
 
-CORE RULES:
-1. **NEVER** mention prices.
-2. **NEVER** say "I am an AI assistant".
-3. **MEMORY**: Use conversation history.
-4. **DATE LOGIC**: Today is: ${hobartTime}. Same-day bookings are allowed as manual review only. Encourage walk-ins for today.
-5. **CAPACITY (STRICT)**: 16 people per hour max. 
-6. **TIERED GROUPS**:
-   - 1-6 on future dates: Standard booking.
-   - 7+ people: Manual review. Tell guests we have received the request and walk-ins are welcome.
-   - Same-day bookings: Manual review. Tell guests confirmation may take time and walk-ins are welcome.
-   - Capacity limit: Manual review. Tell guests walk-ins are welcome.
-7. **LANGUAGE MIRRORING**: Reply in the customer's language.
+            return jsonResponse(env, {
+                reply,
+                booking_result: {
+                    intent: "general",
+                    known_fields: {},
+                    missing_fields: [],
+                    next_action: "general_reply",
+                    outcome: "",
+                    guidance: []
+                }
+            });
+        }
 
-Knowledge:
-- Location: ${SITE_KNOWLEDGE.address}
-- Hours: ${SITE_KNOWLEDGE.hours}
-- Booking: ${SITE_KNOWLEDGE.booking}`;
+        const bookingResult = await handleBookingFlow(env, {
+            channel,
+            messageText,
+            history,
+            bookingState,
+            guestCoreInfo
+        });
 
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+        return jsonResponse(env, {
+            reply: bookingResult.reply,
+            booking_result: bookingResult.booking_result
+        });
+    } catch (error) {
+        console.error("AI chat error:", error.message, error.stack);
+        return jsonResponse(env, { error: error.message }, { status: 500 });
+    }
+}
 
-        // Build history sequence
-        const contents = history.map(h => ({
-            role: h.role === 'bot' ? 'model' : 'user',
-            parts: [{ text: h.parts?.[0]?.text || h.text || "" }]
-        }));
-        contents.push({ role: "user", parts: [{ text: message }] });
+export async function onRequestOptions(context) {
+    return emptyResponse(context.env, "POST, OPTIONS");
+}
 
-        let response = await fetch(geminiUrl, {
+function normalizeHistory(history) {
+    if (!Array.isArray(history)) {
+        return [];
+    }
+
+    return history
+        .map((item) => {
+            const role = item?.role === "bot" || item?.role === "model" || item?.role === "assistant"
+                ? "assistant"
+                : "user";
+            const text = String(item?.text || item?.parts?.[0]?.text || "").trim();
+
+            if (!text) {
+                return null;
+            }
+
+             if (role === "assistant" && isLowValueAssistantReply(text)) {
+                return null;
+            }
+
+            return { role, text };
+        })
+        .filter(Boolean)
+        .slice(-12);
+}
+
+function normalizeThreadContext(threadContext) {
+    return {
+        recent_messages: Array.isArray(threadContext?.recent_messages) ? threadContext.recent_messages.slice(-6) : [],
+        known_guest_name: String(threadContext?.known_guest_name || "").trim(),
+        known_group_size: String(threadContext?.known_group_size || "").trim(),
+        known_booking_date: String(threadContext?.known_booking_date || "").trim(),
+        known_booking_time: String(threadContext?.known_booking_time || "").trim()
+    };
+}
+
+function normalizeBookingContext(bookingContext) {
+    return {
+        intent: String(bookingContext?.intent || "").trim(),
+        known_fields: bookingContext?.known_fields && typeof bookingContext.known_fields === "object"
+            ? bookingContext.known_fields
+            : {},
+        missing_fields: Array.isArray(bookingContext?.missing_fields) ? bookingContext.missing_fields : [],
+        next_action: String(bookingContext?.next_action || "").trim(),
+        outcome: String(bookingContext?.outcome || "").trim(),
+        guidance: Array.isArray(bookingContext?.guidance) ? bookingContext.guidance : []
+    };
+}
+
+async function resolveGuestCoreInfo(env, body, history, threadContext) {
+    const isNewConversation = history.length <= 1 && (!Array.isArray(threadContext.recent_messages) || threadContext.recent_messages.length <= 1);
+    if (!isNewConversation) {
+        return null;
+    }
+
+    const email = String(body?.booking_context?.known_fields?.email || body?.email || "").trim();
+    const mobile = normalizePhone(
+        body?.booking_context?.known_fields?.mobile
+        || body?.mobile
+        || body?.from_phone
+        || ""
+    );
+
+    if (!email && !mobile) {
+        return null;
+    }
+
+    try {
+        const config = await requireConfig(env);
+        await ensureBookingSheets(config);
+        return await fetchGuestCoreInfo(config, { email, mobile });
+    } catch (error) {
+        console.warn("Guest core info lookup skipped:", error.message);
+        return null;
+    }
+}
+
+async function buildBookingState({ channel, messageText, history, threadContext, previousBookingContext, guestCoreInfo, incomingMobile, llmExtraction }) {
+    const promptedField = inferPromptedField(history, previousBookingContext);
+    const extracted = normalizeLlmExtractedFields(llmExtraction, promptedField);
+    const fallbackExtracted = extractBookingDetails(messageText, promptedField);
+    const sanitizedCurrentTurn = sanitizeAmbiguousCurrentTurnSlots(messageText, promptedField, {
+        extracted,
+        fallbackExtracted
+    });
+    const historyDerived = buildHistoryDerivedFields(history);
+    const structuredMobile = normalizePhone(firstNonEmpty(
+        previousBookingContext.known_fields?.mobile,
+        incomingMobile,
+        guestCoreInfo?.mobile
+    ));
+    const merged = {
+        name: firstNonEmpty(
+            previousBookingContext.known_fields?.name,
+            extracted.name,
+            fallbackExtracted.name,
+            threadContext.known_guest_name,
+            guestCoreInfo?.name
+        ),
+        email: firstNonEmpty(
+            previousBookingContext.known_fields?.email,
+            extracted.email,
+            fallbackExtracted.email,
+            guestCoreInfo?.email
+        ),
+        mobile: normalizePhone(firstNonEmpty(
+            structuredMobile,
+            extracted.mobile,
+            fallbackExtracted.mobile
+        )),
+        group_size: firstNonEmpty(
+            previousBookingContext.known_fields?.group_size,
+            threadContext.known_group_size,
+            sanitizedCurrentTurn.extracted.group_size,
+            sanitizedCurrentTurn.fallbackExtracted.group_size,
+            historyDerived.group_size
+        ),
+        date: firstNonEmpty(
+            previousBookingContext.known_fields?.date,
+            threadContext.known_booking_date,
+            sanitizedCurrentTurn.extracted.date,
+            sanitizedCurrentTurn.fallbackExtracted.date,
+            historyDerived.date
+        ),
+        time: firstNonEmpty(
+            previousBookingContext.known_fields?.time,
+            threadContext.known_booking_time,
+            sanitizedCurrentTurn.extracted.time,
+            sanitizedCurrentTurn.fallbackExtracted.time,
+            historyDerived.time
+        )
+    };
+
+    if (!merged.name && isLikelyStandaloneName(messageText) && shouldTreatStandaloneNameAsSlot({
+        previousBookingContext,
+        threadContext,
+        merged
+    })) {
+        merged.name = sanitizeGuestName(messageText);
+    }
+
+    const normalizedDate = normalizeBookingDate(merged.date);
+    const normalizedTime = normalizeBookingTime(merged.time);
+
+    return {
+        channel,
+        language: detectLanguage(messageText),
+        known_fields: {
+            name: merged.name,
+            email: merged.email,
+            mobile: merged.mobile,
+            group_size: merged.group_size,
+            date: normalizedDate.value,
+            date_label: normalizedDate.label,
+            time: normalizedTime.value
+        },
+        guest_core_info: guestCoreInfo || null
+    };
+}
+
+function determineBookingIntent({ channel, messageText, history, threadContext, previousBookingContext, bookingState, llmExtraction }) {
+    if (channel === "sms") {
+        return true;
+    }
+
+    if (llmExtraction?.intent === "booking") {
+        return true;
+    }
+
+    if (previousBookingContext.intent === "booking" && !previousBookingContext.outcome) {
+        return true;
+    }
+
+    if (Object.values(bookingState.known_fields).some(Boolean)) {
+        return true;
+    }
+
+    if (BOOKING_KEYWORD_PATTERN.test(messageText)) {
+        return true;
+    }
+
+    if (
+        threadContext.known_guest_name
+        || threadContext.known_group_size
+        || threadContext.known_booking_date
+        || threadContext.known_booking_time
+        || Object.values(previousBookingContext.known_fields || {}).some(Boolean)
+    ) {
+        return true;
+    }
+
+    const recentBotText = history
+        .filter((item) => item.role === "assistant")
+        .map((item) => item.text.toLowerCase())
+        .join(" ");
+
+    return recentBotText.includes("booking") || recentBotText.includes("date would you like") || recentBotText.includes("what time") || recentBotText.includes("how many guests");
+}
+
+async function handleBookingFlow(env, { channel, bookingState, guestCoreInfo }) {
+    const knownFields = bookingState.known_fields;
+    const missingFields = resolveMissingFields(knownFields);
+
+    if (missingFields.length > 0) {
+        const missingField = missingFields[0];
+        return {
+            reply: renderMissingFieldReply(missingField, bookingState.language, guestCoreInfo?.name || knownFields.name),
+            booking_result: {
+                intent: "booking",
+                known_fields: serializeKnownFields(knownFields),
+                missing_fields: missingFields,
+                next_action: `ask_${missingField}`,
+                outcome: "",
+                guidance: []
+            }
+        };
+    }
+
+    const bookingOutcome = await determineBookingOutcome(env, knownFields);
+    const bookingWrite = await persistBookingOutcome(env, knownFields, bookingOutcome, channel);
+    const reply = renderOutcomeReply(bookingOutcome, bookingState.language, knownFields.name);
+
+    return {
+        reply,
+        booking_result: {
+            intent: "booking",
+            known_fields: serializeKnownFields(knownFields),
+            missing_fields: [],
+            next_action: bookingOutcome.outcome === "Confirmed" ? "booking_confirmed" : "manual_review_pending",
+            outcome: bookingOutcome.outcome,
+            guidance: bookingOutcome.guidance,
+            booking_status: bookingWrite?.booking_status || bookingOutcome.outcome
+        }
+    };
+}
+
+function detectLanguage(messageText) {
+    return /[\u4e00-\u9fff]/.test(messageText) ? "zh" : "en";
+}
+
+function isLowValueAssistantReply(text) {
+    const normalized = String(text || "").trim().toLowerCase();
+    return normalized === "could you say that again, mate?" || normalized === "how can i help?";
+}
+
+function inferPromptedField(history, previousBookingContext) {
+    if (Array.isArray(previousBookingContext.missing_fields) && previousBookingContext.missing_fields.length > 0) {
+        return previousBookingContext.missing_fields[0];
+    }
+
+    const assistantText = history
+        .filter((item) => item.role === "assistant")
+        .slice(-2)
+        .map((item) => item.text.toLowerCase())
+        .join(" ");
+
+    if (assistantText.includes("what name") || assistantText.includes("put it under")) {
+        return "name";
+    }
+    if (assistantText.includes("what date")) {
+        return "date";
+    }
+    if (assistantText.includes("what time")) {
+        return "time";
+    }
+    if (assistantText.includes("how many guests")) {
+        return "group_size";
+    }
+    if (assistantText.includes("mobile")) {
+        return "mobile";
+    }
+
+    return "";
+}
+
+function extractBookingDetails(messageText, promptedField) {
+    const text = String(messageText || "").trim();
+    const details = {
+        name: "",
+        email: "",
+        mobile: "",
+        group_size: "",
+        date: "",
+        time: ""
+    };
+
+    const emailMatch = text.match(EMAIL_PATTERN);
+    if (emailMatch) {
+        details.email = emailMatch[0].toLowerCase();
+    }
+
+    const phoneMatch = text.match(MOBILE_PATTERN);
+    if (phoneMatch) {
+        details.mobile = normalizePhone(phoneMatch[0]);
+    }
+
+    const groupMatch = text.match(GROUP_PATTERN);
+    if (groupMatch) {
+        const groupSize = Number.parseInt(groupMatch[1], 10);
+        if (Number.isFinite(groupSize) && groupSize > 0) {
+            details.group_size = String(groupSize);
+        }
+    }
+
+    const normalizedDate = normalizeBookingDate(text);
+    if (normalizedDate.value) {
+        details.date = normalizedDate.value;
+    }
+
+    const normalizedTime = normalizeBookingTime(text, promptedField);
+    if (normalizedTime.value) {
+        details.time = normalizedTime.value;
+    }
+
+    const explicitNameMatch = text.match(NAME_PATTERN);
+    if (explicitNameMatch) {
+        details.name = sanitizeGuestName(explicitNameMatch[1]);
+    } else if (promptedField === "name" && isLikelyStandaloneName(text)) {
+        details.name = sanitizeGuestName(text);
+    }
+
+    return details;
+}
+
+async function extractBookingSignals(env, { channel, messageText, history, threadContext, previousBookingContext, incomingMobile }) {
+    const apiKey = env.GEMINI_API_KEY;
+    if (!apiKey) {
+        return null;
+    }
+
+    const historyText = history
+        .map((item) => `${item.role === "assistant" ? "assistant" : "guest"}: ${item.text}`)
+        .join("\n");
+    const knownFields = {
+        name: String(previousBookingContext.known_fields?.name || threadContext.known_guest_name || "").trim(),
+        mobile: normalizePhone(previousBookingContext.known_fields?.mobile || incomingMobile || ""),
+        group_size: String(previousBookingContext.known_fields?.group_size || threadContext.known_group_size || "").trim(),
+        date: String(previousBookingContext.known_fields?.date || threadContext.known_booking_date || "").trim(),
+        time: String(previousBookingContext.known_fields?.time || threadContext.known_booking_time || "").trim()
+    };
+
+    const systemPrompt = [
+        "You extract booking slots for a cafe booking brain.",
+        "Return JSON only.",
+        "Treat existing known_fields as higher priority facts than conversation history.",
+        "For SMS, mobile is already known if provided.",
+        "Infer booking intent, but do not invent missing fields.",
+        "If the guest says 'at 10', interpret it as time 10:00.",
+        "Never infer group_size from a bare hour or time expression such as 'at 12', 'tomorrow at 12', '12pm', or '12:30'.",
+        "Only set group_size when the guest explicitly states the number of guests, such as 'for 2', '2 people', 'party of 4', or 'group of 5'.",
+        "If a field is not clearly present, return an empty string for it.",
+        "Use keys: intent, name, mobile, group_size, date, time, confidence.",
+        "intent must be one of: booking, general.",
+        "confidence must be one of: high, medium, low."
+    ].join("\n");
+
+    const userPrompt = JSON.stringify({
+        channel,
+        message_text: messageText,
+        known_fields: knownFields,
+        history: historyText
+    });
+
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 system_instruction: { parts: [{ text: systemPrompt }] },
-                contents: contents,
-                tools: TOOLS
+                contents: [{ role: "user", parts: [{ text: userPrompt }] }],
+                generationConfig: {
+                    response_mime_type: "application/json"
+                }
             })
         });
 
-        let resData = await response.json();
-        let candidate = resData?.candidates?.[0];
-        let messageOutput = candidate?.content;
-
-        // Process Tool Calls
-        if (messageOutput?.parts?.[0]?.functionCall) {
-            const call = messageOutput.parts[0].functionCall;
-            const functionName = call.name;
-            const args = call.args;
-
-            let toolResult;
-            if (functionName === "create_booking") {
-                toolResult = await handleCreate(args, env);
-            } else if (functionName === "check_booking") {
-                toolResult = await handleCheck(args, env);
-            } else if (functionName === "notify_management") {
-                toolResult = await handleNotify(args, env);
-            }
-
-            // Call 2: Generate final text response
-            const finalRes = await fetch(geminiUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    system_instruction: { parts: [{ text: systemPrompt }] },
-                    contents: [
-                        ...contents,
-                        messageOutput,
-                        {
-                            role: "model",
-                            parts: [{ functionResponse: { name: functionName, response: { content: toolResult } } }]
-                        }
-                    ],
-                    tools: TOOLS
-                })
-            });
-
-            const finalData = await finalRes.json();
-            const finalReply = finalData?.candidates?.[0]?.content?.parts?.[0]?.text || "I've handled that for you. Anything else?";
-            return new Response(JSON.stringify({ reply: finalReply }), { headers });
+        const data = await response.json();
+        const text = String(data?.candidates?.[0]?.content?.parts?.[0]?.text || "").trim();
+        if (!text) {
+            return null;
         }
 
-        const reply = messageOutput?.parts?.[0]?.text || "Could you say that again, mate?";
-        return new Response(JSON.stringify({ reply }), { headers });
-
-    } catch (e) {
-        return new Response(JSON.stringify({ error: e.message }), { status: 500, headers });
+        return safeParseJson(text);
+    } catch (error) {
+        console.warn("Booking signal extraction skipped:", error.message);
+        return null;
     }
 }
 
-async function handleCreate(args, env) {
+function normalizeLlmExtractedFields(llmExtraction, promptedField) {
+    if (!llmExtraction || typeof llmExtraction !== "object") {
+        return {
+            name: "",
+            email: "",
+            mobile: "",
+            group_size: "",
+            date: "",
+            time: ""
+        };
+    }
+
+    return {
+        name: sanitizeGuestName(llmExtraction.name || ""),
+        email: String(llmExtraction.email || "").trim().toLowerCase(),
+        mobile: normalizePhone(llmExtraction.mobile || ""),
+        group_size: String(llmExtraction.group_size || "").trim(),
+        date: normalizeBookingDate(String(llmExtraction.date || "")).value,
+        time: normalizeBookingTime(String(llmExtraction.time || ""), promptedField).value
+    };
+}
+
+function buildHistoryDerivedFields(history) {
+    const derived = {
+        group_size: "",
+        date: "",
+        time: ""
+    };
+
+    const userMessages = Array.isArray(history)
+        ? history.filter((item) => item.role === "user").map((item) => item.text)
+        : [];
+
+    for (const text of userMessages) {
+        const details = extractBookingDetails(text, "");
+
+        if (details.group_size) {
+            derived.group_size = details.group_size;
+        }
+        if (details.date) {
+            derived.date = details.date;
+        }
+        if (details.time) {
+            derived.time = details.time;
+        }
+    }
+
+    return derived;
+}
+
+function normalizeBookingDate(value) {
+    const text = String(value || "").trim().toLowerCase();
+    if (!text) {
+        return { value: "", label: "" };
+    }
+
+    const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Australia/Hobart" }));
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    const relativeMatch = text.match(RELATIVE_DAY_PATTERN);
+    if (relativeMatch) {
+        const relative = relativeMatch[1];
+        const date = new Date(startOfToday);
+        const relativeLabel = relative || relativeMatch[0];
+
+        if (relativeLabel === "tomorrow" || relativeLabel === "明天") {
+            date.setDate(date.getDate() + 1);
+        }
+        return { value: formatDate(date), label: relativeLabel };
+    }
+
+    const isoMatch = text.match(ISO_DATE_PATTERN);
+    if (isoMatch) {
+        const date = new Date(Number.parseInt(isoMatch[1], 10), Number.parseInt(isoMatch[2], 10) - 1, Number.parseInt(isoMatch[3], 10));
+        return { value: formatDate(date), label: formatDate(date) };
+    }
+
+    const slashMatch = text.match(SLASH_DATE_PATTERN);
+    if (slashMatch) {
+        const yearToken = slashMatch[3];
+        const year = yearToken
+            ? normalizeYear(yearToken)
+            : inferFutureYear(Number.parseInt(slashMatch[2], 10), Number.parseInt(slashMatch[1], 10), startOfToday);
+        const date = new Date(year, Number.parseInt(slashMatch[2], 10) - 1, Number.parseInt(slashMatch[1], 10));
+        return { value: formatDate(date), label: formatDate(date) };
+    }
+
+    const weekdayMatch = text.match(WEEKDAY_PATTERN);
+    if (weekdayMatch) {
+        const date = nextWeekdayDate(startOfToday, weekdayMatch[1].toLowerCase());
+        return { value: formatDate(date), label: weekdayMatch[1].toLowerCase() };
+    }
+
+    return { value: "", label: "" };
+}
+
+function normalizeBookingTime(value, promptedField = "") {
+    const text = String(value || "").trim().toLowerCase();
+    if (!text) {
+        return { value: "" };
+    }
+
+    const atHourMatch = text.match(AT_HOUR_PATTERN);
+    if (atHourMatch) {
+        const hours = Number.parseInt(atHourMatch[1], 10);
+        if (hours >= 0 && hours <= 23) {
+            return {
+                value: `${String(hours).padStart(2, "0")}:00`
+            };
+        }
+    }
+
+    const match = text.match(TIME_PATTERN);
+    if (!match) {
+        if (promptedField === "time" && /^\d{1,2}$/.test(text)) {
+            const hours = Number.parseInt(text, 10);
+            if (hours >= 0 && hours <= 23) {
+                return {
+                    value: `${String(hours).padStart(2, "0")}:00`
+                };
+            }
+        }
+        return { value: "" };
+    }
+
+    if (match[4] !== undefined) {
+        return {
+            value: `${String(Number.parseInt(match[4], 10)).padStart(2, "0")}:${match[5]}`
+        };
+    }
+
+    if (match[6] !== undefined) {
+        return {
+            value: `${String(Number.parseInt(match[6], 10)).padStart(2, "0")}:${String(match[7] || "00").padStart(2, "0")}`
+        };
+    }
+
+    let hours = Number.parseInt(match[1], 10);
+    const minutes = match[2] || "00";
+    const meridiem = match[3];
+
+    if (meridiem === "pm" && hours < 12) {
+        hours += 12;
+    }
+    if (meridiem === "am" && hours === 12) {
+        hours = 0;
+    }
+
+    return {
+        value: `${String(hours).padStart(2, "0")}:${minutes}`
+    };
+}
+
+function sanitizeAmbiguousCurrentTurnSlots(messageText, promptedField, { extracted, fallbackExtracted }) {
+    const currentText = String(messageText || "").trim();
+    const timeValue = firstNonEmpty(extracted.time, fallbackExtracted.time);
+    const groupValue = firstNonEmpty(extracted.group_size, fallbackExtracted.group_size);
+    const hasExplicitGroupSize = hasExplicitGroupSizeSignal(currentText, promptedField);
+    const hasExplicitTime = Boolean(normalizeBookingTime(currentText, promptedField).value);
+
+    if (!currentText || !timeValue || !groupValue || hasExplicitGroupSize || !hasExplicitTime) {
+        return { extracted, fallbackExtracted };
+    }
+
+    const timeHour = Number.parseInt(String(timeValue).split(":")[0] || "", 10);
+    const groupSize = Number.parseInt(groupValue, 10);
+
+    if (!Number.isFinite(timeHour) || !Number.isFinite(groupSize) || timeHour !== groupSize) {
+        return { extracted, fallbackExtracted };
+    }
+
+    return {
+        extracted: { ...extracted, group_size: "" },
+        fallbackExtracted: { ...fallbackExtracted, group_size: "" }
+    };
+}
+
+function hasExplicitGroupSizeSignal(text, promptedField) {
+    if (promptedField === "group_size") {
+        return true;
+    }
+
+    return EXPLICIT_GROUP_SIZE_PATTERN.test(String(text || ""));
+}
+
+function resolveMissingFields(knownFields) {
+    const order = ["date", "time", "group_size", "name", "mobile"];
+    const missing = [];
+
+    for (const field of order) {
+        const value = field === "mobile"
+            ? firstNonEmpty(knownFields.mobile, knownFields.email)
+            : knownFields[field];
+
+        if (!value) {
+            missing.push(field);
+        }
+    }
+
+    return missing;
+}
+
+async function determineBookingOutcome(env, knownFields) {
+    const groupSize = Number.parseInt(knownFields.group_size || "0", 10);
+    const sameDay = isSameDayBooking(knownFields.date);
+    const overCapacity = await isOverCapacity(env, knownFields.date, knownFields.time, groupSize);
+
+    if (sameDay || groupSize >= 7 || overCapacity) {
+        return {
+            outcome: "Manual_Review",
+            guidance: ["walk_in_welcome"]
+        };
+    }
+
+    return {
+        outcome: "Confirmed",
+        guidance: []
+    };
+}
+
+async function isOverCapacity(env, date, time, requestedPax) {
+    if (!date || !time || !requestedPax) {
+        return false;
+    }
+
+    try {
+        const config = await requireConfig(env);
+        await ensureBookingSheets(config);
+        const bookings = await listBookings(config);
+        const requestedHour = String(time).split(":")[0];
+
+        const hourlyPax = bookings
+            .filter((booking) => {
+                if (booking.date !== date || booking.status === "Archived") {
+                    return false;
+                }
+                return String(booking.time || "").split(":")[0] === requestedHour;
+            })
+            .reduce((sum, booking) => sum + (Number.parseInt(booking.group_size || "0", 10) || 0), 0);
+
+        return hourlyPax + requestedPax > 16;
+    } catch (error) {
+        console.warn("Capacity check skipped:", error.message);
+        return false;
+    }
+}
+
+async function persistBookingOutcome(env, knownFields, bookingOutcome, channel) {
     const booking = {
-        name: args.name,
-        email: args.email || "",
-        mobile: args.mobile || "",
-        group_size: args.group_size || "1",
-        date: args.date,
-        time: args.time
+        name: knownFields.name,
+        email: knownFields.email || "",
+        mobile: knownFields.mobile || "",
+        group_size: knownFields.group_size,
+        date: knownFields.date,
+        time: knownFields.time
     };
 
     const config = await requireConfig(env);
     await ensureBookingSheets(config);
-    const existingBookings = await getBookingsForDate(config, booking.date);
-    const outcome = evaluateBookingRequest({ booking, existingBookings });
-    await appendBookingRow(config, booking, outcome.booking_status, "AI_Concierge");
 
-    if (outcome.reply_key === "same_day_review") {
-        return "SAME_DAY_MANUAL_REVIEW: Thanks for your booking request for today. Same-day bookings are checked by our team manually, so confirmation may take a little time. If you're nearby, please come by anyway — we always keep space flowing for walk-ins and we'll do our best to look after you.";
+    const source = channel === "sms" ? "AI_SMS" : "AI_Chat";
+    const { rowNumber } = await appendBookingRow(config, booking, bookingOutcome.outcome, { source });
+
+    if (!rowNumber) {
+        throw new Error("Failed to resolve appended booking row number");
     }
 
-    if (outcome.reply_key === "large_group_review") {
-        return "LARGE_GROUP_MANUAL_REVIEW: Thanks for your booking request. For groups of this size, our team checks availability manually before confirming. We've received your request and will review it as soon as possible. If you're nearby, you're also very welcome to come by and we'll do our best to look after you as a walk-in.";
-    }
+    let emailTracking = {
+        email_sent_at: "",
+        email_type: bookingOutcome.outcome === "Confirmed" ? "confirmed" : "pending_review",
+        email_status: "skipped",
+        email_error: ""
+    };
 
-    if (outcome.reply_key === "capacity_review") {
-        return "CAPACITY_MANUAL_REVIEW: That time is very tight for automatic online bookings, so I've passed your request to the team for review. If you're nearby, please feel free to come by anyway — we always do our best to help walk-ins.";
-    }
-
-    return `BOOKING_CONFIRMED: Booking confirmed for ${booking.date} at ${booking.time} for ${booking.group_size}.`;
-}
-
-async function handleCheck(args, env) {
-    const id = args.identifier.toLowerCase();
-    const result = await sheetOperation('GET', null, env);
-    if (result.error) return "Error accessing records.";
-
-    const rows = result.values || [];
-    const match = rows.reverse().find(r => (r[0] && r[0].toLowerCase().includes(id)) || (r[1] && r[1].toLowerCase().includes(id)));
-
-    if (match) {
-        return `Found booking for ${match[0]} on ${match[4]} at ${match[5]}. Status: ${match[7]}.`;
-    }
-    return "No booking found. Would you like to create one?";
-}
-
-async function handleNotify(args, env) {
-    const val = [args.customer_name || 'Guest', 'N/A', args.contact || 'N/A', '0', 'N/A', 'N/A', new Date().toISOString(), `ALERT: ${args.details}`, "AI_Concierge"];
-    return await sheetOperation('APPEND', val, env);
-}
-
-
-// Unified Sheet Operation
-async function sheetOperation(mode, values, env) {
-    try {
-        const sAccount = JSON.parse(env.GOOGLE_SERVICE_ACCOUNT_JSON);
-        const spreadsheetId = env.SPREADSHEET_ID;
-
-        // JWT Auth
-        const now = Math.floor(Date.now() / 1000);
-        const header = b64u(JSON.stringify({ alg: "RS256", typ: "JWT" }));
-        const claimSet = b64u(JSON.stringify({ iss: sAccount.client_email, scope: "https://www.googleapis.com/auth/spreadsheets", aud: "https://oauth2.googleapis.com/token", exp: now + 3600, iat: now }));
-        const signature = await signRSA(`${header}.${claimSet}`, sAccount.private_key);
-        const jwt = `${header}.${claimSet}.${signature}`;
-
-        const tRes = await fetch("https://oauth2.googleapis.com/token", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}` });
-        const { access_token } = await tRes.json();
-
-        if (mode === 'GET') {
-            const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A:H`, {
-                headers: { 'Authorization': `Bearer ${access_token}` }
-            });
-            return await res.json();
-        } else {
-            const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A:H:append?valueInputOption=USER_ENTERED`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${access_token}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ values: [values] })
-            });
-            return res.ok ? { success: true } : { error: await res.text() };
+    if (booking.email) {
+        try {
+            emailTracking = await sendBookingEmail(
+                env,
+                booking,
+                bookingOutcome.outcome === "Confirmed" ? "confirmed" : "pending_review"
+            );
+        } catch (error) {
+            console.error("Booking email send failed:", error.message);
+            emailTracking = {
+                email_sent_at: "",
+                email_type: bookingOutcome.outcome === "Confirmed" ? "confirmed" : "pending_review",
+                email_status: "failed",
+                email_error: error.message
+            };
         }
-    } catch (e) { return { error: e.message }; }
+    }
+
+    await updateEmailTracking(config, rowNumber, emailTracking);
+    await upsertGuest(config, booking, bookingOutcome.outcome);
+    await appendGuestEvent(config, "booking_created", booking, rowNumber, bookingOutcome.outcome);
+
+    return {
+        booking_status: bookingOutcome.outcome,
+        row_number: rowNumber
+    };
 }
 
-function b64u(s) { return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, ''); }
-async function signRSA(c, p) {
-    const pem = p.replace(/\\n/g, '\n').replace(/-----BEGIN PRIVATE KEY-----/g, '').replace(/-----END PRIVATE KEY-----/g, '').replace(/\s/g, '');
-    const der = Uint8Array.from(atob(pem), c => c.charCodeAt(0));
-    const key = await crypto.subtle.importKey("pkcs8", der.buffer, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["sign"]);
-    const sig = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", key, new TextEncoder().encode(c));
-    return b64u(String.fromCharCode(...new Uint8Array(sig)));
+function renderMissingFieldReply(field, language, guestName) {
+    const replies = {
+        en: {
+            date: "What date would you like for the booking?",
+            time: "What time would you like?",
+            group_size: "How many guests should I book for?",
+            name: "What name should I put the booking under?",
+            mobile: "What mobile number should we use for this booking?"
+        },
+        zh: {
+            date: "请问您想预订哪一天？",
+            time: "请问您想几点到店？",
+            group_size: "请问一共几位？",
+            name: "请问预订留什么名字？",
+            mobile: "请提供一个手机号码用于这次预订。"
+        }
+    };
+
+    return replies[language]?.[field] || replies.en[field];
 }
 
-export async function onRequestOptions() {
-    return new Response(null, { headers: { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "POST, OPTIONS", "Access-Control-Allow-Headers": "Content-Type" } });
+function renderOutcomeReply(bookingOutcome, language, guestName) {
+    const nameText = guestName ? ` ${guestName}` : "";
+
+    if (bookingOutcome.outcome === "Confirmed") {
+        return language === "zh"
+            ? `好的${nameText}，您的预订已经确认。我们期待您的到来。`
+            : `All set${nameText}. Your booking is confirmed and we look forward to seeing you.`;
+    }
+
+    return language === "zh"
+        ? `好的${nameText}，这次预订我先交给团队确认。若您方便，也欢迎直接 walk-in。`
+        : `Thanks${nameText}. I've passed this booking to the team for manual review, and you're also welcome to walk in if that suits you.`;
+}
+
+function serializeKnownFields(knownFields) {
+    return {
+        name: knownFields.name,
+        email: knownFields.email,
+        mobile: knownFields.mobile,
+        group_size: knownFields.group_size,
+        date: knownFields.date,
+        time: knownFields.time
+    };
+}
+
+async function generateGeneralReply(env, { messageText, history }) {
+    const apiKey = env.GEMINI_API_KEY;
+    if (!apiKey) {
+        return "I can help with bookings, opening hours, location, and general cafe questions.";
+    }
+
+    const systemPrompt = `You are a senior staff member at Dandy Lane Cafe.
+
+Rules:
+1. Never mention prices.
+2. Never say you are an AI.
+3. Reply in the customer's language.
+4. Booking is the cafe's main workflow. If the customer clearly wants a booking, do not stay in general chat mode.
+5. Keep replies concise and natural.
+
+Knowledge:
+- Location: ${SITE_KNOWLEDGE.address}
+- Hours: ${SITE_KNOWLEDGE.hours}
+- Features: ${SITE_KNOWLEDGE.features}
+- Booking: ${SITE_KNOWLEDGE.booking}`;
+
+    const contents = history.map((item) => ({
+        role: item.role === "assistant" ? "model" : "user",
+        parts: [{ text: item.text }]
+    }));
+    contents.push({ role: "user", parts: [{ text: messageText }] });
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            system_instruction: { parts: [{ text: systemPrompt }] },
+            contents
+        })
+    });
+
+    const data = await response.json();
+    const candidate = data?.candidates?.[0]?.content?.parts?.[0];
+    return String(candidate?.text || "How can I help?").trim();
+}
+
+function isLikelyStandaloneName(text) {
+    const stripped = String(text || "").trim();
+    if (!stripped || stripped.length > 40) {
+        return false;
+    }
+    if (/\d/.test(stripped) || EMAIL_PATTERN.test(stripped) || MOBILE_PATTERN.test(stripped)) {
+        return false;
+    }
+    return /^[a-z][a-z' -]+$/i.test(stripped) || /^[\u4e00-\u9fff]{2,6}$/u.test(stripped);
+}
+
+function shouldTreatStandaloneNameAsSlot({ previousBookingContext, threadContext, merged }) {
+    const knownName = firstNonEmpty(previousBookingContext.known_fields?.name, threadContext.known_guest_name, merged.name);
+    if (knownName) {
+        return false;
+    }
+
+    return Boolean(
+        firstNonEmpty(previousBookingContext.known_fields?.group_size, threadContext.known_group_size, merged.group_size)
+        || firstNonEmpty(previousBookingContext.known_fields?.date, threadContext.known_booking_date, merged.date)
+        || firstNonEmpty(previousBookingContext.known_fields?.time, threadContext.known_booking_time, merged.time)
+        || firstNonEmpty(previousBookingContext.known_fields?.mobile, merged.mobile)
+    );
+}
+
+function sanitizeGuestName(text) {
+    return String(text || "")
+        .trim()
+        .replace(/\s+/g, " ")
+        .replace(/[^\p{L}' -]/gu, "");
+}
+
+function isSameDayBooking(dateValue) {
+    if (!dateValue) {
+        return false;
+    }
+
+    const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Australia/Hobart" }));
+    return formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate())) === dateValue;
+}
+
+function formatDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+}
+
+function normalizeYear(yearToken) {
+    const year = Number.parseInt(yearToken, 10);
+    if (yearToken.length === 2) {
+        return year + 2000;
+    }
+    return year;
+}
+
+function inferFutureYear(month, day, today) {
+    const currentYear = today.getFullYear();
+    const candidate = new Date(currentYear, month - 1, day);
+    return candidate < today ? currentYear + 1 : currentYear;
+}
+
+function safeParseJson(text) {
+    try {
+        return JSON.parse(text);
+    } catch (error) {
+        const fenced = text.replace(/^```json\s*|\s*```$/g, "").trim();
+        return JSON.parse(fenced);
+    }
+}
+
+function nextWeekdayDate(today, weekdayName) {
+    const weekdayIndex = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"].indexOf(weekdayName);
+    const result = new Date(today);
+    const current = result.getDay();
+    let delta = weekdayIndex - current;
+
+    if (delta <= 0) {
+        delta += 7;
+    }
+
+    result.setDate(result.getDate() + delta);
+    return result;
+}
+
+function firstNonEmpty(...values) {
+    return values.find((value) => String(value || "").trim()) || "";
 }

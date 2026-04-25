@@ -217,6 +217,7 @@
         overlay.addEventListener('click', closeFunc);
 
         let chatHistory = [];
+        let bookingContext = null;
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -244,8 +245,10 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
+                        channel: 'chat',
                         message: text,
                         history: chatHistory,
+                        booking_context: bookingContext,
                         sender_id: webUserId
                     })
                 });
@@ -255,9 +258,10 @@
 
                 if (data.reply) {
                     appendMessage(data.reply, 'bot');
-                    chatHistory.push({ role: 'user', parts: [{ text: text }] });
-                    chatHistory.push({ role: 'model', parts: [{ text: data.reply }] });
+                    chatHistory.push({ role: 'user', text: text });
+                    chatHistory.push({ role: 'assistant', text: data.reply });
                     if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
+                    bookingContext = data.booking_result && !data.booking_result.outcome ? data.booking_result : null;
                 } else {
                     throw new Error('No reply');
                 }

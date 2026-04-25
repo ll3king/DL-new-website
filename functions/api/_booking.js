@@ -1,9 +1,8 @@
-const SHEET_HEADERS = {
+﻿const SHEET_HEADERS = {
     Sheet1: [["name", "email", "mobile", "group_size", "date", "time", "created_at", "status", "source", "email_sent_at", "email_type", "email_status", "email_error"]],
     Guests: [["email_normalized", "email", "name", "mobile", "first_booking_at", "last_booking_at", "booking_count", "last_group_size", "last_booking_date", "last_status"]],
     GuestEvents: [["event_at", "event_type", "email_normalized", "booking_row", "booking_status", "details"]],
-    SmsThreads: [["phone_normalized", "display_phone", "guest_name", "guest_email", "current_intent", "state", "group_size", "booking_date", "booking_time", "last_inbound_at", "last_outbound_at", "last_booking_row", "handoff_reason", "last_message", "updated_at"]],
-    SmsMessages: [["message_at", "phone_normalized", "direction", "sender_type", "provider_message_id", "message_text", "intent", "state", "booking_row", "metadata_json"]]
+    SmsThreads: [["phone_normalized", "display_phone", "known_guest_name", "known_mobile", "known_group_size", "known_booking_date", "known_booking_time", "recent_messages_json", "last_inbound_at", "updated_at"]]
 };
 
 export function buildCorsHeaders(env, methods = "GET, POST, PATCH, OPTIONS") {
@@ -37,6 +36,16 @@ export function emptyResponse(env, methods) {
 
 export function normalizeEmail(email) {
     return String(email || "").trim().toLowerCase();
+}
+
+function buildGuestKey(booking) {
+    const normalizedEmail = normalizeEmail(booking.email);
+    if (normalizedEmail) {
+        return normalizedEmail;
+    }
+
+    const normalizedMobile = normalizePhone(booking.mobile);
+    return normalizedMobile ? `phone:${normalizedMobile}` : "";
 }
 
 export function normalizePhone(phone) {
@@ -165,7 +174,10 @@ export async function ensureBookingSheets(config) {
     await Promise.all(Object.entries(SHEET_HEADERS).map(([title, headers]) => ensureSheetHeader(config, title, headers)));
 }
 
-export async function appendBookingRow(config, booking, status, source = "Website") {
+export async function appendBookingRow(config, booking, status, options = {}) {
+    const normalizedOptions = typeof options === "string"
+        ? { source: options }
+        : (options || {});
     const row = [
         booking.name,
         booking.email,
@@ -175,7 +187,7 @@ export async function appendBookingRow(config, booking, status, source = "Websit
         booking.time,
         new Date().toISOString(),
         status,
-        source,
+        normalizedOptions.source || "Website",
         "",
         "",
         "",
@@ -244,12 +256,7 @@ export async function listBookings(config) {
             email_status: row[11] || "",
             email_error: row[12] || ""
         }))
-        .filter((booking) => booking.status !== "Archived")
-        .sort((left, right) => {
-            const leftKey = `${left.date || "9999-12-31"}T${left.time || "23:59"}`;
-            const rightKey = `${right.date || "9999-12-31"}T${right.time || "23:59"}`;
-            return leftKey.localeCompare(rightKey);
-        });
+        .filter((booking) => booking.status !== "Archived");
 }
 
 export async function getBookingsForDate(config, date) {
@@ -269,14 +276,49 @@ export async function getBookingsForDate(config, date) {
         .filter((booking) => booking.date === date && booking.status !== "Archived");
 }
 
-export async function upsertGuest(config, booking, bookingStatus, options = {}) {
-    const normalizedEmail = normalizeEmail(booking.email);
-    if (!normalizedEmail) {
-        return { rowNumber: null, bookingCount: 0 };
+export async function fetchGuestCoreInfo(config, identifiers = {}) {
+    const normalizedEmail = normalizeEmail(identifiers.email);
+    const normalizedMobile = normalizePhone(identifiers.mobile || identifiers.phone);
+
+    if (!normalizedEmail && !normalizedMobile) {
+        return null;
     }
 
+    const rows = await getValues(config, "Guests!A2:J500");
+    const match = rows.find((row) => {
+        const rowEmail = normalizeEmail(row[0] || row[1] || "");
+        const rowMobile = normalizePhone(row[3] || "");
+
+        if (normalizedEmail && rowEmail === normalizedEmail) {
+            return true;
+        }
+
+        if (normalizedMobile && rowMobile === normalizedMobile) {
+            return true;
+        }
+
+        return false;
+    });
+
+    if (!match) {
+        return null;
+    }
+
+    return {
+        email: match[1] || "",
+        name: match[2] || "",
+        mobile: match[3] || "",
+        booking_count: match[6] || "",
+        last_group_size: match[7] || "",
+        last_booking_date: match[8] || "",
+        last_status: match[9] || ""
+    };
+}
+
+export async function upsertGuest(config, booking, bookingStatus, options = {}) {
+    const guestKey = buildGuestKey(booking);
     const rows = await getValues(config, "Guests!A:J");
-    const existingIndex = rows.findIndex((row, index) => index > 0 && normalizeEmail(row[0]) === normalizedEmail);
+    const existingIndex = rows.findIndex((row, index) => index > 0 && String(row[0] || "").trim() === guestKey);
     const now = new Date().toISOString();
     const incrementBookingCount = options.incrementBookingCount !== false;
 
@@ -293,7 +335,7 @@ export async function upsertGuest(config, booking, bookingStatus, options = {}) 
     }
 
     const guestRow = [
-        normalizedEmail,
+        guestKey,
         booking.email,
         booking.name,
         booking.mobile || "",
@@ -327,11 +369,115 @@ export async function appendGuestEvent(config, eventType, booking, bookingRow, b
     await appendValues(config, "GuestEvents!A:F", [[
         new Date().toISOString(),
         eventType,
-        normalizeEmail(booking.email),
+        buildGuestKey(booking),
         String(bookingRow || ""),
         bookingStatus,
         details
     ]]);
+}
+
+export async function fetchSmsThreadContext(config, phone) {
+    const normalizedPhone = normalizePhone(phone);
+    const rows = await getValues(config, "SmsThreads!A2:J500");
+    const rowIndex = rows.findIndex((row) => normalizePhone(row[0]) === normalizedPhone);
+
+    if (rowIndex === -1) {
+        return null;
+    }
+
+    const row = rows[rowIndex];
+    let recentMessages = [];
+
+    try {
+        recentMessages = row[7] ? JSON.parse(row[7]) : [];
+    } catch (error) {
+        recentMessages = [];
+    }
+
+    return {
+        rowNumber: rowIndex + 2,
+        phone_normalized: row[0] || "",
+        display_phone: row[1] || "",
+        known_guest_name: row[2] || "",
+        known_mobile: row[3] || "",
+        known_group_size: row[4] || "",
+        known_booking_date: row[5] || "",
+        known_booking_time: row[6] || "",
+        recent_messages: Array.isArray(recentMessages) ? recentMessages : [],
+        last_inbound_at: row[8] || "",
+        updated_at: row[9] || ""
+    };
+}
+
+export async function upsertSmsThreadContext(config, thread) {
+    const normalizedPhone = normalizePhone(thread.phone_normalized || thread.display_phone);
+    const existing = await fetchSmsThreadContext(config, normalizedPhone);
+    const row = [[
+        normalizedPhone,
+        thread.display_phone || normalizedPhone,
+        thread.known_guest_name || "",
+        normalizePhone(thread.known_mobile || normalizedPhone),
+        thread.known_group_size || "",
+        thread.known_booking_date || "",
+        thread.known_booking_time || "",
+        JSON.stringify(thread.recent_messages || []),
+        thread.last_inbound_at || "",
+        thread.updated_at || new Date().toISOString()
+    ]];
+
+    if (existing) {
+        await updateValues(config, `SmsThreads!A${existing.rowNumber}:J${existing.rowNumber}`, row);
+        return { rowNumber: existing.rowNumber };
+    }
+
+    const result = await appendValues(config, "SmsThreads!A:J", row);
+    return { rowNumber: extractRowNumber(result.updates?.updatedRange) };
+}
+
+export async function sendSmsMessage(env, payload) {
+    if (!env.TELERIVET_API_KEY) {
+        throw new Error("TELERIVET_API_KEY is not configured");
+    }
+    if (!env.TELERIVET_PROJECT_ID) {
+        throw new Error("TELERIVET_PROJECT_ID is not configured");
+    }
+
+    const body = {
+        content: payload.text,
+        to_number: payload.to
+    };
+
+    if (env.TELERIVET_ROUTE_ID) {
+        body.route_id = env.TELERIVET_ROUTE_ID;
+    }
+
+    const response = await fetch(`https://api.telerivet.com/v1/projects/${env.TELERIVET_PROJECT_ID}/messages/send`, {
+        method: "POST",
+        headers: {
+            "Authorization": `Basic ${btoa(`${env.TELERIVET_API_KEY}:`)}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+    });
+
+    const rawText = await response.text();
+    let data = {};
+
+    try {
+        data = rawText ? JSON.parse(rawText) : {};
+    } catch (error) {
+        data = { raw: rawText };
+    }
+
+    if (!response.ok) {
+        const errorMessage = data?.message || data?.error || rawText || "Unknown Telerivet send error";
+        throw new Error(errorMessage);
+    }
+
+    return {
+        provider_message_id: data.id || "",
+        status: data.status || "queued"
+    };
 }
 
 export async function sendBookingEmail(env, booking, emailType) {
@@ -359,9 +505,9 @@ export async function sendBookingEmail(env, booking, emailType) {
     };
 
     const introMap = {
-        confirmed: "Thanks, your booking is confirmed. We look forward to welcoming you to Dandy Lane.",
-        pending_review: "Thanks for your booking request. Our team will review it as soon as possible. If you're nearby, please come by anyway — we always keep space flowing for walk-ins and we'll do our best to look after you.",
-        approval_confirmed: "Your booking request has now been reviewed and confirmed. We look forward to welcoming you to Dandy Lane.",
+        confirmed: "Your booking has been confirmed.",
+        pending_review: "Thanks for your request. Our team will review it shortly.",
+        approval_confirmed: "Your booking request has been approved and confirmed.",
         cancelled: "Your booking has been cancelled. Thank you for letting us know, and we hope to welcome you another time."
     };
 
@@ -414,130 +560,6 @@ export async function sendBookingEmail(env, booking, emailType) {
         email_status: "sent",
         email_error: "",
         resend_id: data.id || ""
-    };
-}
-
-export async function fetchSmsThread(config, normalizedPhone) {
-    const rows = await getValues(config, "SmsThreads!A2:O500");
-    const rowIndex = rows.findIndex((row) => normalizePhone(row[0]) === normalizedPhone);
-
-    if (rowIndex === -1) {
-        return null;
-    }
-
-    const row = rows[rowIndex];
-    return {
-        rowNumber: rowIndex + 2,
-        phone_normalized: row[0] || "",
-        display_phone: row[1] || "",
-        guest_name: row[2] || "",
-        guest_email: row[3] || "",
-        current_intent: row[4] || "booking",
-        state: row[5] || "idle",
-        group_size: row[6] || "",
-        booking_date: row[7] || "",
-        booking_time: row[8] || "",
-        last_inbound_at: row[9] || "",
-        last_outbound_at: row[10] || "",
-        last_booking_row: row[11] || "",
-        handoff_reason: row[12] || "",
-        last_message: row[13] || "",
-        updated_at: row[14] || ""
-    };
-}
-
-export async function upsertSmsThread(config, thread) {
-    const normalizedPhone = normalizePhone(thread.phone_normalized || thread.display_phone);
-    const existing = await fetchSmsThread(config, normalizedPhone);
-    const row = [[
-        normalizedPhone,
-        thread.display_phone || normalizedPhone,
-        thread.guest_name || "",
-        thread.guest_email || "",
-        thread.current_intent || "booking",
-        thread.state || "idle",
-        thread.group_size || "",
-        thread.booking_date || "",
-        thread.booking_time || "",
-        thread.last_inbound_at || "",
-        thread.last_outbound_at || "",
-        thread.last_booking_row || "",
-        thread.handoff_reason || "",
-        thread.last_message || "",
-        thread.updated_at || new Date().toISOString()
-    ]];
-
-    if (existing) {
-        await updateValues(config, `SmsThreads!A${existing.rowNumber}:O${existing.rowNumber}`, row);
-        return { rowNumber: existing.rowNumber };
-    }
-
-    const result = await appendValues(config, "SmsThreads!A:O", row);
-    return { rowNumber: extractRowNumber(result.updates?.updatedRange) };
-}
-
-export async function appendSmsMessage(config, message) {
-    const result = await appendValues(config, "SmsMessages!A:J", [[
-        message.message_at || new Date().toISOString(),
-        normalizePhone(message.phone_normalized || message.display_phone),
-        message.direction || "inbound",
-        message.sender_type || "guest",
-        message.provider_message_id || "",
-        message.message_text || "",
-        message.intent || "",
-        message.state || "",
-        message.booking_row || "",
-        JSON.stringify(message.metadata || {})
-    ]]);
-
-    return { rowNumber: extractRowNumber(result.updates?.updatedRange) };
-}
-
-export async function sendSmsMessage(env, payload) {
-    if (!env.SMS_OUTBOUND_WEBHOOK_URL) {
-        return { sms_status: "not_configured", sms_error: "SMS_OUTBOUND_WEBHOOK_URL is not configured" };
-    }
-
-    const headers = {
-        "Content-Type": "application/json",
-        "User-Agent": "dandy-lane-sms/1.0"
-    };
-
-    if (env.SMS_OUTBOUND_AUTH_TOKEN) {
-        headers.Authorization = `Bearer ${env.SMS_OUTBOUND_AUTH_TOKEN}`;
-    }
-
-    const response = await fetch(env.SMS_OUTBOUND_WEBHOOK_URL, {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-            to: payload.to,
-            text: payload.text,
-            thread_state: payload.thread_state || "",
-            booking_row: payload.booking_row || "",
-            metadata: payload.metadata || {}
-        })
-    });
-
-    const rawText = await response.text();
-    if (!response.ok) {
-        return {
-            sms_status: "failed",
-            sms_error: rawText || `SMS webhook failed with ${response.status}`
-        };
-    }
-
-    let data = {};
-    try {
-        data = rawText ? JSON.parse(rawText) : {};
-    } catch (error) {
-        data = { raw: rawText };
-    }
-
-    return {
-        sms_status: "sent",
-        sms_error: "",
-        provider_message_id: data.id || data.message_id || ""
     };
 }
 
