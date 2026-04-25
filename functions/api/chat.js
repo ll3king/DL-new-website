@@ -33,6 +33,7 @@ const GROUP_PATTERN = /\b(?:for|of|party of|group of)?\s*(\d{1,2})\s*(?:people|p
 const MOBILE_PATTERN = /(?:\+?\d[\d\s()-]{7,}\d)/;
 const EMAIL_PATTERN = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i;
 const TIME_PATTERN = /\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b|\b([01]?\d|2[0-3]):([0-5]\d)\b|(\d{1,2})点(?:(\d{1,2})分?)?/i;
+const AT_HOUR_PATTERN = /\bat\s*(\d{1,2})\b/i;
 const ISO_DATE_PATTERN = /\b(20\d{2})-(\d{1,2})-(\d{1,2})\b/;
 const SLASH_DATE_PATTERN = /\b(\d{1,2})[\/-](\d{1,2})(?:[\/-](\d{2,4}))?\b/;
 const WEEKDAY_PATTERN = /\b(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i;
@@ -55,15 +56,24 @@ export async function onRequestPost(context) {
             return jsonResponse(env, { error: "No message" }, { status: 400 });
         }
 
+        const llmExtraction = await extractBookingSignals(env, {
+            channel,
+            messageText,
+            history,
+            threadContext,
+            previousBookingContext,
+            incomingMobile
+        });
         const guestCoreInfo = await resolveGuestCoreInfo(env, body, history, threadContext);
-        const bookingState = buildBookingState({
+        const bookingState = await buildBookingState({
             channel,
             messageText,
             history,
             threadContext,
             previousBookingContext,
             guestCoreInfo,
-            incomingMobile
+            incomingMobile,
+            llmExtraction
         });
         const isBookingIntent = determineBookingIntent({
             channel,
@@ -71,7 +81,8 @@ export async function onRequestPost(context) {
             history,
             threadContext,
             previousBookingContext,
-            bookingState
+            bookingState,
+            llmExtraction
         });
 
         if (!isBookingIntent) {
@@ -192,9 +203,10 @@ async function resolveGuestCoreInfo(env, body, history, threadContext) {
     }
 }
 
-function buildBookingState({ channel, messageText, history, threadContext, previousBookingContext, guestCoreInfo, incomingMobile }) {
+async function buildBookingState({ channel, messageText, history, threadContext, previousBookingContext, guestCoreInfo, incomingMobile, llmExtraction }) {
     const promptedField = inferPromptedField(history, previousBookingContext);
-    const extracted = extractBookingDetails(messageText, promptedField);
+    const extracted = normalizeLlmExtractedFields(llmExtraction, promptedField);
+    const fallbackExtracted = extractBookingDetails(messageText, promptedField);
     const historyDerived = buildHistoryDerivedFields(history);
     const structuredMobile = normalizePhone(firstNonEmpty(
         previousBookingContext.known_fields?.mobile,
@@ -205,34 +217,40 @@ function buildBookingState({ channel, messageText, history, threadContext, previ
         name: firstNonEmpty(
             previousBookingContext.known_fields?.name,
             extracted.name,
+            fallbackExtracted.name,
             threadContext.known_guest_name,
             guestCoreInfo?.name
         ),
         email: firstNonEmpty(
             previousBookingContext.known_fields?.email,
             extracted.email,
+            fallbackExtracted.email,
             guestCoreInfo?.email
         ),
         mobile: normalizePhone(firstNonEmpty(
             structuredMobile,
-            extracted.mobile
+            extracted.mobile,
+            fallbackExtracted.mobile
         )),
         group_size: firstNonEmpty(
             previousBookingContext.known_fields?.group_size,
             threadContext.known_group_size,
             extracted.group_size,
+            fallbackExtracted.group_size,
             historyDerived.group_size
         ),
         date: firstNonEmpty(
             previousBookingContext.known_fields?.date,
             threadContext.known_booking_date,
             extracted.date,
+            fallbackExtracted.date,
             historyDerived.date
         ),
         time: firstNonEmpty(
             previousBookingContext.known_fields?.time,
             threadContext.known_booking_time,
             extracted.time,
+            fallbackExtracted.time,
             historyDerived.time
         )
     };
@@ -264,8 +282,12 @@ function buildBookingState({ channel, messageText, history, threadContext, previ
     };
 }
 
-function determineBookingIntent({ channel, messageText, history, threadContext, previousBookingContext, bookingState }) {
+function determineBookingIntent({ channel, messageText, history, threadContext, previousBookingContext, bookingState, llmExtraction }) {
     if (channel === "sms") {
+        return true;
+    }
+
+    if (llmExtraction?.intent === "booking") {
         return true;
     }
 
@@ -424,6 +446,91 @@ function extractBookingDetails(messageText, promptedField) {
     return details;
 }
 
+async function extractBookingSignals(env, { channel, messageText, history, threadContext, previousBookingContext, incomingMobile }) {
+    const apiKey = env.GEMINI_API_KEY;
+    if (!apiKey) {
+        return null;
+    }
+
+    const historyText = history
+        .map((item) => `${item.role === "assistant" ? "assistant" : "guest"}: ${item.text}`)
+        .join("\n");
+    const knownFields = {
+        name: String(previousBookingContext.known_fields?.name || threadContext.known_guest_name || "").trim(),
+        mobile: normalizePhone(previousBookingContext.known_fields?.mobile || incomingMobile || ""),
+        group_size: String(previousBookingContext.known_fields?.group_size || threadContext.known_group_size || "").trim(),
+        date: String(previousBookingContext.known_fields?.date || threadContext.known_booking_date || "").trim(),
+        time: String(previousBookingContext.known_fields?.time || threadContext.known_booking_time || "").trim()
+    };
+
+    const systemPrompt = [
+        "You extract booking slots for a cafe booking brain.",
+        "Return JSON only.",
+        "Treat existing known_fields as higher priority facts than conversation history.",
+        "For SMS, mobile is already known if provided.",
+        "Infer booking intent, but do not invent missing fields.",
+        "If the guest says 'at 10', interpret it as time 10:00.",
+        "If a field is not clearly present, return an empty string for it.",
+        "Use keys: intent, name, mobile, group_size, date, time, confidence.",
+        "intent must be one of: booking, general.",
+        "confidence must be one of: high, medium, low."
+    ].join("\n");
+
+    const userPrompt = JSON.stringify({
+        channel,
+        message_text: messageText,
+        known_fields: knownFields,
+        history: historyText
+    });
+
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                system_instruction: { parts: [{ text: systemPrompt }] },
+                contents: [{ role: "user", parts: [{ text: userPrompt }] }],
+                generationConfig: {
+                    response_mime_type: "application/json"
+                }
+            })
+        });
+
+        const data = await response.json();
+        const text = String(data?.candidates?.[0]?.content?.parts?.[0]?.text || "").trim();
+        if (!text) {
+            return null;
+        }
+
+        return safeParseJson(text);
+    } catch (error) {
+        console.warn("Booking signal extraction skipped:", error.message);
+        return null;
+    }
+}
+
+function normalizeLlmExtractedFields(llmExtraction, promptedField) {
+    if (!llmExtraction || typeof llmExtraction !== "object") {
+        return {
+            name: "",
+            email: "",
+            mobile: "",
+            group_size: "",
+            date: "",
+            time: ""
+        };
+    }
+
+    return {
+        name: sanitizeGuestName(llmExtraction.name || ""),
+        email: String(llmExtraction.email || "").trim().toLowerCase(),
+        mobile: normalizePhone(llmExtraction.mobile || ""),
+        group_size: String(llmExtraction.group_size || "").trim(),
+        date: normalizeBookingDate(String(llmExtraction.date || "")).value,
+        time: normalizeBookingTime(String(llmExtraction.time || ""), promptedField).value
+    };
+}
+
 function buildHistoryDerivedFields(history) {
     const derived = {
         group_size: "",
@@ -519,6 +626,16 @@ function normalizeBookingTime(value, promptedField = "") {
         return {
             value: `${String(Number.parseInt(match[6], 10)).padStart(2, "0")}:${String(match[7] || "00").padStart(2, "0")}`
         };
+    }
+
+    const atHourMatch = text.match(AT_HOUR_PATTERN);
+    if (atHourMatch) {
+        const hours = Number.parseInt(atHourMatch[1], 10);
+        if (hours >= 0 && hours <= 23) {
+            return {
+                value: `${String(hours).padStart(2, "0")}:00`
+            };
+        }
     }
 
     if (promptedField === "time" && /^\d{1,2}$/.test(text)) {
@@ -810,6 +927,15 @@ function inferFutureYear(month, day, today) {
     const currentYear = today.getFullYear();
     const candidate = new Date(currentYear, month - 1, day);
     return candidate < today ? currentYear + 1 : currentYear;
+}
+
+function safeParseJson(text) {
+    try {
+        return JSON.parse(text);
+    } catch (error) {
+        const fenced = text.replace(/^```json\s*|\s*```$/g, "").trim();
+        return JSON.parse(fenced);
+    }
 }
 
 function nextWeekdayDate(today, weekdayName) {
