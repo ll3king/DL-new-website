@@ -1,4 +1,14 @@
 stories:
+  - slug: "a-golden-croissant-kind-of-brunch"
+    title: "A Golden Croissant Kind of Brunch"
+    date: "2026-05-19"
+    author: "Dandy Lane Team"
+    summary: "This week at Dandy Lane, we're leaning into a warmer, more satisfying brunch moment with our Croissant Scramble."
+    content: "Some brunch plates are made for slow mornings.<br><br>This week, our Croissant Scramble brings together the comfort of a golden croissant with the kind of savoury brunch feeling that makes you want to sit down, settle in, and take a little more time with your coffee.<br><br>It is generous without feeling heavy, familiar but still a little different, and very much in the spirit of Dandy Lane: warm, layered, and made for a proper brunch in the city.<br><br>If your week needs a better morning, come find us in the lane.<br><br>Join us for coffee and brunch at Dandy Lane."
+    featured: false
+    cover: "assets/media/golden-croissant-brunch.png"
+    tags: ["Brunch", "Seasonal", "Cafe Life"]
+
   - slug: "the-little-in-between-moments-at-dandy-lane"
     title: "The Little In-Between Moments at Dandy Lane"
     date: "2026-04-23"
