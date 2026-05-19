@@ -14,6 +14,7 @@ import {
     normalizePhone,
     requireConfig,
     sendBookingEmail,
+    updateBookingStatus,
     updateEmailTracking,
     upsertGuest
 } from "./_booking.js";
@@ -40,6 +41,8 @@ const SLASH_DATE_PATTERN = /\b(\d{1,2})[\/-](\d{1,2})(?:[\/-](\d{2,4}))?\b/;
 const WEEKDAY_PATTERN = /\b(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i;
 const RELATIVE_DAY_PATTERN = /\b(today|tonight|tomorrow)\b|今天|今晚|明天/i;
 const NAME_PATTERN = /\b(?:my name is|name is|this is|i am|it's)\s+([a-z][a-z' -]{1,40})\b/i;
+const LOOKUP_FALLBACK_PATTERN = /\b(confirm|confirmation|double check|check|what time|what date|my booking|under the name|under)\b/i;
+const CANCEL_FALLBACK_PATTERN = /\b(cancel|cancellation|won't be able to make|will not be able to make|can't make|cannot make)\b/i;
 
 export async function onRequestPost(context) {
     const { request, env } = context;
@@ -76,7 +79,7 @@ export async function onRequestPost(context) {
             incomingMobile,
             llmExtraction
         });
-        const isBookingIntent = determineBookingIntent({
+        const conversationMode = determineConversationMode({
             channel,
             messageText,
             history,
@@ -86,7 +89,7 @@ export async function onRequestPost(context) {
             llmExtraction
         });
 
-        if (!isBookingIntent) {
+        if (conversationMode === "general") {
             const reply = await generateGeneralReply(env, {
                 messageText,
                 history
@@ -96,6 +99,7 @@ export async function onRequestPost(context) {
                 reply,
                 booking_result: {
                     intent: "general",
+                    mode: "general",
                     known_fields: {},
                     missing_fields: [],
                     next_action: "general_reply",
@@ -105,13 +109,18 @@ export async function onRequestPost(context) {
             });
         }
 
-        const bookingResult = await handleBookingFlow(env, {
-            channel,
-            messageText,
-            history,
-            bookingState,
-            guestCoreInfo
-        });
+        let bookingResult;
+        if (conversationMode === "lookup") {
+            bookingResult = await handleLookupFlow(env, { bookingState });
+        } else if (conversationMode === "cancel") {
+            bookingResult = await handleCancelFlow(env, { bookingState });
+        } else {
+            bookingResult = await handleBookingFlow(env, {
+                channel,
+                bookingState,
+                guestCoreInfo
+            });
+        }
 
         return jsonResponse(env, {
             reply: bookingResult.reply,
@@ -166,6 +175,7 @@ function normalizeThreadContext(threadContext) {
 function normalizeBookingContext(bookingContext) {
     return {
         intent: String(bookingContext?.intent || "").trim(),
+        mode: String(bookingContext?.mode || "").trim(),
         known_fields: bookingContext?.known_fields && typeof bookingContext.known_fields === "object"
             ? bookingContext.known_fields
             : {},
@@ -287,25 +297,35 @@ async function buildBookingState({ channel, messageText, history, threadContext,
     };
 }
 
-function determineBookingIntent({ channel, messageText, history, threadContext, previousBookingContext, bookingState, llmExtraction }) {
-    if (channel === "sms") {
-        return true;
+function determineConversationMode({ channel, messageText, history, threadContext, previousBookingContext, bookingState, llmExtraction }) {
+    const llmMode = normalizeConversationMode(llmExtraction?.mode);
+    if (llmMode) {
+        return llmMode;
     }
 
-    if (llmExtraction?.intent === "booking") {
-        return true;
+    const previousMode = normalizeConversationMode(previousBookingContext.mode);
+    if (previousMode && previousBookingContext.intent === "booking" && !previousBookingContext.outcome) {
+        return previousMode;
     }
 
-    if (previousBookingContext.intent === "booking" && !previousBookingContext.outcome) {
-        return true;
+    if (CANCEL_FALLBACK_PATTERN.test(messageText)) {
+        return "cancel";
+    }
+
+    if (LOOKUP_FALLBACK_PATTERN.test(messageText)) {
+        return "lookup";
+    }
+
+    if (llmExtraction?.intent === "general" && channel !== "sms") {
+        return "general";
     }
 
     if (Object.values(bookingState.known_fields).some(Boolean)) {
-        return true;
+        return "create";
     }
 
     if (BOOKING_KEYWORD_PATTERN.test(messageText)) {
-        return true;
+        return "create";
     }
 
     if (
@@ -315,7 +335,7 @@ function determineBookingIntent({ channel, messageText, history, threadContext, 
         || threadContext.known_booking_time
         || Object.values(previousBookingContext.known_fields || {}).some(Boolean)
     ) {
-        return true;
+        return "create";
     }
 
     const recentBotText = history
@@ -323,7 +343,11 @@ function determineBookingIntent({ channel, messageText, history, threadContext, 
         .map((item) => item.text.toLowerCase())
         .join(" ");
 
-    return recentBotText.includes("booking") || recentBotText.includes("date would you like") || recentBotText.includes("what time") || recentBotText.includes("how many guests");
+    if (recentBotText.includes("booking") || recentBotText.includes("date would you like") || recentBotText.includes("what time") || recentBotText.includes("how many guests")) {
+        return "create";
+    }
+
+    return "general";
 }
 
 async function handleBookingFlow(env, { channel, bookingState, guestCoreInfo }) {
@@ -336,6 +360,7 @@ async function handleBookingFlow(env, { channel, bookingState, guestCoreInfo }) 
             reply: renderMissingFieldReply(missingField, bookingState.language, guestCoreInfo?.name || knownFields.name),
             booking_result: {
                 intent: "booking",
+                mode: "create",
                 known_fields: serializeKnownFields(knownFields),
                 missing_fields: missingFields,
                 next_action: `ask_${missingField}`,
@@ -353,12 +378,83 @@ async function handleBookingFlow(env, { channel, bookingState, guestCoreInfo }) 
         reply,
         booking_result: {
             intent: "booking",
+            mode: "create",
             known_fields: serializeKnownFields(knownFields),
             missing_fields: [],
             next_action: bookingOutcome.outcome === "Confirmed" ? "booking_confirmed" : "manual_review_pending",
             outcome: bookingOutcome.outcome,
             guidance: bookingOutcome.guidance,
             booking_status: bookingWrite?.booking_status || bookingOutcome.outcome
+        }
+    };
+}
+
+async function handleLookupFlow(env, { bookingState }) {
+    const knownFields = bookingState.known_fields;
+    const lookupResult = await resolveLookupResult(env, knownFields);
+
+    if (lookupResult.type === "match") {
+        return {
+            reply: renderLookupMatchReply(lookupResult.booking, bookingState.language),
+            booking_result: {
+                intent: "booking",
+                mode: "lookup",
+                known_fields: serializeKnownFields(knownFields),
+                missing_fields: [],
+                next_action: "lookup_resolved",
+                outcome: lookupResult.booking.status || "",
+                guidance: []
+            }
+        };
+    }
+
+    const promptField = selectLookupPromptField(knownFields, "lookup");
+    return {
+        reply: renderLookupPromptReply(promptField, bookingState.language),
+        booking_result: {
+            intent: "booking",
+            mode: "lookup",
+            known_fields: serializeKnownFields(knownFields),
+            missing_fields: promptField ? [promptField] : [],
+            next_action: promptField ? `ask_${promptField}` : "lookup_needs_identifiers",
+            outcome: "",
+            guidance: [lookupResult.type]
+        }
+    };
+}
+
+async function handleCancelFlow(env, { bookingState }) {
+    const knownFields = bookingState.known_fields;
+    const lookupResult = await resolveLookupResult(env, knownFields);
+
+    if (lookupResult.type !== "match") {
+        const promptField = selectLookupPromptField(knownFields, "cancel");
+        return {
+            reply: renderCancelPromptReply(promptField, bookingState.language),
+            booking_result: {
+                intent: "booking",
+                mode: "cancel",
+                known_fields: serializeKnownFields(knownFields),
+                missing_fields: promptField ? [promptField] : [],
+                next_action: promptField ? `ask_${promptField}` : "cancel_needs_identifiers",
+                outcome: "",
+                guidance: [lookupResult.type]
+            }
+        };
+    }
+
+    const cancelledBooking = await cancelBooking(env, lookupResult.booking);
+    return {
+        reply: renderCancelSuccessReply(cancelledBooking, bookingState.language),
+        booking_result: {
+            intent: "booking",
+            mode: "cancel",
+            known_fields: serializeKnownFields(knownFields),
+            missing_fields: [],
+            next_action: "cancel_completed",
+            outcome: "Cancelled",
+            guidance: [],
+            booking_status: "Cancelled"
         }
     };
 }
@@ -474,12 +570,17 @@ async function extractBookingSignals(env, { channel, messageText, history, threa
         "Treat existing known_fields as higher priority facts than conversation history.",
         "For SMS, mobile is already known if provided.",
         "Infer booking intent, but do not invent missing fields.",
+        "Classify the primary conversation mode as one of: general, create, lookup, cancel.",
+        "Use lookup when the guest is asking to confirm, check, or find an existing booking.",
+        "Use cancel when the guest wants to cancel an existing booking.",
+        "Use create when the guest wants to make, complete, or continue a booking request.",
         "If the guest says 'at 10', interpret it as time 10:00.",
         "Never infer group_size from a bare hour or time expression such as 'at 12', 'tomorrow at 12', '12pm', or '12:30'.",
         "Only set group_size when the guest explicitly states the number of guests, such as 'for 2', '2 people', 'party of 4', or 'group of 5'.",
         "If a field is not clearly present, return an empty string for it.",
-        "Use keys: intent, name, mobile, group_size, date, time, confidence.",
-        "intent must be one of: booking, general.",
+        "Use keys: mode, intent, name, mobile, group_size, date, time, confidence.",
+        "mode must be one of: general, create, lookup, cancel.",
+        "intent must be one of: booking, general. Use booking for create, lookup, and cancel.",
         "confidence must be one of: high, medium, low."
     ].join("\n");
 
@@ -818,6 +919,146 @@ async function persistBookingOutcome(env, knownFields, bookingOutcome, channel) 
     };
 }
 
+async function resolveLookupResult(env, knownFields) {
+    const config = await requireConfig(env);
+    await ensureBookingSheets(config);
+    const bookings = await listBookings(config);
+
+    return pickLookupMatch(bookings, knownFields);
+}
+
+function pickLookupMatch(bookings, knownFields) {
+    const activeBookings = Array.isArray(bookings)
+        ? bookings.filter((booking) => !["Archived", "Cancelled"].includes(String(booking.status || "")))
+        : [];
+
+    const scored = activeBookings
+        .map((booking) => ({
+            booking,
+            score: scoreLookupMatch(booking, knownFields)
+        }))
+        .filter((entry) => entry.score > 0)
+        .sort((left, right) => right.score - left.score);
+
+    if (!scored.length) {
+        return {
+            type: hasLookupIdentifiers(knownFields) ? "no_match" : "missing_identifiers",
+            booking: null
+        };
+    }
+
+    const [best, secondBest] = scored;
+    if (!best || best.score < 6) {
+        return {
+            type: hasLookupIdentifiers(knownFields) ? "ambiguous_match" : "missing_identifiers",
+            booking: null
+        };
+    }
+
+    if (secondBest && secondBest.score === best.score) {
+        return {
+            type: "ambiguous_match",
+            booking: null
+        };
+    }
+
+    return {
+        type: "match",
+        booking: best.booking
+    };
+}
+
+function scoreLookupMatch(booking, knownFields) {
+    let score = 0;
+    const bookingMobile = normalizePhone(booking?.mobile || "");
+    const knownMobile = normalizePhone(knownFields?.mobile || "");
+    const bookingEmail = String(booking?.email || "").trim().toLowerCase();
+    const knownEmail = String(knownFields?.email || "").trim().toLowerCase();
+    const bookingName = normalizeComparableName(booking?.name || "");
+    const knownName = normalizeComparableName(knownFields?.name || "");
+
+    if (knownMobile && bookingMobile === knownMobile) {
+        score += 6;
+    }
+    if (knownEmail && bookingEmail && bookingEmail === knownEmail) {
+        score += 6;
+    }
+    if (knownName && bookingName && bookingName === knownName) {
+        score += 3;
+    }
+    if (knownFields?.date && booking?.date === knownFields.date) {
+        score += 3;
+    }
+    if (knownFields?.group_size && String(booking?.group_size || "") === String(knownFields.group_size || "")) {
+        score += 2;
+    }
+    if (knownFields?.time && String(booking?.time || "") === String(knownFields.time || "")) {
+        score += 2;
+    }
+
+    return score;
+}
+
+function hasLookupIdentifiers(knownFields) {
+    return Boolean(
+        String(knownFields?.name || "").trim()
+        || String(knownFields?.mobile || "").trim()
+        || String(knownFields?.email || "").trim()
+        || String(knownFields?.date || "").trim()
+    );
+}
+
+function selectLookupPromptField(knownFields, mode) {
+    const hasContact = Boolean(firstNonEmpty(knownFields?.mobile, knownFields?.email));
+    if (!knownFields?.name && !hasContact) {
+        return "name";
+    }
+    if (!knownFields?.date) {
+        return "date";
+    }
+    if (mode === "lookup" && !knownFields?.group_size && !knownFields?.name) {
+        return "group_size";
+    }
+    return "date";
+}
+
+async function cancelBooking(env, booking) {
+    const config = await requireConfig(env);
+    await ensureBookingSheets(config);
+
+    await updateBookingStatus(config, booking.id, "Cancelled");
+
+    let emailTracking = {
+        email_sent_at: "",
+        email_type: "cancelled",
+        email_status: "skipped",
+        email_error: ""
+    };
+
+    if (booking.email) {
+        try {
+            emailTracking = await sendBookingEmail(env, booking, "cancelled");
+        } catch (error) {
+            console.error("Booking cancellation email failed:", error.message);
+            emailTracking = {
+                email_sent_at: "",
+                email_type: "cancelled",
+                email_status: "failed",
+                email_error: error.message
+            };
+        }
+    }
+
+    await updateEmailTracking(config, booking.id, emailTracking);
+    await upsertGuest(config, booking, "Cancelled", { incrementBookingCount: false });
+    await appendGuestEvent(config, "booking_cancelled", booking, booking.id, "Cancelled");
+
+    return {
+        ...booking,
+        status: "Cancelled"
+    };
+}
+
 function renderMissingFieldReply(field, language, guestName) {
     const replies = {
         en: {
@@ -851,6 +1092,59 @@ function renderOutcomeReply(bookingOutcome, language, guestName) {
     return language === "zh"
         ? `好的${nameText}，这次预订我先交给团队确认。若您方便，也欢迎直接 walk-in。`
         : `Thanks${nameText}. I've passed this booking to the team for manual review, and you're also welcome to walk in if that suits you.`;
+}
+
+function renderLookupMatchReply(booking, language) {
+    const nameText = booking?.name ? ` ${booking.name}` : "";
+    const statusText = String(booking?.status || "").trim();
+
+    if (language === "zh") {
+        return `我找到您的预订了${nameText}。时间是 ${booking.date} ${booking.time}，人数 ${booking.group_size} 位。当前状态：${statusText || "已记录"}。`;
+    }
+
+    return `I found your booking${nameText}. It's for ${booking.date} at ${booking.time} for ${booking.group_size} guests. Current status: ${statusText || "Recorded"}.`;
+}
+
+function renderLookupPromptReply(field, language) {
+    const replies = {
+        en: {
+            name: "I can check that for you. What name is the booking under?",
+            date: "I can check that for you. What date is the booking for?",
+            group_size: "I can check that for you. How many guests is the booking for?"
+        },
+        zh: {
+            name: "我可以帮您查一下。请问预订是登记在哪个名字下？",
+            date: "我可以帮您查一下。请问预订是哪一天？",
+            group_size: "我可以帮您查一下。请问预订是几位？"
+        }
+    };
+
+    return replies[language]?.[field] || replies.en[field] || replies.en.date;
+}
+
+function renderCancelPromptReply(field, language) {
+    const replies = {
+        en: {
+            name: "I can help cancel that. What name is the booking under?",
+            date: "I can help cancel that. What date is the booking for?",
+            group_size: "I can help cancel that. How many guests is the booking for?"
+        },
+        zh: {
+            name: "我可以帮您取消。请问预订是登记在哪个名字下？",
+            date: "我可以帮您取消。请问预订是哪一天？",
+            group_size: "我可以帮您取消。请问预订是几位？"
+        }
+    };
+
+    return replies[language]?.[field] || replies.en[field] || replies.en.date;
+}
+
+function renderCancelSuccessReply(booking, language) {
+    if (language === "zh") {
+        return `好的，您的 ${booking.date} ${booking.time} 预订已取消。希望下次再欢迎您。`;
+    }
+
+    return `Your booking for ${booking.date} at ${booking.time} has been cancelled. We hope to welcome you another time.`;
 }
 
 function serializeKnownFields(knownFields) {
@@ -935,6 +1229,15 @@ function sanitizeGuestName(text) {
         .trim()
         .replace(/\s+/g, " ")
         .replace(/[^\p{L}' -]/gu, "");
+}
+
+function normalizeComparableName(text) {
+    return sanitizeGuestName(text).toLowerCase();
+}
+
+function normalizeConversationMode(mode) {
+    const normalized = String(mode || "").trim().toLowerCase();
+    return ["general", "create", "lookup", "cancel"].includes(normalized) ? normalized : "";
 }
 
 function isSameDayBooking(dateValue) {
