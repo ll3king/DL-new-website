@@ -111,9 +111,9 @@ export async function onRequestPost(context) {
 
         let bookingResult;
         if (conversationMode === "lookup") {
-            bookingResult = await handleLookupFlow(env, { bookingState });
+            bookingResult = await handleLookupFlow(env, { bookingState, messageText, history });
         } else if (conversationMode === "cancel") {
-            bookingResult = await handleCancelFlow(env, { bookingState });
+            bookingResult = await handleCancelFlow(env, { bookingState, messageText, history });
         } else {
             bookingResult = await handleBookingFlow(env, {
                 channel,
@@ -389,72 +389,72 @@ async function handleBookingFlow(env, { channel, bookingState, guestCoreInfo }) 
     };
 }
 
-async function handleLookupFlow(env, { bookingState }) {
+async function handleLookupFlow(env, { bookingState, messageText, history }) {
     const knownFields = bookingState.known_fields;
     const lookupResult = await resolveLookupResult(env, knownFields);
+    const llmResult = await generateModeReply(env, {
+        mode: "lookup",
+        language: bookingState.language,
+        messageText,
+        history,
+        knownFields,
+        lookupResult,
+        cancelResult: null
+    });
 
-    if (lookupResult.type === "match") {
-        return {
-            reply: renderLookupMatchReply(lookupResult.booking, bookingState.language),
-            booking_result: {
-                intent: "booking",
-                mode: "lookup",
-                known_fields: serializeKnownFields(knownFields),
-                missing_fields: [],
-                next_action: "lookup_resolved",
-                outcome: lookupResult.booking.status || "",
-                guidance: []
-            }
-        };
-    }
-
-    const promptField = selectLookupPromptField(knownFields, "lookup");
     return {
-        reply: renderLookupPromptReply(promptField, bookingState.language),
+        reply: llmResult.reply,
         booking_result: {
             intent: "booking",
             mode: "lookup",
             known_fields: serializeKnownFields(knownFields),
-            missing_fields: promptField ? [promptField] : [],
-            next_action: promptField ? `ask_${promptField}` : "lookup_needs_identifiers",
-            outcome: "",
-            guidance: [lookupResult.type]
+            missing_fields: Array.isArray(llmResult.missing_fields) ? llmResult.missing_fields : [],
+            next_action: llmResult.next_action || (lookupResult.type === "match" ? "lookup_resolved" : "lookup_follow_up"),
+            outcome: llmResult.outcome || (lookupResult.booking?.status || ""),
+            guidance: Array.isArray(llmResult.guidance) ? llmResult.guidance : (lookupResult.type === "match" ? [] : [lookupResult.type])
         }
     };
 }
 
-async function handleCancelFlow(env, { bookingState }) {
+async function handleCancelFlow(env, { bookingState, messageText, history }) {
     const knownFields = bookingState.known_fields;
     const lookupResult = await resolveLookupResult(env, knownFields);
+    let cancelResult = null;
 
-    if (lookupResult.type !== "match") {
-        const promptField = selectLookupPromptField(knownFields, "cancel");
-        return {
-            reply: renderCancelPromptReply(promptField, bookingState.language),
-            booking_result: {
-                intent: "booking",
-                mode: "cancel",
-                known_fields: serializeKnownFields(knownFields),
-                missing_fields: promptField ? [promptField] : [],
-                next_action: promptField ? `ask_${promptField}` : "cancel_needs_identifiers",
-                outcome: "",
-                guidance: [lookupResult.type]
-            }
+    if (lookupResult.type === "match") {
+        const cancelledBooking = await cancelBooking(env, lookupResult.booking);
+        cancelResult = {
+            status: "cancelled",
+            booking: cancelledBooking
+        };
+    } else {
+        cancelResult = {
+            status: lookupResult.type,
+            booking: null
         };
     }
 
-    const cancelledBooking = await cancelBooking(env, lookupResult.booking);
+    const llmResult = await generateModeReply(env, {
+        mode: "cancel",
+        language: bookingState.language,
+        messageText,
+        history,
+        knownFields,
+        lookupResult,
+        cancelResult
+    });
+
     return {
-        reply: renderCancelSuccessReply(cancelledBooking, bookingState.language),
+        reply: llmResult.reply,
         booking_result: {
             intent: "booking",
             mode: "cancel",
             known_fields: serializeKnownFields(knownFields),
-            missing_fields: [],
-            next_action: "cancel_completed",
-            outcome: "Cancelled",
-            guidance: [],
-            booking_status: "Cancelled"
+            missing_fields: Array.isArray(llmResult.missing_fields) ? llmResult.missing_fields : [],
+            next_action: llmResult.next_action || (cancelResult.status === "cancelled" ? "cancel_completed" : "cancel_follow_up"),
+            outcome: llmResult.outcome || (cancelResult.status === "cancelled" ? "Cancelled" : ""),
+            guidance: Array.isArray(llmResult.guidance) ? llmResult.guidance : (cancelResult.status === "cancelled" ? [] : [cancelResult.status]),
+            booking_status: cancelResult.status === "cancelled" ? "Cancelled" : undefined
         }
     };
 }
@@ -1008,20 +1008,6 @@ function hasLookupIdentifiers(knownFields) {
     );
 }
 
-function selectLookupPromptField(knownFields, mode) {
-    const hasContact = Boolean(firstNonEmpty(knownFields?.mobile, knownFields?.email));
-    if (!knownFields?.name && !hasContact) {
-        return "name";
-    }
-    if (!knownFields?.date) {
-        return "date";
-    }
-    if (mode === "lookup" && !knownFields?.group_size && !knownFields?.name) {
-        return "group_size";
-    }
-    return "date";
-}
-
 async function cancelBooking(env, booking) {
     const config = await requireConfig(env);
     await ensureBookingSheets(config);
@@ -1059,6 +1045,87 @@ async function cancelBooking(env, booking) {
     };
 }
 
+async function generateModeReply(env, { mode, language, messageText, history, knownFields, lookupResult, cancelResult }) {
+    const apiKey = env.GEMINI_API_KEY;
+    if (!apiKey) {
+        return {
+            reply: "I can help with that booking. Could you share a bit more detail?",
+            missing_fields: [],
+            next_action: `${mode}_follow_up`,
+            outcome: "",
+            guidance: []
+        };
+    }
+
+    const historyText = Array.isArray(history)
+        ? history.map((item) => `${item.role === "assistant" ? "assistant" : "guest"}: ${item.text}`).join("\n")
+        : "";
+
+    const systemPrompt = [
+        "You are the booking AI brain for Dandy Lane Cafe.",
+        "All customer-facing replies must be generated by you, not by templates.",
+        "Return JSON only.",
+        "Use keys: reply, missing_fields, next_action, outcome, guidance.",
+        "reply must be concise, natural, and in the guest's language.",
+        "missing_fields must be an array of zero or more of: name, email, mobile, group_size, date, time.",
+        "next_action must be a short snake_case label.",
+        "outcome should be empty unless a booking was found, confirmed, or cancelled.",
+        "guidance must be an array of short labels.",
+        "Do not invent booking details that are not present in known_fields or tool results.",
+        "If the mode is lookup, use lookup_result as a fact source and decide whether to answer directly or ask for the minimum clarification.",
+        "If the mode is cancel, use lookup_result and cancel_result as fact sources and decide whether to confirm cancellation or ask for the minimum clarification.",
+        "If lookup_result is empty or ambiguous, ask for the minimum missing detail instead of acting like a create flow."
+    ].join("\n");
+
+    const userPrompt = JSON.stringify({
+        mode,
+        language,
+        message_text: messageText,
+        known_fields: knownFields,
+        history: historyText,
+        lookup_result: lookupResult,
+        cancel_result: cancelResult
+    });
+
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                system_instruction: { parts: [{ text: systemPrompt }] },
+                contents: [{ role: "user", parts: [{ text: userPrompt }] }],
+                generationConfig: {
+                    response_mime_type: "application/json"
+                }
+            })
+        });
+
+        const data = await response.json();
+        const text = String(data?.candidates?.[0]?.content?.parts?.[0]?.text || "").trim();
+        if (!text) {
+            throw new Error("Empty mode reply");
+        }
+
+        const parsed = safeParseJson(text);
+        return {
+            reply: String(parsed?.reply || "").trim(),
+            missing_fields: Array.isArray(parsed?.missing_fields) ? parsed.missing_fields : [],
+            next_action: String(parsed?.next_action || "").trim(),
+            outcome: String(parsed?.outcome || "").trim(),
+            guidance: Array.isArray(parsed?.guidance) ? parsed.guidance : []
+        };
+    } catch (error) {
+        console.warn("Mode reply generation skipped:", error.message);
+        return {
+            reply: "I can help with that booking. Could you share a bit more detail?",
+            missing_fields: [],
+            next_action: `${mode}_follow_up`,
+            outcome: "",
+            guidance: []
+        };
+    }
+}
+
 function renderMissingFieldReply(field, language, guestName) {
     const replies = {
         en: {
@@ -1092,59 +1159,6 @@ function renderOutcomeReply(bookingOutcome, language, guestName) {
     return language === "zh"
         ? `好的${nameText}，这次预订我先交给团队确认。若您方便，也欢迎直接 walk-in。`
         : `Thanks${nameText}. I've passed this booking to the team for manual review, and you're also welcome to walk in if that suits you.`;
-}
-
-function renderLookupMatchReply(booking, language) {
-    const nameText = booking?.name ? ` ${booking.name}` : "";
-    const statusText = String(booking?.status || "").trim();
-
-    if (language === "zh") {
-        return `我找到您的预订了${nameText}。时间是 ${booking.date} ${booking.time}，人数 ${booking.group_size} 位。当前状态：${statusText || "已记录"}。`;
-    }
-
-    return `I found your booking${nameText}. It's for ${booking.date} at ${booking.time} for ${booking.group_size} guests. Current status: ${statusText || "Recorded"}.`;
-}
-
-function renderLookupPromptReply(field, language) {
-    const replies = {
-        en: {
-            name: "I can check that for you. What name is the booking under?",
-            date: "I can check that for you. What date is the booking for?",
-            group_size: "I can check that for you. How many guests is the booking for?"
-        },
-        zh: {
-            name: "我可以帮您查一下。请问预订是登记在哪个名字下？",
-            date: "我可以帮您查一下。请问预订是哪一天？",
-            group_size: "我可以帮您查一下。请问预订是几位？"
-        }
-    };
-
-    return replies[language]?.[field] || replies.en[field] || replies.en.date;
-}
-
-function renderCancelPromptReply(field, language) {
-    const replies = {
-        en: {
-            name: "I can help cancel that. What name is the booking under?",
-            date: "I can help cancel that. What date is the booking for?",
-            group_size: "I can help cancel that. How many guests is the booking for?"
-        },
-        zh: {
-            name: "我可以帮您取消。请问预订是登记在哪个名字下？",
-            date: "我可以帮您取消。请问预订是哪一天？",
-            group_size: "我可以帮您取消。请问预订是几位？"
-        }
-    };
-
-    return replies[language]?.[field] || replies.en[field] || replies.en.date;
-}
-
-function renderCancelSuccessReply(booking, language) {
-    if (language === "zh") {
-        return `好的，您的 ${booking.date} ${booking.time} 预订已取消。希望下次再欢迎您。`;
-    }
-
-    return `Your booking for ${booking.date} at ${booking.time} has been cancelled. We hope to welcome you another time.`;
 }
 
 function serializeKnownFields(knownFields) {
