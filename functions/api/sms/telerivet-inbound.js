@@ -80,7 +80,7 @@ function hasBookingStructure(text) {
     const hasTime = TIME_PATTERN.test(text);
     const hasDateSignal = WEEKDAY_PATTERN.test(text) || RELATIVE_DAY_PATTERN.test(text) || DATE_PATTERN.test(text);
 
-    return (hasParty && hasTime) || (hasParty && hasDateSignal) || (hasTime && hasDateSignal);
+    return hasParty && (hasTime || hasDateSignal);
 }
 
 function evaluateHighIntentBooking(text) {
