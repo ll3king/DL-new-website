@@ -460,12 +460,6 @@
                     });
                     const data = await res.json();
                     if (!res.ok) {
-                        if (mode === 'create' && data.code === 'duplicate_cancelled') {
-                            throw new Error(data.error || 'This booking already exists in cancelled state. Please restore it instead of creating a new one.');
-                        }
-                        if (mode === 'create' && data.code === 'duplicate_active') {
-                            throw new Error(data.error || 'This booking already exists.');
-                        }
                         throw new Error(data.error || 'Unable to save booking');
                     }
                     closeModal();

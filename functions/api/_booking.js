@@ -236,6 +236,14 @@ export async function appendBookingRow(config, booking, status, options = {}) {
     return { rowNumber, row };
 }
 
+export async function appendBookingRowWithCleanup(context, config, booking, status, options = {}) {
+    const result = await appendBookingRow(config, booking, status, options);
+    if (result?.rowNumber) {
+        scheduleBookingDedupeCleanup(context, config, result.rowNumber);
+    }
+    return result;
+}
+
 export async function fetchBookingRow(config, rowNumber) {
     const values = await getValues(config, `Sheet1!A${rowNumber}:M${rowNumber}`);
     const row = values[0] || [];
@@ -274,7 +282,7 @@ export async function updateEmailTracking(config, rowNumber, tracking) {
 }
 
 export async function listBookings(config) {
-    const rows = await getValues(config, "Sheet1!A2:M200");
+    const rows = await getValues(config, "Sheet1!A2:M");
 
     return rows
         .map((row, index) => ({
@@ -296,18 +304,8 @@ export async function listBookings(config) {
         .filter((booking) => booking.status !== "Archived");
 }
 
-export async function findDuplicateBooking(config, booking) {
-    const targetKey = buildBookingDuplicateKey(booking);
-    if (!targetKey || targetKey === "||||") {
-        return null;
-    }
-
-    const bookings = await listBookings(config);
-    return bookings.find((existing) => buildBookingDuplicateKey(existing) === targetKey) || null;
-}
-
 export async function getBookingsForDate(config, date) {
-    const rows = await getValues(config, "Sheet1!A2:M500");
+    const rows = await getValues(config, "Sheet1!A2:M");
     return rows
         .map((row, index) => ({
             id: String(index + 2),
@@ -321,6 +319,54 @@ export async function getBookingsForDate(config, date) {
             source: row[8] || ""
         }))
         .filter((booking) => booking.date === date && booking.status !== "Archived");
+}
+
+export function scheduleBookingDedupeCleanup(context, config, rowNumber) {
+    const task = cleanupDuplicateBookingRow(config, rowNumber)
+        .catch((error) => {
+            console.error("Booking dedupe cleanup failed:", error.message);
+        });
+
+    if (context?.waitUntil) {
+        context.waitUntil(task);
+    }
+
+    return task;
+}
+
+export async function cleanupDuplicateBookingRow(config, rowNumber) {
+    const currentRowNumber = Number.parseInt(String(rowNumber || ""), 10);
+    if (!Number.isFinite(currentRowNumber) || currentRowNumber < 2) {
+        return { deleted: false, reason: "invalid_row" };
+    }
+
+    const currentBooking = await fetchBookingRow(config, currentRowNumber);
+    const currentKey = buildBookingDuplicateKey(currentBooking);
+    if (!currentKey || currentKey === "||||") {
+        return { deleted: false, reason: "missing_identity" };
+    }
+
+    const bookings = await listBookings(config);
+    const duplicates = bookings
+        .filter((booking) => buildBookingDuplicateKey(booking) === currentKey)
+        .sort((left, right) => Number.parseInt(left.id, 10) - Number.parseInt(right.id, 10));
+
+    if (duplicates.length <= 1) {
+        return { deleted: false, reason: "unique" };
+    }
+
+    const oldest = duplicates[0];
+    if (!oldest || String(oldest.id) === String(currentRowNumber)) {
+        return { deleted: false, reason: "oldest_kept" };
+    }
+
+    await deleteBookingRow(config, currentRowNumber);
+
+    return {
+        deleted: true,
+        deleted_row: String(currentRowNumber),
+        kept_row: oldest.id
+    };
 }
 
 export async function fetchGuestCoreInfo(config, identifiers = {}) {
@@ -715,6 +761,27 @@ async function batchUpdateSpreadsheet(config, requests) {
     }
 
     return response.json();
+}
+
+async function deleteBookingRow(config, rowNumber) {
+    const metadata = await fetchSheetMetadata(config);
+    const sheet = (metadata.sheets || []).find((entry) => entry.properties?.title === "Sheet1");
+    const sheetId = sheet?.properties?.sheetId;
+
+    if (!Number.isFinite(sheetId)) {
+        throw new Error("Sheet1 sheetId not found");
+    }
+
+    await batchUpdateSpreadsheet(config, [{
+        deleteDimension: {
+            range: {
+                sheetId,
+                dimension: "ROWS",
+                startIndex: rowNumber - 1,
+                endIndex: rowNumber
+            }
+        }
+    }]);
 }
 
 async function getValues(config, range) {

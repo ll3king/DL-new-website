@@ -4,7 +4,7 @@
  */
 
 import {
-    appendBookingRow,
+    appendBookingRowWithCleanup,
     appendGuestEvent,
     emptyResponse,
     ensureBookingSheets,
@@ -42,7 +42,7 @@ export async function onRequestPost(context) {
         const outcome = evaluateBookingRequest({ booking, existingBookings });
         const bookingStatus = outcome.booking_status;
         const emailType = outcome.email_type;
-        const { rowNumber } = await appendBookingRow(config, booking, bookingStatus);
+        const { rowNumber } = await appendBookingRowWithCleanup(context, config, booking, bookingStatus);
 
         if (!rowNumber) {
             throw new Error("Failed to resolve appended Sheet1 row number");

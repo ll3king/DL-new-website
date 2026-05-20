@@ -4,12 +4,11 @@
  */
 
 import {
+    appendBookingRowWithCleanup,
     appendGuestEvent,
-    appendBookingRow,
     emptyResponse,
     ensureBookingSheets,
     fetchBookingRow,
-    findDuplicateBooking,
     jsonResponse,
     listBookings,
     requireConfig,
@@ -64,19 +63,6 @@ function buildCreatedBookingResponse(rowNumber, booking, status = "Confirmed", s
         email_status: "",
         email_error: ""
     };
-}
-
-function buildDuplicateResponse(env, duplicateBooking) {
-    const duplicateState = duplicateBooking.status === "Cancelled" ? "duplicate_cancelled" : "duplicate_active";
-    const error = duplicateState === "duplicate_cancelled"
-        ? "This booking already exists and is currently cancelled. Please restore the existing booking instead of creating a new one."
-        : "This booking already exists.";
-
-    return jsonResponse(env, {
-        error,
-        code: duplicateState,
-        booking: duplicateBooking
-    }, { status: 409 });
 }
 
 export async function onRequestGet(context) {
@@ -228,12 +214,7 @@ export async function onRequestPost(context) {
 
         const config = await requireConfig(env);
         await ensureBookingSheets(config);
-        const duplicateBooking = await findDuplicateBooking(config, booking);
-        if (duplicateBooking) {
-            return buildDuplicateResponse(env, duplicateBooking);
-        }
-
-        const { rowNumber } = await appendBookingRow(config, booking, "Confirmed", "Admin");
+        const { rowNumber } = await appendBookingRowWithCleanup(context, config, booking, "Confirmed", "Admin");
 
         if (!rowNumber) {
             throw new Error("Failed to create booking");
