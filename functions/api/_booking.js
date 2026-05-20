@@ -65,6 +65,43 @@ export function normalizePhone(phone) {
     return `+${digits}`;
 }
 
+export function normalizeBookingName(name) {
+    return String(name || "").trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+export function normalizeBookingGroupSize(groupSize) {
+    const parsed = Number.parseInt(String(groupSize || "").trim(), 10);
+    return Number.isFinite(parsed) && parsed > 0 ? String(parsed) : "";
+}
+
+export function normalizeBookingDate(date) {
+    return String(date || "").trim();
+}
+
+export function normalizeBookingTime(time) {
+    const value = String(time || "").trim();
+    if (!value) {
+        return "";
+    }
+
+    const match = value.match(/^(\d{1,2}):(\d{2})/);
+    if (!match) {
+        return value;
+    }
+
+    return `${match[1].padStart(2, "0")}:${match[2]}`;
+}
+
+export function buildBookingDuplicateKey(booking) {
+    return [
+        normalizeBookingName(booking.name),
+        normalizePhone(booking.mobile),
+        normalizeBookingGroupSize(booking.group_size),
+        normalizeBookingDate(booking.date),
+        normalizeBookingTime(booking.time)
+    ].join("|");
+}
+
 export function extractRowNumber(updatedRange) {
     const match = /![A-Z]+(\d+):/i.exec(updatedRange || "");
     return match ? Number.parseInt(match[1], 10) : null;
@@ -257,6 +294,16 @@ export async function listBookings(config) {
             email_error: row[12] || ""
         }))
         .filter((booking) => booking.status !== "Archived");
+}
+
+export async function findDuplicateBooking(config, booking) {
+    const targetKey = buildBookingDuplicateKey(booking);
+    if (!targetKey || targetKey === "||||") {
+        return null;
+    }
+
+    const bookings = await listBookings(config);
+    return bookings.find((existing) => buildBookingDuplicateKey(existing) === targetKey) || null;
 }
 
 export async function getBookingsForDate(config, date) {

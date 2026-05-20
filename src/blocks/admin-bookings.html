@@ -418,10 +418,36 @@
 
         function bindBookingFormSubmit(mode, bookingId = '') {
             const form = document.getElementById('admin-booking-form');
+            const submitButton = form.querySelector('button[type="submit"]');
+            const originalSubmitLabel = submitButton ? submitButton.textContent : '';
+            let isSubmitting = false;
+
+            function setSubmittingState(submitting) {
+                isSubmitting = submitting;
+                Array.from(form.elements).forEach((element) => {
+                    if (element instanceof HTMLButtonElement && element.type === 'button') {
+                        return;
+                    }
+                    element.disabled = submitting;
+                });
+
+                if (submitButton) {
+                    submitButton.disabled = submitting;
+                    submitButton.textContent = submitting
+                        ? (mode === 'create' ? 'Creating...' : 'Saving...')
+                        : originalSubmitLabel;
+                    submitButton.style.opacity = submitting ? '0.7' : '1';
+                    submitButton.style.cursor = submitting ? 'wait' : 'pointer';
+                }
+            }
+
             form.addEventListener('submit', async (event) => {
                 event.preventDefault();
+                if (isSubmitting) return;
+
                 const formData = new FormData(form);
                 const payload = Object.fromEntries(formData.entries());
+                setSubmittingState(true);
 
                 try {
                     const res = await fetch('/api/admin/bookings', {
@@ -433,11 +459,20 @@
                         body: JSON.stringify(mode === 'create' ? payload : { ...payload, id: bookingId, action: 'edit' })
                     });
                     const data = await res.json();
-                    if (!res.ok) throw new Error(data.error || 'Unable to save booking');
+                    if (!res.ok) {
+                        if (mode === 'create' && data.code === 'duplicate_cancelled') {
+                            throw new Error(data.error || 'This booking already exists in cancelled state. Please restore it instead of creating a new one.');
+                        }
+                        if (mode === 'create' && data.code === 'duplicate_active') {
+                            throw new Error(data.error || 'This booking already exists.');
+                        }
+                        throw new Error(data.error || 'Unable to save booking');
+                    }
                     closeModal();
                     await loadBookings();
                 } catch (error) {
                     alert(error.message);
+                    setSubmittingState(false);
                 }
             });
         }

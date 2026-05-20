@@ -9,6 +9,7 @@ import {
     emptyResponse,
     ensureBookingSheets,
     fetchBookingRow,
+    findDuplicateBooking,
     jsonResponse,
     listBookings,
     requireConfig,
@@ -44,6 +45,38 @@ function getAuthErrorResponse(env) {
     }
 
     return jsonResponse(env, { error: "Unauthorized" }, { status: 401 });
+}
+
+function buildCreatedBookingResponse(rowNumber, booking, status = "Confirmed", source = "Admin") {
+    return {
+        id: String(rowNumber),
+        name: booking.name || "",
+        email: booking.email || "",
+        mobile: booking.mobile || "",
+        group_size: String(booking.group_size || ""),
+        date: booking.date || "",
+        time: booking.time || "",
+        timestamp: new Date().toISOString(),
+        status,
+        source,
+        email_sent_at: "",
+        email_type: "",
+        email_status: "",
+        email_error: ""
+    };
+}
+
+function buildDuplicateResponse(env, duplicateBooking) {
+    const duplicateState = duplicateBooking.status === "Cancelled" ? "duplicate_cancelled" : "duplicate_active";
+    const error = duplicateState === "duplicate_cancelled"
+        ? "This booking already exists and is currently cancelled. Please restore the existing booking instead of creating a new one."
+        : "This booking already exists.";
+
+    return jsonResponse(env, {
+        error,
+        code: duplicateState,
+        booking: duplicateBooking
+    }, { status: 409 });
 }
 
 export async function onRequestGet(context) {
@@ -195,6 +228,11 @@ export async function onRequestPost(context) {
 
         const config = await requireConfig(env);
         await ensureBookingSheets(config);
+        const duplicateBooking = await findDuplicateBooking(config, booking);
+        if (duplicateBooking) {
+            return buildDuplicateResponse(env, duplicateBooking);
+        }
+
         const { rowNumber } = await appendBookingRow(config, booking, "Confirmed", "Admin");
 
         if (!rowNumber) {
@@ -206,7 +244,7 @@ export async function onRequestPost(context) {
 
         return jsonResponse(env, {
             message: "Created",
-            booking: await fetchBookingRow(config, rowNumber)
+            booking: buildCreatedBookingResponse(rowNumber, booking)
         }, { status: 201 });
     } catch (error) {
         console.error("Admin POST Error:", error.message);
