@@ -36,19 +36,23 @@
 
 - [docs/project-governance-branch-and-doc-map.zh-CN.md](docs/project-governance-branch-and-doc-map.zh-CN.md)
 
-### 4. `Booking System` 核心参考
+### 4. 治理树状图
+
+- [docs/project-governance-tree-map.zh-CN.md](docs/project-governance-tree-map.zh-CN.md)
+
+### 5. `Booking System` 核心参考
 
 - [docs/postmortem-booking-rules-admin-upgrade.zh-CN.md](docs/postmortem-booking-rules-admin-upgrade.zh-CN.md)
 - [docs/booking-crm-min-path.zh-CN.md](docs/booking-crm-min-path.zh-CN.md)
 - [docs/postmortem-booking-email-crm.zh-CN.md](docs/postmortem-booking-email-crm.zh-CN.md)
 
-### 5. `Content` 小入口
+### 6. `Content` 小入口
 
 如果只是更新 stories / posts / media，直接进入：
 
 - [docs/content-update-quick-entry.zh-CN.md](docs/content-update-quick-entry.zh-CN.md)
 
-### 6. `Search Optimization` 入口
+### 7. `Search Optimization` 入口
 
 如果这次工作属于 SEO / GEO / AEO / schema / redirects，直接进入：
 
