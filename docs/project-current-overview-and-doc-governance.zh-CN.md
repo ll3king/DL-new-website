@@ -4,7 +4,7 @@
 
 ## 文档目的
 
-这份文档是当前项目的唯一主入口。
+这份文档是当前项目治理主入口。
 
 它只负责四件事：
 
@@ -15,7 +15,7 @@
 
 如果未来重新接手这个项目，先看这份文档，不要先钻进旧 brief，也不要从历史子模块文档开始。
 
-但在仓库层面，最外层入口固定为：
+在仓库层面，最外层入口固定为：
 
 - [README.md](../README.md)
 
@@ -74,9 +74,10 @@
 - [project-governance-branch-and-doc-map.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-governance-branch-and-doc-map.zh-CN.md)
 - [project-module-code-boundary-map.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-module-code-boundary-map.zh-CN.md)
 
-### 3. Content 小入口
+### 3. 模块直接入口
 
 - [content-update-quick-entry.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/content-update-quick-entry.zh-CN.md)
+- [search-optimization-entry.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/search-optimization-entry.zh-CN.md)
 
 凡是不在上面这三类中的旧文档，不再作为当前治理入口保留。
 
@@ -102,11 +103,15 @@
 
 - [content-update-quick-entry.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/content-update-quick-entry.zh-CN.md)
 
+如果这次工作属于 SEO / GEO / AEO / schema / redirects，直接走：
+
+- [search-optimization-entry.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/search-optimization-entry.zh-CN.md)
+
 ## 文档治理规则
 
 ### 1. 总入口唯一
 
-后续任何人进入这个项目，先看本文件。
+后续任何人进入这个项目，先看 `README.md`，再看本文件。
 
 ### 2. 模块优先于历史分支
 
@@ -123,6 +128,10 @@
 ### 5. Content 保留一个小入口
 
 `Content` 不是主系统中心，但保留一个很小、很直接的入口，避免每次内容更新都绕完整个大治理框架。
+
+### 6. Search Optimization 保留一个直接入口
+
+`Search Optimization` 不是 `Booking System` 的附属说明，应保留自己的直接入口，但仍受模块 code 边界约束。
 
 ## 当前最重要的一句话
 

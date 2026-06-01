@@ -113,9 +113,10 @@
 - [postmortem-booking-email-crm.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/postmortem-booking-email-crm.zh-CN.md)
 - [project-module-code-boundary-map.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-module-code-boundary-map.zh-CN.md)
 
-### 3. Content 小入口
+### 3. 模块直接入口
 
 - [content-update-quick-entry.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/content-update-quick-entry.zh-CN.md)
+- [search-optimization-entry.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/search-optimization-entry.zh-CN.md)
 
 ## 三、当前 docs 保留规则
 
@@ -123,7 +124,7 @@
 
 - 一个主入口
 - 一组核心参考
-- 一个 `Content` 小入口
+- 一组模块直接入口
 
 不再保留：
 
@@ -148,6 +149,12 @@
 直接进入：
 
 - [content-update-quick-entry.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/content-update-quick-entry.zh-CN.md)
+
+### 如果目标是 `Search Optimization`
+
+直接进入：
+
+- [search-optimization-entry.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/search-optimization-entry.zh-CN.md)
 
 ### 如果目标是回查 AI / SMS / 早期试验历史
 

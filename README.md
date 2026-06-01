@@ -48,6 +48,12 @@
 
 - [docs/content-update-quick-entry.zh-CN.md](docs/content-update-quick-entry.zh-CN.md)
 
+### 6. `Search Optimization` 入口
+
+如果这次工作属于 SEO / GEO / AEO / schema / redirects，直接进入：
+
+- [docs/search-optimization-entry.zh-CN.md](docs/search-optimization-entry.zh-CN.md)
+
 ## 当前功能模块
 
 当前 Website 项目集合按下面模块治理：
