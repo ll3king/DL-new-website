@@ -15,6 +15,15 @@
 
 如果未来重新接手这个项目，先看这份文档，不要先钻进旧 brief，也不要从历史子模块文档开始。
 
+但在仓库层面，最外层入口固定为：
+
+- [README.md](../README.md)
+
+也就是说：
+
+- `README.md` = 仓库外层入口
+- 本文档 = 项目治理主入口
+
 ## 当前项目中心
 
 当前项目的主系统中心是：
@@ -54,6 +63,7 @@
 
 ### 1. 主入口
 
+- [README.md](../README.md)
 - [project-current-overview-and-doc-governance.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-current-overview-and-doc-governance.zh-CN.md)
 
 ### 2. 核心参考
@@ -69,6 +79,13 @@
 - [content-update-quick-entry.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/content-update-quick-entry.zh-CN.md)
 
 凡是不在上面这三类中的旧文档，不再作为当前治理入口保留。
+
+根目录历史说明文档已经降级到：
+
+- [Knowledge.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/Knowledge.md)
+- [system_blueprint.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/system_blueprint.md)
+
+它们只保留历史参考定位，不属于当前活跃入口集合。
 
 ## 当前最推荐的阅读顺序
 
