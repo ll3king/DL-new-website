@@ -1,4 +1,14 @@
 stories:
+  - slug: "its-dirty-wrap-time"
+    title: "It’s Dirty Wrap Time"
+    date: "2026-06-01"
+    author: "Dandy Lane Team"
+    summary: "A time-limited Dandy Lane moment for the people who already know."
+    content: "Some updates do not need a big introduction.<br><br>It’s time.<br><br>Dirty Wrap time is here at Dandy Lane — a time-limited combo that has become less about explaining what it is, and more about the feeling of knowing exactly when to come in for it.<br><br>Warm, satisfying, familiar, and very much a Dandy Lane kind of stop.<br><br>Here for a limited time.<br><br><strong>It’s time. Dirty Wrap time. If you know, you know.</strong>"
+    featured: false
+    cover: "assets/media/dirty-wrap-time-cover.png"
+    tags: ["Limited Time", "Cafe Life", "Seasonal"]
+
   - slug: "a-golden-croissant-kind-of-brunch"
     title: "A Golden Croissant Kind of Brunch"
     date: "2026-05-19"
