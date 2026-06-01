@@ -14,6 +14,10 @@
 
 - [project-current-overview-and-doc-governance.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-current-overview-and-doc-governance.zh-CN.md)
 
+模块与代码边界总表见：
+
+- [project-module-code-boundary-map.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-module-code-boundary-map.zh-CN.md)
+
 ## 一、历史分支关系表
 
 ### A. booking 主系统主线
@@ -108,6 +112,10 @@
 - [postmortem-booking-email-crm.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/postmortem-booking-email-crm.zh-CN.md)
   - 性质：阶段 retrospective
   - 用途：看 email + CRM 是如何并入主系统的
+
+- [project-module-code-boundary-map.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-module-code-boundary-map.zh-CN.md)
+  - 性质：治理总表
+  - 用途：看各功能模块允许改哪些文件
 
 ### 3. AI brain 历史文档
 

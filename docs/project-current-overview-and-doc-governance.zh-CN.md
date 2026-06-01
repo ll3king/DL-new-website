@@ -159,7 +159,10 @@
 4. 分支与文档总表  
    [project-governance-branch-and-doc-map.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-governance-branch-and-doc-map.zh-CN.md)
 
-5. 如确实需要追溯历史子入口，再看：
+5. 模块与代码边界总表  
+   [project-module-code-boundary-map.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-module-code-boundary-map.zh-CN.md)
+
+6. 如确实需要追溯历史子入口，再看：
    - [sms-project-retrospective-and-main-merge-readiness.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/sms-project-retrospective-and-main-merge-readiness.zh-CN.md)
    - [ai-brain-branch-retrospective.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/ai-brain-branch-retrospective.zh-CN.md)
    - [postmortem-ai-brain-main-merge.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/postmortem-ai-brain-main-merge.zh-CN.md)
@@ -209,6 +212,17 @@
 - 某些入口问题仍可能需要回查
 
 但后续项目治理不应再从它们展开，而应从 booking backend 主体展开。
+
+### 5. 每个功能模块必须有 code 改动边界
+
+以后不能只知道模块做什么，还必须知道：
+
+- 这个模块允许改哪些文件
+- 这个模块默认不该碰哪些文件
+
+当前统一总表见：
+
+- [project-module-code-boundary-map.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-module-code-boundary-map.zh-CN.md)
 
 ## 当前最重要的一句话
 
