@@ -18,6 +18,8 @@
 
 - [project-module-code-boundary-map.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-module-code-boundary-map.zh-CN.md)
 
+本文件是当前唯一允许保留的历史分支关系入口。
+
 ## 一、历史分支关系表
 
 ### A. booking 主系统主线
@@ -52,19 +54,20 @@
 - 主题：`/api/chat` 升级成 booking-first AI brain
 - 当前地位：booking system 的历史子入口主线
 - 当前不应作为项目中心使用
-- 对应核心文档：
-  - [ai-brain-branch-retrospective.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/ai-brain-branch-retrospective.zh-CN.md)
-  - [ai-chat-brain-alignment.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/ai-chat-brain-alignment.zh-CN.md)
-  - [postmortem-ai-brain-main-merge.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/postmortem-ai-brain-main-merge.zh-CN.md)
+- 当前治理状态：
+  - 保留分支历史
+  - 不再保留独立入口文档家族
+  - 如需回查，只从本文件进入
 
 #### `feature/sms-booking-gateway`
 
 - 主题：SMS booking 渠道接入与主链路打通
 - 当前地位：booking system 的历史子入口主线
 - 当前不应作为项目中心使用
-- 对应核心文档：
-  - [sms-project-retrospective-and-main-merge-readiness.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/sms-project-retrospective-and-main-merge-readiness.zh-CN.md)
-  - 其余 `sms-*` 文档
+- 当前治理状态：
+  - 保留分支历史
+  - 不再保留独立入口文档家族
+  - 如需回查，只从本文件进入
 
 ### C. 其他分支
 
@@ -81,7 +84,25 @@
 #### `ai-feature/booking-redirection-manual-alert`
 
 - 主题：早期 booking 引导 / 提醒相关试验
-- 当前地位：可保留历史，但不属于当前 booking backend 主线
+- 当前地位：前序试验来源，不再作为独立治理对象
+
+其主要功能已被后续主系统吸收或替代：
+
+- 已吸收：
+  - admin dashboard calendar / 列结构演进
+  - booking schema alignment 思路
+  - manual review / capacity 处理思路
+
+- 已替代：
+  - `7-10 walk-in / >10 manual`
+  - 旧 AI concierge 分层人数规则
+  - 旧 booking redirection 叙事
+
+当前治理要求：
+
+- 只保留它对 `Booking System` 的历史来源说明
+- 不再把它视为当前有效项目
+- 后续文档中不再单独展开这条线
 
 ## 二、当前 docs 职责划分
 
@@ -119,27 +140,19 @@
 
 ### 3. AI brain 历史文档
 
-- [ai-brain-branch-retrospective.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/ai-brain-branch-retrospective.zh-CN.md)
-- [ai-chat-brain-alignment.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/ai-chat-brain-alignment.zh-CN.md)
-- [postmortem-ai-brain-main-merge.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/postmortem-ai-brain-main-merge.zh-CN.md)
-- [ai-brain-fix-brief.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/ai-brain-fix-brief.zh-CN.md)
+当前治理动作：
 
-治理定位：
-
-- 这些文档保留历史价值
-- 但后续不是项目总入口
-- 只在需要回查 AI 子入口历史时再打开
+- 不再保留独立 AI 文档家族作为项目入口
+- AI 历史只在本文件中保留最小分支摘要
+- AI 相关独立 brief / retrospective / alignment 文档进入清理范围
 
 ### 4. SMS 历史文档
 
-- [sms-project-retrospective-and-main-merge-readiness.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/sms-project-retrospective-and-main-merge-readiness.zh-CN.md)
-- 其他 `sms-*` 文档
+当前治理动作：
 
-治理定位：
-
-- 这些文档主要服务历史追溯
-- 它们数量多，且包含大量阶段性 brief
-- 后续默认不要从这些文档开始理解项目
+- 不再保留独立 SMS 文档家族作为项目入口
+- SMS 历史只在本文件中保留最小分支摘要
+- SMS 相关 planning / alignment / brief / checklist 文档进入清理范围
 
 ## 三、当前推荐读取路径
 
@@ -154,10 +167,7 @@
 
 ### 如果目标是回查 AI 或 SMS 历史
 
-在读完总览后，再按需进入：
-
-- AI：`ai-*` / `postmortem-ai-brain-main-merge`
-- SMS：`sms-*`
+在读完总览后，直接回到本文件查看分支摘要，不再进入独立文档家族。
 
 ## 四、后续文档治理规则
 
@@ -180,6 +190,14 @@ brief 可以写，但不能长期成为唯一口径。
 
 这样以后接手时不用重新拼分支史。
 
+### 4. 已被吸收的试验线，不再保留独立文档叙事
+
+像 `ai-feature/booking-redirection-manual-alert` 这种已被后续主系统吸收的线：
+
+- 只保留最小历史来源说明
+- 不再保留独立入口文档
+- 不再继续扩写旧规则叙事
+
 ## 一句话总结
 
-当前仓库里，真正要被当作“主系统历史”的，是 booking backend 主线；AI 与 SMS 都保留历史价值，但都不再是项目叙事中心。
+当前仓库里，真正要被当作“主系统历史”的，是 booking backend 主线；AI、SMS 与早期 booking 试验线都只保留最小历史摘要，不再保留独立治理入口。

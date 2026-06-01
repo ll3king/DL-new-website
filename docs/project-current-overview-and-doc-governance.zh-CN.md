@@ -4,7 +4,7 @@
 
 ## 文档目的
 
-这份文档是当前项目的总入口。
+这份文档是当前项目的唯一主入口。
 
 它只负责四件事：
 
@@ -13,7 +13,7 @@
 - 固定历史分支与子项目的正确从属关系
 - 固定后续接手时应遵守的最小文档治理规则
 
-如果后面重新接手这个项目，先看这份文档，不要先钻进旧 brief。
+如果后面重新接手这个项目，先看这份文档，不要先钻进旧 brief，也不要直接从历史子模块文档开始。
 
 ## 当前项目中心
 
@@ -100,7 +100,7 @@
 
 这条能力属于 booking 主表治理能力，而不是某个单入口的局部补丁。
 
-### 4. SMS 和 AI brain 现在是历史子线，不是当前设计中心
+### 4. SMS 和 AI brain 现在是历史子模块，不是当前设计中心
 
 截至目前：
 
@@ -111,7 +111,7 @@
 
 正确关系是：
 
-- 它们是已经接入过 booking system 的历史子入口
+- 它们是已经接入过 booking system 的历史子模块
 - 不是后续项目设计的主轴
 
 ## 历史分支关系
@@ -162,10 +162,11 @@
 5. 模块与代码边界总表  
    [project-module-code-boundary-map.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-module-code-boundary-map.zh-CN.md)
 
-6. 如确实需要追溯历史子入口，再看：
-   - [sms-project-retrospective-and-main-merge-readiness.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/sms-project-retrospective-and-main-merge-readiness.zh-CN.md)
-   - [ai-brain-branch-retrospective.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/ai-brain-branch-retrospective.zh-CN.md)
-   - [postmortem-ai-brain-main-merge.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/postmortem-ai-brain-main-merge.zh-CN.md)
+6. Content 快速入口  
+   [content-update-quick-entry.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/content-update-quick-entry.zh-CN.md)
+
+7. 如确实需要追溯历史子模块，再回到：  
+   [project-governance-branch-and-doc-map.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-governance-branch-and-doc-map.zh-CN.md)
 
 ## 文档治理规则
 
@@ -204,14 +205,15 @@
 
 就应优先回收到 booking 主系统脉络里，不要默认新开平行项目叙事。
 
-### 4. SMS / AI 文档保留历史，但不再主导项目叙事
+### 4. 历史子模块不再保留独立入口家族
 
-相关文档继续保留，原因是：
+后续项目治理不再保留一整组 `SMS` / `AI brain` 独立入口文档家族。
 
-- 它们记录了真实历史工作
-- 某些入口问题仍可能需要回查
+相关历史如确实需要回查，应通过：
 
-但后续项目治理不应再从它们展开，而应从 booking backend 主体展开。
+- [project-governance-branch-and-doc-map.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-governance-branch-and-doc-map.zh-CN.md)
+
+统一进入，而不是直接从旧 brief 开始。
 
 ### 5. 每个功能模块必须有 code 改动边界
 
@@ -223,6 +225,16 @@
 当前统一总表见：
 
 - [project-module-code-boundary-map.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-module-code-boundary-map.zh-CN.md)
+
+### 6. Content 保留一个小入口，不走完整大框架
+
+`Content` 不是项目主线，但它需要一个非常小、非常直接的更新入口。
+
+因此：
+
+- `Content` 保留单独快速入口
+- 它可以直接指导 story / post / media 更新
+- 但仍受模块 code 边界约束
 
 ## 当前最重要的一句话
 
