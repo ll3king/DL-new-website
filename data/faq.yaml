@@ -1,19 +1,63 @@
+intro: "Answers about Dandy Lane's signature brunch dishes, daily-made hollandaise, breakfast and brunch service, Hobart CBD location, bookings, takeaway, and dietary options."
+
 questions:
-  - question: "Where is Dandy Lane Cafe located in Hobart?"
-    answer: "Dandy Lane Cafe is located at Unit 10 / 138 Collins Street, Hobart TAS 7000, tucked away in Collins Court."
-  - question: "What is your signature dish?"
-    answer: "Our most famous signature dish is the Wine-Infused Benedict (available in six variations), featuring daily house-made hollandaise with a wine infusion. Other favorites include the Potato Parmesan Rosti and our Scotch Steak Sandwich."
-  - question: "Do you offer wine-infused hollandaise every day?"
-    answer: "Yes, our chef prepares fresh hollandaise every morning, and our signature wine-infused version is available daily as part of our Benedict range."
-  - question: "Is Dandy Lane Cafe suitable for remote work?"
-    answer: "Yes, we are a laptop-friendly cafe. We offer fast free WiFi and have quiet corners specifically suited for remote work and studying in Hobart CBD."
+  - question: "What is Dandy Lane Cafe known for?"
+    answer: "Dandy Lane Cafe is known for breakfast and brunch in Hobart CBD, especially its Wine-Infused Benedicts, daily-made hollandaise, Potato Parmesan Rosti, Scotch Steak Sandwich, seasonal brunch specials, and specialty coffee."
+    links:
+      - label: "See the menu"
+        href: "/menu"
+      - label: "Read about the hollandaise"
+        href: "/stories-the-art-of-the-wine-infused-hollandaise"
+
+  - question: "What should first-time visitors order?"
+    answer: "First-time visitors often start with the Wine-Infused Benedicts. Other signature options include the Potato Parmesan Rosti and Scotch Steak Sandwich."
+    links:
+      - label: "View signature brunch dishes"
+        href: "/menu"
+
+  - question: "What makes the Wine-Infused Benedicts different?"
+    answer: "The dish is built around Dandy Lane's daily-made wine-infused hollandaise. Existing site content references six variations and wine reductions matched to different Benedict combinations."
+    links:
+      - label: "The Art of the Wine-Infused Hollandaise"
+        href: "/stories-the-art-of-the-wine-infused-hollandaise"
+      - label: "Hand-Whisked Heritage"
+        href: "/stories-hand-whisked-heritage"
+
+  - question: "Does Dandy Lane serve breakfast and brunch in Hobart CBD?"
+    answer: "Yes. Dandy Lane Cafe serves breakfast, brunch, specialty coffee, and lunch-style dishes from Unit 10 / 138 Collins Street in Hobart CBD."
+    links:
+      - label: "Find the location"
+        href: "/location"
+
+  - question: "What are the signature brunch dishes?"
+    answer: "The signature brunch dishes include the Wine-Infused Benedicts, Potato Parmesan Rosti, and Scotch Steak Sandwich, supported by seasonal brunch specials."
+    links:
+      - label: "Browse the menu"
+        href: "/menu"
+
+  - question: "Where is Dandy Lane Cafe located?"
+    answer: "Dandy Lane Cafe is located at Unit 10 / 138 Collins Street, Hobart TAS 7000, tucked inside Collins Court opposite JB HI-FI Hobart."
+    links:
+      - label: "Get directions"
+        href: "/location"
+
   - question: "What are your opening hours?"
     answer: "Dandy Lane is open Monday to Friday from 07:00 to 15:00, and Saturdays and Sundays from 09:00 to 14:00."
-  - question: "What are the booking rules at Dandy Lane?"
-    answer: "We accept online bookings for groups of up to 6. For groups larger than 6, please call us directly on 0498 061 067. We have a maximum of 16 people per hour to maintain our quiet atmosphere, and peak-hour seating is capped at 90 minutes. Laptops are welcome in designated workspace areas."
-  - question: "Do you offer takeaway options?"
-    answer: "Yes, we offer a full takeaway menu for both specialty coffee and food. You can order at the counter for quick service."
-  - question: "Is Dandy Lane Cafe pet friendly?"
-    answer: "Yes, we have outdoor seating areas in Collins Court where well-behaved pets are more than welcome to join you."
-  - question: "Do you accommodate dietary requirements like gluten-free or vegan?"
-    answer: "Absolutely. We offer various gluten-free and vegetarian options. Please inform our staff of any specific dietary needs or allergies when ordering."
+
+  - question: "Can I book for brunch?"
+    answer: "Yes. We accept online bookings for groups of up to 6. For groups larger than 6, please call us directly on 0498 061 067."
+    links:
+      - label: "Book a table"
+        href: "/booking"
+
+  - question: "Do you offer takeaway?"
+    answer: "Yes, we offer takeaway options for both specialty coffee and food. You can order at the counter for quick service."
+
+  - question: "Do you accommodate dietary requirements?"
+    answer: "Yes. We offer gluten-free and vegetarian-friendly options, and our team can help with dietary questions when ordering."
+    links:
+      - label: "See menu details"
+        href: "/menu"
+
+  - question: "Do you have laptop-friendly or workspace details?"
+    answer: "Yes, laptops are welcome in designated areas. These are facility details rather than the main reason to visit, and availability can vary during busy brunch periods."

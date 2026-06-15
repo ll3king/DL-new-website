@@ -1,32 +1,38 @@
 # Search Optimization Entry
 
-最后更新：2026-06-01
+最后更新：2026-06-15
 
 ## 文档目的
 
 这份文档是 `Search Optimization` 的直接入口。
 
-它只服务一类工作：
+它只服务这类工作：
 
-- SEO / GEO / AEO / schema / redirects / search-facing structure 更新
+- SEO
+- GEO
+- AEO
+- schema
+- redirects
+- robots / sitemap
+- search-facing structure
 
 它不负责：
 
 - `Booking System`
 - admin backend
-- AI Chat
-- SMS
-- stories / posts / media 更新
+- `AI Chat`
+- `SMS`
+- 与搜索优化无关的一般内容改版
 
-如果这次工作不是 `Search Optimization`，请回到：
+如果这次工作不属于 `Search Optimization`，请回到：
 
 - [project-current-overview-and-doc-governance.zh-CN.md](./project-current-overview-and-doc-governance.zh-CN.md)
 
 ## 当前模块定位
 
-`Search Optimization` 是 `Website` 项目中的一个独立功能模块。
+`Search Optimization` 是 `Website` 项目中的独立功能模块。
 
-它的职责是把原来分散的：
+它把原来分散的：
 
 - SEO
 - GEO
@@ -54,6 +60,7 @@
 - [src/blocks/faq-list.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/faq-list.html)
 - [src/blocks/identity-hero.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/identity-hero.html)
 - [src/blocks/intent-match.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/intent-match.html)
+- [scripts/generate.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/scripts/generate.js)
 
 ## 关联可改文件
 
@@ -67,18 +74,51 @@
 - [functions/api/chat.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/chat.js)
 - [functions/api/sms/inbound.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/inbound.js)
 - [functions/api/sms/telerivet-inbound.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/telerivet-inbound.js)
+
+## 跨 Content 的例外
+
+默认情况下，`Search Optimization` 不直接修改 `stories / posts / media`。
+
+但如果是已经明确批准的：
+
+- AEO / GEO 决策锚点迁移
+- Answer Summary 增强
+- stories 排序重构
+- search-facing 内部链接补强
+
+则允许最小范围触达：
+
 - [data/stories.yaml](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/data/stories.yaml)
+- [src/blocks/story-list.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/story-list.html)
+- [src/blocks/story-detail.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/story-detail.html)
+
+前提是：
+
+- 不新增页面
+- 不创建独立内容项目分叉
+- 不把 `Content` 改造成与本次 Search Optimization 无关的一般内容改版
 
 ## 标准动作
 
 1. 先确认这次工作属于 `Search Optimization`
 2. 只改 search-facing structure / schema / entity / redirects / discovery 辅助
-3. 不顺手碰 booking、AI、SMS、Content
-4. 修改后回看：
+3. 不顺手碰 booking、AI、SMS
+4. 如果明确批准跨 `Content`，只在被批准的 stories 范围内做最小增强
+5. 修改后回看：
    - schema 是否仍自洽
    - redirects 是否仍清晰
    - robots / sitemap 是否仍正确
 
+## External Proof Consistency Snapshot
+
+| Source | Current public claim | Matches official site? | Risk | Recommended action |
+|---|---|---|---|---|
+| Tripadvisor | Repo `same_as` currently points to a Tripadvisor restaurant review URL for Dandy Lane Cafe in Hobart. | Partially verified from repo only; current listing details were not fully confirmed in accessible search results during this pass. | Medium | Keep as `sameAs` only if the listing still resolves to the correct Hobart cafe identity, address, and category. Manually verify title, address, and signature dish positioning before stronger citation. |
+| Discover Tasmania | No confirmed current Discover Tasmania listing was surfaced in accessible search results during this pass. | Not verified. | Medium | Do not cite as a current proof source until an active listing is confirmed. |
+| Hobart & Beyond | No confirmed current Hobart & Beyond feature or listing was surfaced in accessible search results during this pass. | Not verified. | Medium | Treat as candidate proof only after manual verification. |
+| Time Out | No confirmed current Time Out listing or editorial page was surfaced in accessible search results during this pass. | Not verified. | Medium | Do not use as a visible proof claim without manual confirmation. |
+| Hello Hobart | No confirmed current Hello Hobart listing or feature was surfaced in accessible search results during this pass. | Not verified. | Medium | Treat as unconfirmed until manually checked. |
+
 ## 一句话规则
 
-`Search Optimization` 是 `Website` 里的独立功能模块，不是 `Booking System` 的附属补丁，也不是 `Content` 更新的一部分。
+`Search Optimization` 是 `Website` 里的独立功能模块，不是 `Booking System` 的附属补丁，也不是 `Content` 更新的一部分。只有在明确批准的 AEO/GEO 升级里，它才可以最小范围跨到 stories。 

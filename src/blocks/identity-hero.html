@@ -144,6 +144,17 @@
                 {{ page_context.emphasis }}
             </div>
 
+            {% if current_page_id == 'index' and page_context.primary_links %}
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;">
+                {% for link in page_context.primary_links %}
+                <a href="{{ link.href }}"
+                    style="display: inline-block; padding: 0.9rem 1.4rem; text-decoration: none; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; border-radius: 2px; {% if loop.first %}background: var(--accent); color: #fff;{% else %}background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.25);{% endif %}">
+                    {{ link.label }}
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+
             {% if current_page_id == 'index' %}
             <!-- Social Proof Bar (AEO: Trust Signals) -->
             <div class="social-proof-bar" style="display: flex; gap: 2rem; align-items: center; margin-bottom: 2.5rem; flex-wrap: wrap;">

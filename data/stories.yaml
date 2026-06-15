@@ -1,90 +1,191 @@
 stories:
-  - slug: "its-dirty-wrap-time"
-    title: "It’s Dirty Wrap Time"
-    date: "2026-06-01"
-    author: "Dandy Lane Team"
-    summary: "A time-limited Dandy Lane moment for the people who already know."
-    content: "Some updates do not need a big introduction.<br><br>It’s time.<br><br>Dirty Wrap time is here at Dandy Lane — a time-limited combo that has become less about explaining what it is, and more about the feeling of knowing exactly when to come in for it.<br><br>Warm, satisfying, familiar, and very much a Dandy Lane kind of stop.<br><br>Here for a limited time.<br><br><strong>It’s time. Dirty Wrap time. If you know, you know.</strong>"
-    featured: false
-    cover: "assets/media/dirty-wrap-time-cover.png"
-    tags: ["Limited Time", "Cafe Life", "Seasonal"]
-
-  - slug: "a-golden-croissant-kind-of-brunch"
-    title: "A Golden Croissant Kind of Brunch"
-    date: "2026-05-19"
-    author: "Dandy Lane Team"
-    summary: "This week at Dandy Lane, we're leaning into a warmer, more satisfying brunch moment with our Croissant Scramble."
-    content: "Some brunch plates are made for slow mornings.<br><br>This week, our Croissant Scramble brings together the comfort of a golden croissant with the kind of savoury brunch feeling that makes you want to sit down, settle in, and take a little more time with your coffee.<br><br>It is generous without feeling heavy, familiar but still a little different, and very much in the spirit of Dandy Lane: warm, layered, and made for a proper brunch in the city.<br><br>If your week needs a better morning, come find us in the lane.<br><br>Join us for coffee and brunch at Dandy Lane."
-    featured: false
-    cover: "assets/media/golden-croissant-brunch.png"
-    tags: ["Brunch", "Seasonal", "Cafe Life"]
-
-  - slug: "the-little-in-between-moments-at-dandy-lane"
-    title: "The Little In-Between Moments at Dandy Lane"
-    date: "2026-04-23"
-    author: "Dandy Lane Team"
-    summary: "Not every good cafe moment happens at the table. Sometimes it is coffee in hand, a quick chat, a bright corner, and a small pause in the day."
-    content: "At Dandy Lane, not every good cafe moment begins with a full table.<br><br>Sometimes it looks more like coffee in hand, a quick catch-up, a pause between plans, or a few extra minutes spent somewhere that feels easy to stay in. Those in-between moments matter too, and they are part of what gives a cafe its feeling.<br><br>These small corners of colour have quietly become part of that rhythm. A place to perch, chat, wait for a friend, or simply slow down for a moment with a takeaway cup in hand. Nothing overdone. Just a simple detail that makes the space feel a little lighter, a little warmer, and a little more Dandy.<br><br>For us, hospitality is not only about what arrives on the plate. It is also about how a place makes people feel while they are in it: comfortable, welcome, and able to linger for a minute.<br><br>Sometimes that is exactly what a good cafe should offer.<br><br>Drop by for coffee, brunch, and a few good in-between moments in the lane."
-    featured: false
-    cover: "assets/media/chairs hallway cover.jpg"
-    tags: ["Community", "Cafe Life"]
-
-  - slug: "the-pulse-of-the-lane"
-    title: "The Pulse of the Lane: A Story of Dandy Lane Cafe"
-    date: "2026-04-05"
-    author: "Dandy Lane Team"
-    summary: "From the mural at the entrance to the logo in your hand, this story traces how Dandy Lane's identity grew out of Hobart's street-side character."
-    content: "In the heart of Hobart, tucked away from the main road, lies an alleyway that breathes creativity. This is Dandy Lane Cafe, not just a spot for a caffeine fix, but a cultural anchor for the city's dreamers, digital nomads, and weekend explorers.<br><br><strong>The Mural: The Spark of Rebellion</strong><br>The story began with the towering graffiti wall right at the cafe's entrance. For many locals, this wall was a landmark before the cafe itself became familiar. Its bold geometric waves of azure, burnt orange, and mustard yellow reflected the raw, unfiltered energy of Hobart's underground art scene. It was never just paint. It felt like a statement of freedom, movement, and local identity, turning the lane itself into part of the Dandy Lane story.<br><br><img src=\"assets/media/story_pulse_lane_inline.png\" alt=\"Dandy Lane Cafe logo concept inspired by street art\" style=\"width: 100%; height: auto; border-radius: 12px; margin: 0.5rem 0 1.5rem; display: block;\"><br><strong>The Logo: Street Art in Your Palm</strong><br>When it came time to define the brand, the founders knew the logo could not feel corporate. It had to belong to the street. Its flowing script and high-contrast palette draw directly from the mural's visual language, carrying that same warmth and confidence into the identity itself. Inspired by the word 'Dandy' in the name, the dandelion motif adds movement to the mark. The floating seeds suggest ideas, conversations, and energy carried outward, while the bold 'Cafe' badge gives the logo a grounded, tagged quality that suits the lane.<br><br><strong>The Dandy Lifestyle: From Wall to Cup</strong><br>For the twenty-to-thirty-five crowd, Dandy Lane is a kind of third space. It is where you post a latte against the mural, where the urban exterior meets a warmer interior, and where the cup in your hand feels connected to the setting around it. When you hold a Dandy Lane cup, you are not just holding a drink. You are holding a small piece of Hobart's street soul, translated into something daily, warm, and familiar. It is a reminder that even in a fast-paced city, there is still room for boldness, brightness, and connection to the roots of the lane."
-    featured: true
-    cover: "assets/media/story_pulse_lane_cover.png"
-    tags: ["Brand", "Community", "Design"]
-
   - slug: "the-art-of-the-wine-infused-hollandaise"
     title: "The Art of the Wine-Infused Hollandaise"
     date: "2026-02-15"
     author: "Head Chef"
     summary: "Discover why we spend 2 hours every morning perfecting our signature wine-infused sauces."
+    answer_summary: "This story explains the sauce behind Dandy Lane's Wine-Infused Benedicts. The hollandaise is made daily and infused with Tasmanian wine reductions, making it the core craft element behind one of the cafe's signature brunch dishes."
+    evidence_points:
+      - "Daily batch"
+      - "Tasmanian white and red wines"
+      - "Six variations"
+      - "Sauvignon Blanc blend for seafood"
+      - "Pinot Noir reduction for smoked bacon"
+    related_menu_item: "Wine-Infused Benedicts"
+    related_links:
+      - label: "View the menu"
+        href: "/menu"
+      - label: "Book brunch"
+        href: "/booking"
     content: "The secret to our Benedict isn't just the eggs; it's the reduction. By infusing premium Tasmanian white and red wines into our daily batch of hollandaise, we achieve a complexity of flavor that standard sauces simply can't match. Each morning, our kitchen team whisks together six distinct variations, from a bright Sauvignon Blanc citrus blend for seafood to a deeper, robust Pinot Noir reduction that pairs perfectly with our smoked bacon."
     featured: true
     cover: "assets/media/dish_benny.jpg"
     tags: ["Signature", "Behind the Scenes"]
-
-  - slug: "creating-a-quiet-workspace-in-hobart-cbd"
-    title: "Creating a Quiet Workspace in Hobart CBD"
-    date: "2026-02-10"
-    author: "Dandy Lane Team"
-    summary: "Why we intentionally designed our lane sanctuary for remote workers and deep thinkers."
-    content: "We believe a cafe should be more than just a place to eat. By choosing a location tucked inside Collins Court, we've created a natural noise buffer from the city traffic. Combined with high-speed WiFi and strategic power outlets, it's the perfect spot for your next deep-work session. We've even calibrated our acoustic playlist to enhance focus, making Dandy Lane a favorite for local freelancers and creative professionals seeking a laptop-friendly sanctuary."
-    featured: false
-    cover: "assets/media/faq_hero.jpg"
-    tags: ["Community", "Workplace"]
-
-  - slug: "sourcing-tasmanian-best-produce"
-    title: "Sourcing Tasmania's Best Produce"
-    date: "2026-02-01"
-    author: "Operations Manager"
-    summary: "Meet the local farmers behind our Potato Parmesan Rosti and Steak Sandwich."
-    content: "Our Scotch steak comes from local Tassie growers who prioritize ethical farming. We believe that shortening the distance from farm to plate is the only way to ensure the consistent quality our regulars expect. From local sourdough bakers to seasonal vegetable producers in the Derwent Valley, our menu is a love letter to Tasmanian agriculture."
-    featured: true
-    cover: "assets/media/dish_steak.jpg"
-    tags: ["Suppliers", "Local"]
-
-  - slug: "the-alchemist-of-acids"
-    title: "The Alchemist of Acids: Coffee in TAS"
-    date: "2026-02-20"
-    author: "Head Barista"
-    summary: "How we balance coffee acidity against the unique Tasmanian climate for the perfect pull."
-    content: "Tasmania's cool climate and variable humidity present a unique challenge for coffee extraction. At Dandy Lane, our baristas approach coffee like alchemists. We adjust our grind size and water temperature multiple times a day as the sea breeze shifts through the lane. By carefully managing the acidity profile of our beans, we ensure that every flat white or espresso delivered has that signature Dandy Lane balance: bright, clean, and consistently smooth regardless of the weather outside."
-    featured: true
-    cover: "assets/media/stories_hero.png"
-    tags: ["Coffee", "Craftsmanship"]
 
   - slug: "hand-whisked-heritage"
     title: "Hand-Whisked Heritage"
     date: "2026-02-22"
     author: "Kitchen Lead"
     summary: "A deep dive into the physical craft and labor behind our daily hollandaise ritual."
+    answer_summary: "This story supports Dandy Lane's daily hollandaise craft. The hand-whisking ritual is part of the cafe's brunch identity and connects directly to the Wine-Infused Benedicts and hollandaise-led dishes."
+    evidence_points:
+      - "Hand-whisked daily"
+      - "Copper whisk rhythm"
+      - "Regional wine reductions"
+      - "Core culinary identity"
+    related_menu_item: "Wine-Infused Benedicts"
+    related_links:
+      - label: "View the menu"
+        href: "/menu"
+      - label: "Read the hollandaise story"
+        href: "/stories-the-art-of-the-wine-infused-hollandaise"
     content: "There is no machine in the world that can replicate the texture of a hand-whisked hollandaise. Every morning at 6:30 AM, our kitchen echoes with the rhythm of copper whisks hitting stainless steel. This heritage technique allows us to monitor the precise emulsification of local butter and regional wine reductions. It is a labor-intensive ritual, but it is the cornerstone of our culinary identity. When you see that perfectly silken sauce on your rosti, you're tasting hours of physical craft."
     featured: true
     cover: "assets/media/dish_rosti.jpg"
     tags: ["Culinary", "Traditional Techniques"]
+
+  - slug: "sourcing-tasmanian-best-produce"
+    title: "Sourcing Tasmania's Best Produce"
+    date: "2026-02-01"
+    author: "Operations Manager"
+    summary: "Meet the local farmers behind our Potato Parmesan Rosti and Steak Sandwich."
+    answer_summary: "This story supports the quality claims behind Dandy Lane's savoury brunch dishes, especially the Potato Parmesan Rosti and Scotch Steak Sandwich, by explaining the use of Tasmanian growers, local sourdough, and seasonal produce."
+    evidence_points:
+      - "Local Tassie growers"
+      - "Local sourdough bakers"
+      - "Seasonal vegetable producers in the Derwent Valley"
+      - "Ethical farming focus"
+    related_menu_item: "Potato Parmesan Rosti and Scotch Steak Sandwich"
+    related_links:
+      - label: "View the menu"
+        href: "/menu"
+      - label: "Book brunch"
+        href: "/booking"
+    content: "Our Scotch steak comes from local Tassie growers who prioritize ethical farming. We believe that shortening the distance from farm to plate is the only way to ensure the consistent quality our regulars expect. From local sourdough bakers to seasonal vegetable producers in the Derwent Valley, our menu is a love letter to Tasmanian agriculture."
+    featured: true
+    cover: "assets/media/dish_steak.jpg"
+    tags: ["Suppliers", "Local"]
+
+  - slug: "a-golden-croissant-kind-of-brunch"
+    title: "A Golden Croissant Kind of Brunch"
+    date: "2026-05-19"
+    author: "Dandy Lane Team"
+    summary: "This week at Dandy Lane, we're leaning into a warmer, more satisfying brunch moment with our Croissant Scramble."
+    answer_summary: "This story documents a seasonal brunch special at Dandy Lane and supports the cafe's freshness signal: the menu changes with limited-time brunch moments."
+    evidence_points:
+      - "Limited-time brunch moment"
+      - "Croissant Scramble"
+      - "Warm, satisfying brunch positioning"
+    related_menu_item: "Seasonal brunch specials"
+    related_links:
+      - label: "View the menu"
+        href: "/menu"
+      - label: "Book brunch"
+        href: "/booking"
+    content: "Some brunch plates are made for slow mornings.<br><br>This week, our Croissant Scramble brings together the comfort of a golden croissant with the kind of savoury brunch feeling that makes you want to sit down, settle in, and take a little more time with your coffee.<br><br>It is generous without feeling heavy, familiar but still a little different, and very much in the spirit of Dandy Lane: warm, layered, and made for a proper brunch in the city.<br><br>If your week needs a better morning, come find us in the lane.<br><br>Join us for coffee and brunch at Dandy Lane."
+    featured: false
+    cover: "assets/media/golden-croissant-brunch.png"
+    tags: ["Brunch", "Seasonal", "Cafe Life"]
+
+  - slug: "its-dirty-wrap-time"
+    title: "It's Dirty Wrap Time"
+    date: "2026-06-01"
+    author: "Dandy Lane Team"
+    summary: "A time-limited Dandy Lane moment for the people who already know."
+    answer_summary: "This story documents a limited-time Dandy Lane brunch or lunch special and supports return-visit intent."
+    evidence_points:
+      - "Limited-time special"
+      - "Dirty Wrap return-visit cue"
+      - "Seasonal menu signal"
+    related_menu_item: "Seasonal brunch specials"
+    related_links:
+      - label: "View the menu"
+        href: "/menu"
+      - label: "Book brunch"
+        href: "/booking"
+    content: "Some updates do not need a big introduction.<br><br>It's time.<br><br>Dirty Wrap time is here at Dandy Lane - a time-limited combo that has become less about explaining what it is, and more about the feeling of knowing exactly when to come in for it.<br><br>Warm, satisfying, familiar, and very much a Dandy Lane kind of stop.<br><br>Here for a limited time.<br><br><strong>It's time. Dirty Wrap time. If you know, you know.</strong>"
+    featured: false
+    cover: "assets/media/dirty-wrap-time-cover.png"
+    tags: ["Limited Time", "Cafe Life", "Seasonal"]
+
+  - slug: "the-alchemist-of-acids"
+    title: "The Alchemist of Acids: Coffee in TAS"
+    date: "2026-02-20"
+    author: "Head Barista"
+    summary: "How we balance coffee acidity against the unique Tasmanian climate for the perfect pull."
+    answer_summary: "This story supports Dandy Lane's specialty coffee identity and explains why coffee is part of the breakfast and brunch experience rather than a separate add-on."
+    evidence_points:
+      - "Barista calibration"
+      - "Cool-climate extraction adjustments"
+      - "Bright and clean flavor balance"
+    related_menu_item: "Specialty Coffee"
+    related_links:
+      - label: "View the menu"
+        href: "/menu"
+    content: "Tasmania's cool climate and variable humidity present a unique challenge for coffee extraction. At Dandy Lane, our baristas approach coffee like alchemists. We adjust our grind size and water temperature multiple times a day as the sea breeze shifts through the lane. By carefully managing the acidity profile of our beans, we ensure that every flat white or espresso delivered has that signature Dandy Lane balance: bright, clean, and consistently smooth regardless of the weather outside."
+    featured: true
+    cover: "assets/media/stories_hero.png"
+    tags: ["Coffee", "Craftsmanship"]
+
+  - slug: "the-pulse-of-the-lane"
+    title: "The Pulse of the Lane: A Story of Dandy Lane Cafe"
+    date: "2026-04-05"
+    author: "Dandy Lane Team"
+    summary: "From the mural at the entrance to the logo in your hand, this story traces how Dandy Lane's identity grew out of Hobart's street-side character."
+    answer_summary: "This story supports the brand identity around Dandy Lane's lane setting and city character, but it sits below the core breakfast and brunch decision anchors."
+    evidence_points:
+      - "Lane identity"
+      - "Street-side character"
+      - "Brand roots"
+    related_menu_item: "Dandy Lane brand story"
+    related_links:
+      - label: "View the menu"
+        href: "/menu"
+      - label: "Find the location"
+        href: "/location"
+    content: "In the heart of Hobart, tucked away from the main road, lies an alleyway that breathes creativity. This is Dandy Lane Cafe, not just a spot for a caffeine fix, but a cultural anchor for the city's dreamers, digital nomads, and weekend explorers.<br><br><strong>The Mural: The Spark of Rebellion</strong><br>The story began with the towering graffiti wall right at the cafe's entrance. For many locals, this wall was a landmark before the cafe itself became familiar. Its bold geometric waves of azure, burnt orange, and mustard yellow reflected the raw, unfiltered energy of Hobart's underground art scene. It was never just paint. It felt like a statement of freedom, movement, and local identity, turning the lane itself into part of the Dandy Lane story.<br><br><img src=\"assets/media/story_pulse_lane_inline.png\" alt=\"Dandy Lane Cafe logo concept inspired by street art\" style=\"width: 100%; height: auto; border-radius: 12px; margin: 0.5rem 0 1.5rem; display: block;\"><br><strong>The Logo: Street Art in Your Palm</strong><br>When it came time to define the brand, the founders knew the logo could not feel corporate. It had to belong to the street. Its flowing script and high-contrast palette draw directly from the mural's visual language, carrying that same warmth and confidence into the identity itself. Inspired by the word 'Dandy' in the name, the dandelion motif adds movement to the mark. The floating seeds suggest ideas, conversations, and energy carried outward, while the bold 'Cafe' badge gives the logo a grounded, tagged quality that suits the lane.<br><br><strong>The Dandy Lifestyle: From Wall to Cup</strong><br>For the twenty-to-thirty-five crowd, Dandy Lane is a kind of third space. It is where you post a latte against the mural, where the urban exterior meets a warmer interior, and where the cup in your hand feels connected to the setting around it. When you hold a Dandy Lane cup, you are not just holding a drink. You are holding a small piece of Hobart's street soul, translated into something daily, warm, and familiar. It is a reminder that even in a fast-paced city, there is still room for boldness, brightness, and connection to the roots of the lane."
+    featured: true
+    cover: "assets/media/story_pulse_lane_cover.png"
+    tags: ["Brand", "Community", "Design"]
+
+  - slug: "the-little-in-between-moments-at-dandy-lane"
+    title: "The Little In-Between Moments at Dandy Lane"
+    date: "2026-04-23"
+    author: "Dandy Lane Team"
+    summary: "Not every good cafe moment happens at the table. Sometimes it is coffee in hand, a quick chat, a bright corner, and a small pause in the day."
+    answer_summary: "This story supports Dandy Lane's atmosphere and softer hospitality cues, but it is secondary to the site's primary breakfast and brunch decision anchors."
+    evidence_points:
+      - "Cafe atmosphere"
+      - "Pause-in-the-day hospitality"
+      - "Secondary visit signal"
+    related_menu_item: "General cafe experience"
+    related_links:
+      - label: "View the menu"
+        href: "/menu"
+      - label: "Find the location"
+        href: "/location"
+    content: "At Dandy Lane, not every good cafe moment begins with a full table.<br><br>Sometimes it looks more like coffee in hand, a quick catch-up, a pause between plans, or a few extra minutes spent somewhere that feels easy to stay in. Those in-between moments matter too, and they are part of what gives a cafe its feeling.<br><br>These small corners of colour have quietly become part of that rhythm. A place to perch, chat, wait for a friend, or simply slow down for a moment with a takeaway cup in hand. Nothing overdone. Just a simple detail that makes the space feel a little lighter, a little warmer, and a little more Dandy.<br><br>For us, hospitality is not only about what arrives on the plate. It is also about how a place makes people feel while they are in it: comfortable, welcome, and able to linger for a minute.<br><br>Sometimes that is exactly what a good cafe should offer.<br><br>Drop by for coffee, brunch, and a few good in-between moments in the lane."
+    featured: false
+    cover: "assets/media/chairs hallway cover.jpg"
+    tags: ["Community", "Cafe Life"]
+
+  - slug: "creating-a-quiet-workspace-in-hobart-cbd"
+    title: "Creating a Quiet Workspace in Hobart CBD"
+    date: "2026-02-10"
+    author: "Dandy Lane Team"
+    summary: "Why we intentionally designed our lane sanctuary for remote workers and deep thinkers."
+    answer_summary: "This story supports tertiary facility details around laptop-friendly use and quiet corners. It is not part of Dandy Lane's primary brunch decision anchors."
+    evidence_points:
+      - "Quiet corners"
+      - "Fast WiFi"
+      - "Workspace seating"
+    related_menu_item: "Facilities detail"
+    related_links:
+      - label: "Read the FAQ"
+        href: "/faq"
+      - label: "View the menu"
+        href: "/menu"
+    content: "We believe a cafe should be more than just a place to eat. By choosing a location tucked inside Collins Court, we've created a natural noise buffer from the city traffic. Combined with high-speed WiFi and strategic power outlets, it's the perfect spot for your next deep-work session. We've even calibrated our acoustic playlist to enhance focus, making Dandy Lane a favorite for local freelancers and creative professionals seeking a laptop-friendly sanctuary."
+    featured: false
+    cover: "assets/media/faq_hero.jpg"
+    tags: ["Community", "Workplace"]

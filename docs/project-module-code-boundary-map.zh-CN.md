@@ -60,6 +60,15 @@
 - [functions/api/admin/bookings.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/admin/bookings.js)
 - [functions/api/chat.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/chat.js)
 - [functions/api/sms/inbound.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/inbound.js)
+
+例外说明：
+- `Search Optimization` 默认不直接修改 `stories / posts / media`
+- 但如果任务已经明确批准为 `AEO / GEO` 锚点迁移、Answer Summary 增强、stories 排序重构、search-facing 内部链接补强
+- 则允许最小范围跨到：
+- [data/stories.yaml](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/data/stories.yaml)
+- [src/blocks/story-list.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/story-list.html)
+- [src/blocks/story-detail.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/story-detail.html)
+- 前提是：不新增页面、不新增长期文件路径，只服务于 Search Optimization 本身
 - [functions/api/sms/telerivet-inbound.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/telerivet-inbound.js)
 
 ## 二、Booking System

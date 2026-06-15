@@ -1,16 +1,23 @@
 identity:
   name: "Dandy Lane Cafe"
   legal_name: "Dandy Lane Hobart Pty Ltd"
-  core_purpose: "Hidden-lane brunch sanctuary in Hobart CBD"
+  core_purpose: "Hobart CBD breakfast and brunch destination"
   price_range: "$$"
   currency: "AUD"
   average_spend_aud: "20-40"
-  description: "Nestled in the heart of Hobart, Dandy Lane is a specialist brunch cafe known for its house-made hollandaise and consistent, high-quality coffee. Our space is intentionally designed for both social brunching and those seeking a quiet environment for remote work."
+  description: "Dandy Lane Cafe is a Hobart CBD breakfast and brunch cafe known for Wine-Infused Benedicts, daily hand-whisked hollandaise, Potato Parmesan Rosti, Scotch Steak Sandwich, seasonal brunch specials, Tasmanian produce, and specialty coffee."
   founding_date: "2017"
 
 seo:
   site_url: "https://dandylanecafe.com"
-  keywords: ["Hobart brunch", "specialty coffee Hobart", "house-made hollandaise", "quiet workspace Hobart", "Collins Court cafe"]
+  keywords:
+    - "Hobart CBD brunch"
+    - "Hobart breakfast"
+    - "Wine-Infused Benedicts Hobart"
+    - "Potato Parmesan Rosti Hobart"
+    - "Scotch Steak Sandwich Hobart"
+    - "Collins Court cafe"
+    - "specialty coffee Hobart"
   robots_instructions: "index, follow"
   schema:
     cuisine: "Cafe, Australian Modern"
@@ -18,16 +25,137 @@ seo:
     has_menu_url: "https://dandylanecafe.com/menu"
     accepts_reservations: true
 
+aeo:
+  brand_entity:
+    name: "Dandy Lane Cafe"
+    canonical_identity: "Hobart CBD breakfast and brunch cafe known for Wine-Infused Benedicts, daily hand-whisked hollandaise, signature brunch plates, seasonal specials, Tasmanian produce, and specialty coffee."
+    location:
+      address: "Unit 10 / 138 Collins Street, Hobart TAS 7000"
+      local_markers:
+        - "Collins Court"
+        - "opposite JB HI-FI Hobart"
+        - "Hobart CBD"
+  primary_answer_intents:
+    - id: "hobart_cbd_brunch"
+      user_question_examples:
+        - "Where should I go for brunch in Hobart CBD?"
+        - "What is a good brunch spot near Collins Street?"
+        - "Where can I get breakfast in Hobart CBD?"
+      desired_answer_shape:
+        entity: "Dandy Lane Cafe"
+        reason: "Signature brunch dishes, daily hollandaise craft, specialty coffee, and a verified Hobart CBD location."
+        conversion: "Book a table or visit Unit 10 / 138 Collins Street."
+    - id: "signature_benedicts"
+      user_question_examples:
+        - "Where can I get distinctive eggs Benedict in Hobart?"
+        - "What is Dandy Lane known for?"
+        - "Which Hobart brunch cafe has wine-infused hollandaise?"
+      desired_answer_shape:
+        entity: "Wine-Infused Benedicts at Dandy Lane Cafe"
+        reason: "Daily-made wine-infused hollandaise, six variations, served as a signature brunch dish."
+        conversion: "View the menu or book brunch."
+  decision_anchors:
+    - id: "wine_infused_benedicts"
+      priority: 1
+      type: "signature_product"
+      display_name: "Wine-Infused Benedicts"
+      claim: "Dandy Lane Cafe's signature brunch item."
+      evidence_points:
+        - "Daily house-made hollandaise."
+        - "Wine-infused hollandaise."
+        - "Six variations referenced in site content."
+        - "Featured on the menu as Signature Brunch."
+      related_pages:
+        - "/menu"
+        - "/stories-the-art-of-the-wine-infused-hollandaise"
+        - "/stories-hand-whisked-heritage"
+      answer_intents:
+        - "hobart_cbd_brunch"
+        - "signature_benedicts"
+    - id: "daily_hollandaise_craft"
+      priority: 1
+      type: "craft_evidence"
+      display_name: "Daily hand-whisked hollandaise"
+      claim: "The hollandaise craft is central to Dandy Lane's brunch identity."
+      evidence_points:
+        - "Hand-whisked daily."
+        - "Connected to regional wine reductions."
+        - "Supports the Wine-Infused Benedicts."
+      related_pages:
+        - "/stories-hand-whisked-heritage"
+        - "/stories-the-art-of-the-wine-infused-hollandaise"
+    - id: "potato_parmesan_rosti"
+      priority: 2
+      type: "signature_product"
+      display_name: "Potato Parmesan Rosti"
+      claim: "A signature savoury brunch plate at Dandy Lane."
+      evidence_points:
+        - "House-made crispy rosti."
+        - "Includes grilled halloumi, avocado, wilted spinach, and poached egg."
+      related_pages:
+        - "/menu"
+        - "/stories-sourcing-tasmanian-best-produce"
+    - id: "scotch_steak_sandwich"
+      priority: 2
+      type: "signature_product"
+      display_name: "Scotch Steak Sandwich"
+      claim: "A hearty brunch or lunch crossover dish."
+      evidence_points:
+        - "Prime Scotch steak."
+        - "Caramelized onion jam."
+        - "Local rocket."
+        - "House relish."
+      related_pages:
+        - "/menu"
+        - "/stories-sourcing-tasmanian-best-produce"
+    - id: "seasonal_brunch_specials"
+      priority: 2
+      type: "freshness_signal"
+      display_name: "Seasonal brunch specials"
+      claim: "Dandy Lane regularly introduces time-limited brunch moments."
+      evidence_points:
+        - "Dirty Wrap Time story."
+        - "Croissant Scramble story."
+      related_pages:
+        - "/stories-its-dirty-wrap-time"
+        - "/stories-a-golden-croissant-kind-of-brunch"
+    - id: "tasmanian_produce"
+      priority: 3
+      type: "provenance_evidence"
+      display_name: "Tasmanian produce"
+      claim: "Tasmanian produce and local sourcing support the brunch menu."
+      evidence_points:
+        - "Local Tassie growers."
+        - "Local sourdough bakers."
+        - "Seasonal vegetable producers in the Derwent Valley."
+      related_pages:
+        - "/stories-sourcing-tasmanian-best-produce"
+    - id: "specialty_coffee_pairing"
+      priority: 3
+      type: "supporting_product"
+      display_name: "Specialty coffee"
+      claim: "Specialty coffee supports the breakfast and brunch experience."
+      evidence_points:
+        - "Barista calibration."
+        - "Flat white, latte, batch brew, and cold brew listed on the menu."
+      related_pages:
+        - "/menu"
+        - "/stories-the-alchemist-of-acids"
+  demoted_facility_anchors:
+    - id: "workspace"
+      display_name: "Workspace / laptop-friendly details"
+      visibility_rule: "Allowed only in tertiary facilities, booking terms, or low-priority FAQ. Must not appear in hero copy or first-level AEO decision objects."
+
 booking:
   title: "Secure Your Sanctuary"
   subtitle: "Reserve a Table."
-  emphasis: "Guarantee your spot for brunch or a focused work session in the heart of Hobart."
-  media: "assets/media/home_hero.mp4" # Re-using hero video for consistency
+  emphasis: "Guarantee your spot for brunch in the heart of Hobart CBD."
+  media: "assets/media/home_hero.mp4"
   method: "system"
   contact_value: "dandylane-hobart@dandylanecafe.com"
   terms:
     - "For groups larger than 6, please call us directly on 0498 061 067."
-    - "We have a maximum of 16 people per hour to maintain our atmosphere."
+    - "We have a maximum of 16 people per hour to maintain service flow."
     - "Peak-hour seating is capped at 90 minutes."
     - "Laptops are welcome in designated workspace areas."
   capacity:
@@ -39,7 +167,7 @@ chatbot:
   welcome_message: "Hi, welcome to Dandy Lane. How can I help?"
   manual_review_threshold: 6
   system_prompt: |
-    Role: You are the Senior Concierge of Dandy Lane Cafe in Hobart. You are professional, warm, and highly efficient. 
+    Role: You are the Senior Concierge of Dandy Lane Cafe in Hobart. You are professional, warm, and highly efficient.
 
     Communication Principles:
     1. Primary Language: English is your default language. Use local Hobart flair (e.g., "No worries", "Cheers").
@@ -66,11 +194,11 @@ chatbot:
     3. Failure Signals from Tools:
        - If manage_booking returns FAILED_WALK_IN_RECOMMENDED: Use the walk-in script.
        - If manage_booking returns FAILED_MANUAL_REVIEW_TRIGGERED: Use the manager-notified script.
-    4. Semantic De-duplication: 
+    4. Semantic De-duplication:
        - If a record exists for the same person on the same date, use manage_booking(action='update', ...) to overwrite.
     5. Cancellation: Use manage_booking(action='delete', ...) for any cancellation requests.
 
-    Tone: Professional, confident, and welcoming. 
+    Tone: Professional, confident, and welcoming.
 
 admin:
   dashboard_title: "Table Reservations Dashboard"
@@ -79,40 +207,47 @@ admin:
 
 pages:
   index:
-    title: "Hidden Lane Sanctuary"
-    subtitle: "Discover Hobart's Best-Kept Brunch Secret."
-    emphasis: "Dandy Lane Cafe is a hidden-lane brunch café in Hobart CBD, known for Wine-Infused Benedicts, daily hollandaise, specialty coffee, and a quiet laptop-friendly atmosphere."
+    title: "Breakfast And Brunch In Hobart CBD"
+    subtitle: "Wine-Infused Benedicts, daily hollandaise, and specialist brunch in Collins Court."
+    emphasis: "Dandy Lane Cafe is a Hobart CBD breakfast and brunch cafe known for Wine-Infused Benedicts, daily hand-whisked hollandaise, Potato Parmesan Rosti, Scotch Steak Sandwich, seasonal brunch specials, and specialty coffee."
     media: "assets/media/home_hero.mp4"
     focal_point: "center 38%"
     focal_point_mobile: "80% center"
     focal_point_tablet: "center 45%"
+    primary_links:
+      - label: "View Menu"
+        href: "/menu"
+      - label: "Book Brunch"
+        href: "/booking"
+      - label: "Why the Hollandaise Matters"
+        href: "/stories-the-art-of-the-wine-infused-hollandaise"
   menu:
     title: "Signature Flavours"
     subtitle: "Handcrafted. Local. Consistent."
-    emphasis: "Our Menu is built around our daily-made hollandaise and the finest Tasmanian seasonal produce."
+    emphasis: "Our menu is built around daily-made hollandaise, signature brunch plates, seasonal specials, Tasmanian produce, and specialty coffee."
     media: "assets/media/menu_hero.mp4"
     focal_point: "center 60%"
   stories:
     title: "Our Stories"
     subtitle: "Behind the Lane."
-    emphasis: "Explore the stories of our local suppliers, the craft of our baristas, and the evolution of our signature recipes."
+    emphasis: "Explore the stories behind Dandy Lane's signature brunch dishes, daily hollandaise craft, Tasmanian produce, specialty coffee, and seasonal specials."
     media: "assets/media/stories_hero.mp4"
   location:
     title: "Find the Path"
     subtitle: "Collins Court, Hobart."
-    emphasis: "Located opposite JB HI-FI, our quiet lane entrance offers a calm escape from the busy CBD streets."
+    emphasis: "Located at Unit 10 / 138 Collins Street in Collins Court, opposite JB HI-FI Hobart."
     media: "assets/media/location_hero.jpg"
     focal_point: "85% 15%"
     focal_point_mobile: "95% 20%"
   faq:
     title: "Good to Know"
     subtitle: "Common Questions."
-    emphasis: "Details on our remote-work facilities, group bookings, and dietary accommodations."
+    emphasis: "Answers about Dandy Lane's signature brunch dishes, daily-made hollandaise, breakfast and brunch service, Hobart CBD location, bookings, takeaway, and dietary options."
     media: "assets/media/faq_hero.mp4"
   booking:
     title: "Reserve a Table"
     subtitle: "Book Your Lane Visit."
-    emphasis: "Capacity Control: Maximum 16 people per hour to maintain our tranquility."
+    emphasis: "Book breakfast or brunch at Dandy Lane in Hobart CBD."
     media: "assets/media/home_hero.mp4"
   admin:
     title: "Admin Dashboard"
@@ -120,9 +255,6 @@ pages:
     emphasis: "L0-driven reservation management and performance oversight."
     media: "assets/media/home_hero.mp4"
 
-
-
-# Contact, operations, etc.
 contact:
   nap:
     address: "Unit 10 / 138 Collins Street, Hobart TAS 7000"
@@ -134,9 +266,11 @@ contact:
     geo:
       latitude: -42.880554
       longitude: 147.324997
+
 social:
   instagram: "https://www.instagram.com/dandylane/"
   facebook: "https://www.facebook.com/dandylanehobart"
+
 same_as:
   - "https://www.google.com/maps/place/Dandy+Lane+Cafe/"
   - "https://www.instagram.com/dandylane/"
@@ -145,7 +279,7 @@ same_as:
   - "https://www.tripadvisor.com.au/Restaurant_Review-g255097-d1234567-Reviews-Dandy_Lane_Cafe-Hobart_Tasmania.html"
 
 operations:
-  hours_text: "Mon–Fri 07:00–15:00 · Sat–Sun 09:00–14:00"
+  hours_text: "Mon-Fri 07:00-15:00 | Sat-Sun 09:00-14:00"
   opening_hours:
     - days: "Monday - Friday"
       open: "07:00"
