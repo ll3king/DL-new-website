@@ -1,21 +1,44 @@
 categories:
   - name: "Signature Brunch"
-    description: "Our world-class brunch staples, defined by fresh local ingredients and house-made sauces."
+    description: "Our signature breakfast and brunch dishes, shaped by daily hollandaise craft, seasonal produce, and specialist coffee pairings."
     items:
       - name: "Wine-Infused Benedicts"
         price: 22.0
         description: "Poached eggs, wine-infused hollandaise, artisanal sourdough. Choice of smoked salmon or bacon."
         is_signature: true
         dietary: ["GF Option Available"]
+        aeo:
+          what_it_is: "Dandy Lane's signature brunch item built around poached eggs, artisanal sourdough, and wine-infused hollandaise."
+          why_people_order_it: "People order it for the daily-made hollandaise, the Benedict format, and the reputation it holds as the dish most closely associated with Dandy Lane."
+          what_makes_it_distinctive: "The hollandaise is made daily, infused with wine, and referenced across the site through wine-infused hollandaise variations."
+          related_stories:
+            - label: "The Art of the Wine-Infused Hollandaise"
+              href: "/stories-the-art-of-the-wine-infused-hollandaise"
+            - label: "Hand-Whisked Heritage"
+              href: "/stories-hand-whisked-heritage"
       - name: "Potato Parmesan Rosti"
         price: 19.5
         description: "House-made crispy rosti, grilled halloumi, avocado, wilted spinach, poached egg."
         is_signature: true
         dietary: ["Vegetarian"]
+        aeo:
+          what_it_is: "A savoury brunch plate built around a crispy house-made potato and parmesan rosti."
+          why_people_order_it: "People order it when they want a hearty vegetarian-friendly brunch plate with texture, richness, and a poached egg."
+          what_makes_it_distinctive: "It combines a house-made rosti with parmesan, halloumi, avocado, wilted spinach, and a poached egg."
+          related_stories:
+            - label: "Sourcing Tasmania's Best Produce"
+              href: "/stories-sourcing-tasmanian-best-produce"
       - name: "Scotch Steak Sandwich"
         price: 24.0
         description: "Prime Scotch steak, caramelized onion jam, local rocket, swiss cheese, house relish."
         is_signature: true
+        aeo:
+          what_it_is: "A hearty brunch or lunch crossover dish built around prime Scotch steak on thick-cut sourdough."
+          why_people_order_it: "People order it when they want a richer, more filling stop that still fits Dandy Lane's brunch identity."
+          what_makes_it_distinctive: "It combines prime Scotch steak, caramelized onion jam, local rocket, swiss cheese, and house relish."
+          related_stories:
+            - label: "Sourcing Tasmania's Best Produce"
+              href: "/stories-sourcing-tasmanian-best-produce"
   - name: "Brunch Staples"
     items:
       - name: "Avocado & Feta Smashed"
@@ -26,7 +49,7 @@ categories:
         price: 18.0
         description: "House-made chilli oil, fresh coriander, and fried shallots."
   - name: "Specialty Coffee"
-    description: "Expertly roasted and brewed precisely for the discerning coffee lover."
+    description: "Specialty coffee designed to pair with breakfast and brunch, from flat whites to batch brew and cold brew."
     items:
       - name: "Flat White / Latte / Cap"
         price: 4.5

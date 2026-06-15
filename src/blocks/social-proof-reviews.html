@@ -93,19 +93,19 @@
             <div class="review-card">
                 <div>
                     <div class="review-source">
-                        <span class="source-label">Tripadvisor</span>
+                        <span class="source-label">{{ site.aeo.external_proof.tripadvisor.platform_label }}</span>
                         <div class="review-stars">★★★★★</div>
                     </div>
                     <p class="review-text">
-                        Travellers' Choice 2024. Rated 4.6/5 from 231 reviews on Tripadvisor.
+                        {{ site.aeo.external_proof.tripadvisor.summary_text }}
                     </p>
                 </div>
                 <div class="reviewer-info">
                     <div style="width: 40px; height: 40px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #666; font-size: 0.8rem;">TA</div>
                     <div>
-                        <div class="reviewer-name">Travellers' Choice 2024</div>
-                        <div class="reviewer-meta">4.6/5 · 231 Reviews</div>
-                        <a href="https://www.tripadvisor.com.au/Restaurant_Review-g255097-d1234567-Reviews-Dandy_Lane_Cafe-Hobart_Tasmania.html" target="_blank" rel="noopener" style="font-size: 0.7rem; color: #00af87; text-decoration: none; font-weight: 700; margin-top: 0.3rem; display: inline-block;">Verify on Tripadvisor →</a>
+                        <div class="reviewer-name">{{ site.aeo.external_proof.tripadvisor.award_label }}</div>
+                        <div class="reviewer-meta">{{ site.aeo.external_proof.tripadvisor.meta_text }}</div>
+                        <a href="{{ site.aeo.external_proof.tripadvisor.url }}" target="_blank" rel="noopener" style="font-size: 0.7rem; color: #00af87; text-decoration: none; font-weight: 700; margin-top: 0.3rem; display: inline-block;">{{ site.aeo.external_proof.tripadvisor.verify_label }} →</a>
                     </div>
                 </div>
             </div>
@@ -118,15 +118,15 @@
                         <div class="review-stars">★★★★★</div>
                     </div>
                     <p class="review-text">
-                        Rated 4.6★ from 200+ reviews on Google Maps.
+                        {{ site.aeo.external_proof.google_maps.summary_text }}
                     </p>
                 </div>
                 <div class="reviewer-info">
                     <div style="width: 40px; height: 40px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #666; font-size: 0.8rem;">G</div>
                     <div>
-                        <div class="reviewer-name">Google Maps</div>
-                        <div class="reviewer-meta">4.6★ · 200+ Reviews</div>
-                        <a href="https://www.google.com/maps/place/Dandy+Lane+Cafe/" target="_blank" rel="noopener" style="font-size: 0.7rem; color: #4285F4; text-decoration: none; font-weight: 700; margin-top: 0.3rem; display: inline-block;">Verify on Google Maps →</a>
+                        <div class="reviewer-name">{{ site.aeo.external_proof.google_maps.platform_label }}</div>
+                        <div class="reviewer-meta">{{ site.aeo.external_proof.google_maps.meta_text }}</div>
+                        <a href="{{ site.aeo.external_proof.google_maps.url }}" target="_blank" rel="noopener" style="font-size: 0.7rem; color: #4285F4; text-decoration: none; font-weight: 700; margin-top: 0.3rem; display: inline-block;">{{ site.aeo.external_proof.google_maps.verify_label }} →</a>
                     </div>
                 </div>
             </div>

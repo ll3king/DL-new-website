@@ -144,17 +144,28 @@
                 {{ page_context.emphasis }}
             </div>
 
+            {% if current_page_id == 'index' and page_context.primary_links %}
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;">
+                {% for link in page_context.primary_links %}
+                <a href="{{ link.href }}"
+                    style="display: inline-block; padding: 0.9rem 1.4rem; text-decoration: none; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; border-radius: 2px; {% if loop.first %}background: var(--accent); color: #fff;{% else %}background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.25);{% endif %}">
+                    {{ link.label }}
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+
             {% if current_page_id == 'index' %}
             <!-- Social Proof Bar (AEO: Trust Signals) -->
             <div class="social-proof-bar" style="display: flex; gap: 2rem; align-items: center; margin-bottom: 2.5rem; flex-wrap: wrap;">
                 <div class="badge-item" style="display: flex; align-items: center; gap: 0.8rem;">
                     <div style="background: #00af87; padding: 4px 8px; border-radius: 4px; font-weight: 800; font-size: 0.7rem; color: #fff;">TRIPADVISOR</div>
-                    <span style="font-size: 0.9rem; font-weight: 600; color: rgba(255,255,255,0.8);">Travellers' Choice 2024</span>
+                    <span style="font-size: 0.9rem; font-weight: 600; color: rgba(255,255,255,0.8);">{{ site.aeo.external_proof.tripadvisor.award_label }}</span>
                 </div>
                 <div style="height: 20px; border-left: 1px solid rgba(255,255,255,0.2);"></div>
                 <div class="rating-item" style="line-height: 1.2;">
-                    <span style="font-weight: 800; color: #fff; font-size: 1.1rem; letter-spacing: 0.05em;">GOOGLE 4.6 ★</span>
-                    <span style="font-size: 0.75rem; display: block; opacity: 0.7; text-transform: uppercase;">200+ Regular Guests</span>
+                    <span style="font-weight: 800; color: #fff; font-size: 1.1rem; letter-spacing: 0.05em;">{{ site.aeo.external_proof.google_maps.badge_label }}</span>
+                    <span style="font-size: 0.75rem; display: block; opacity: 0.7; text-transform: uppercase;">{{ site.aeo.external_proof.google_maps.hero_text }}</span>
                 </div>
             </div>
             {% endif %}

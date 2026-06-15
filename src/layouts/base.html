@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ page_title }} | {{ site.identity.name }}</title>
     <meta name="description" content="{{ page_description or site.identity.description }}">
-    <link rel="canonical" href="{{ site.seo.site_url }}{% if current_page_id == 'index' %}/{% else %}/{{ current_page_id }}{% endif %}">
+    <link rel="canonical" href="{{ site.seo.site_url }}{% if page_path %}{{ page_path }}{% elif current_page_id == 'index' %}/{% else %}/{{ current_page_id }}{% endif %}">
 
     <!-- AEO: Consolidated JSON-LD Entity Graph -->
     {% if global_schema %}

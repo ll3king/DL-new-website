@@ -5,12 +5,46 @@
                 style="font-size: 0.9rem; color: var(--accent); font-weight: 700; margin-bottom: 1rem; text-transform: uppercase;">
                 {{ active_story.date }} | By {{ active_story.author }}
             </div>
+            {% if active_story.index_group == 'facilities' %}
+            <div style="font-size: 0.78rem; color: var(--primary); font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 1rem;">
+                Practical Details
+            </div>
+            {% endif %}
             <h1 style="font-size: 3.5rem; line-height: 1.1; margin-bottom: 2rem;">{{ active_story.title }}</h1>
             <div style="height: 480px; border-radius: 12px; overflow: hidden; margin-bottom: 2rem;">
                 <img src="{{ active_story.cover }}" alt="{{ active_story.title }}"
                     style="width: 100%; height: 100%; object-fit: cover;">
             </div>
         </header>
+
+        {% if active_story.answer_summary %}
+        <section style="margin-bottom: 2.5rem; padding: 1.5rem 1.75rem; background: #faf7f3; border-left: 4px solid var(--accent); border-radius: 10px;">
+            <div style="font-size: 0.78rem; color: var(--primary); font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.75rem;">
+                Answer Summary
+            </div>
+            <p style="margin: 0 0 1rem; font-size: 1.05rem; line-height: 1.7; color: var(--text);">{{ active_story.answer_summary }}</p>
+            {% if active_story.evidence_points %}
+            <div style="margin-bottom: 1rem;">
+                <strong style="display: block; margin-bottom: 0.4rem;">Why this matters</strong>
+                <ul style="margin: 0; padding-left: 1.25rem; color: var(--secondary);">
+                    {% for point in active_story.evidence_points %}
+                    <li>{{ point }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            {% if active_story.related_menu_item %}
+            <p style="margin: 0; color: var(--secondary);"><strong>Related menu item:</strong> {{ active_story.related_menu_item }}</p>
+            {% endif %}
+            {% if active_story.related_links %}
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
+                {% for link in active_story.related_links %}
+                <a href="{{ link.href }}" style="font-weight: 700; color: var(--primary); text-decoration: none; border-bottom: 2px solid var(--accent);">{{ link.label }}</a>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </section>
+        {% endif %}
 
         <div style="font-size: 1.25rem; line-height: 1.8; color: var(--text);">
             {{ active_story.content | safe }}
