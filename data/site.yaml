@@ -145,6 +145,25 @@ aeo:
     - id: "workspace"
       display_name: "Workspace / laptop-friendly details"
       visibility_rule: "Allowed only in tertiary facilities, booking terms, or low-priority FAQ. Must not appear in hero copy or first-level AEO decision objects."
+  external_proof:
+    tripadvisor:
+      platform_label: "Tripadvisor"
+      badge_label: "TRIPADVISOR"
+      award_label: "Tripadvisor Travellers' Choice"
+      summary_text: "Tripadvisor Travellers' Choice. Rated 4.6/5 from 231 reviews on Tripadvisor."
+      meta_text: "4.6/5 · 231 Reviews"
+      verify_label: "Verify on Tripadvisor"
+      url: "https://www.tripadvisor.com.au/Restaurant_Review-g255097-d11801652-Reviews-Dandy_Lane_Cafe-Hobart_Greater_Hobart_Tasmania.html"
+      evidence_status: "verified_current"
+    google_maps:
+      platform_label: "Google Maps"
+      badge_label: "GOOGLE MAPS"
+      summary_text: "See current Google Maps rating."
+      meta_text: "Verified on Google Maps"
+      verify_label: "Verify on Google Maps"
+      hero_text: "See current Google Maps rating"
+      url: "https://www.google.com/maps/place/Dandy+Lane+Cafe/"
+      evidence_status: "numeric_claim_softened"
 
 booking:
   title: "Secure Your Sanctuary"
@@ -276,7 +295,7 @@ same_as:
   - "https://www.instagram.com/dandylane/"
   - "https://www.facebook.com/dandylanehobart"
   - "https://www.yelp.com.au/biz/dandy-lane-hobart"
-  - "https://www.tripadvisor.com.au/Restaurant_Review-g255097-d1234567-Reviews-Dandy_Lane_Cafe-Hobart_Tasmania.html"
+  - "https://www.tripadvisor.com.au/Restaurant_Review-g255097-d11801652-Reviews-Dandy_Lane_Cafe-Hobart_Greater_Hobart_Tasmania.html"
 
 operations:
   hours_text: "Mon-Fri 07:00-15:00 | Sat-Sun 09:00-14:00"

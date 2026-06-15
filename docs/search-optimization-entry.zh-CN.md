@@ -111,13 +111,16 @@
 
 ## External Proof Consistency Snapshot
 
+详细外部一致性记录请看：
+
+- [aeo/external-proof-consistency-report.md](./aeo/external-proof-consistency-report.md)
+
 | Source | Current public claim | Matches official site? | Risk | Recommended action |
 |---|---|---|---|---|
-| Tripadvisor | Repo `same_as` currently points to a Tripadvisor restaurant review URL for Dandy Lane Cafe in Hobart. | Partially verified from repo only; current listing details were not fully confirmed in accessible search results during this pass. | Medium | Keep as `sameAs` only if the listing still resolves to the correct Hobart cafe identity, address, and category. Manually verify title, address, and signature dish positioning before stronger citation. |
-| Discover Tasmania | No confirmed current Discover Tasmania listing was surfaced in accessible search results during this pass. | Not verified. | Medium | Do not cite as a current proof source until an active listing is confirmed. |
-| Hobart & Beyond | No confirmed current Hobart & Beyond feature or listing was surfaced in accessible search results during this pass. | Not verified. | Medium | Treat as candidate proof only after manual verification. |
-| Time Out | No confirmed current Time Out listing or editorial page was surfaced in accessible search results during this pass. | Not verified. | Medium | Do not use as a visible proof claim without manual confirmation. |
-| Hello Hobart | No confirmed current Hello Hobart listing or feature was surfaced in accessible search results during this pass. | Not verified. | Medium | Treat as unconfirmed until manually checked. |
+| Tripadvisor | Correct Dandy Lane Cafe listing exists and supports breakfast / lunch / brunch, Cafe / Australian, 4.6/5, and 231 reviews. | Yes for current proof target. | Low | Keep the corrected Dandy Lane listing URL everywhere visible proof is rendered. Do not reintroduce the wrong Tripadvisor entity. |
+| Discover Tasmania | Product anchors are good: Wine-Infused Benedicts, Potato Parmesan Rosti, Scotch steak sandwich. Listing language still leans on laptop-friendly atmosphere / remote work. | Partially. | Medium | Request update to product-led brunch wording. |
+| Hobart & Beyond | Product anchors are good, but listing language still leans on laptop-friendly atmosphere / remote work. | Partially. | Medium | Request update to product-led brunch wording. |
+| Hello Hobart | Sunday is listed as closed, while the official site and Tripadvisor show Sunday 9:00 AM - 2:00 PM. | No. | Medium | Request opening-hours update. |
 
 ## 一句话规则
 

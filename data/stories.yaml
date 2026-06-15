@@ -170,22 +170,23 @@ stories:
     tags: ["Community", "Cafe Life"]
 
   - slug: "creating-a-quiet-workspace-in-hobart-cbd"
-    title: "Creating a Quiet Workspace in Hobart CBD"
+    title: "Facility Details for Laptop-Friendly Seating"
     date: "2026-02-10"
     author: "Dandy Lane Team"
-    summary: "Why we intentionally designed our lane sanctuary for remote workers and deep thinkers."
-    answer_summary: "This story supports tertiary facility details around laptop-friendly use and quiet corners. It is not part of Dandy Lane's primary brunch decision anchors."
+    index_group: "facilities"
+    summary: "Facility details for guests who need laptop-friendly seating."
+    answer_summary: "This page exists for practical guest details around laptop-friendly seating, WiFi access, and selected power-accessible tables. It is not part of Dandy Lane's primary brunch story set."
     evidence_points:
-      - "Quiet corners"
+      - "Laptop-friendly seating"
       - "Fast WiFi"
-      - "Workspace seating"
-    related_menu_item: "Facilities detail"
+      - "Selected power-accessible tables"
+    related_menu_item: "Practical guest details"
     related_links:
       - label: "Read the FAQ"
         href: "/faq"
       - label: "View the menu"
         href: "/menu"
-    content: "We believe a cafe should be more than just a place to eat. By choosing a location tucked inside Collins Court, we've created a natural noise buffer from the city traffic. Combined with high-speed WiFi and strategic power outlets, it's the perfect spot for your next deep-work session. We've even calibrated our acoustic playlist to enhance focus, making Dandy Lane a favorite for local freelancers and creative professionals seeking a laptop-friendly sanctuary."
+    content: "Some guests occasionally need to open a laptop while they are in for coffee or brunch. For those cases, Dandy Lane offers fast WiFi and selected seating with nearby power access.<br><br>This page is a practical note rather than a core Dandy Lane story. The cafe's primary identity remains breakfast, brunch, signature dishes, and specialty coffee in Hobart CBD.<br><br>If laptop-friendly seating matters for your visit, check with staff on arrival and we will point you toward the most suitable available table."
     featured: false
     cover: "assets/media/faq_hero.jpg"
-    tags: ["Community", "Workplace"]
+    tags: ["Facilities", "Practical Details"]

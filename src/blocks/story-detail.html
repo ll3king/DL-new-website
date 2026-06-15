@@ -5,6 +5,11 @@
                 style="font-size: 0.9rem; color: var(--accent); font-weight: 700; margin-bottom: 1rem; text-transform: uppercase;">
                 {{ active_story.date }} | By {{ active_story.author }}
             </div>
+            {% if active_story.index_group == 'facilities' %}
+            <div style="font-size: 0.78rem; color: var(--primary); font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 1rem;">
+                Practical Details
+            </div>
+            {% endif %}
             <h1 style="font-size: 3.5rem; line-height: 1.1; margin-bottom: 2rem;">{{ active_story.title }}</h1>
             <div style="height: 480px; border-radius: 12px; overflow: hidden; margin-bottom: 2rem;">
                 <img src="{{ active_story.cover }}" alt="{{ active_story.title }}"
