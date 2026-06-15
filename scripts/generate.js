@@ -97,6 +97,25 @@ function expandDayRange(dayRange) {
     ];
 }
 
+function normalizePrettyPath(pathValue, fallbackSlug) {
+    if (typeof pathValue === 'string' && pathValue.trim()) {
+        const normalized = pathValue.trim().replace(/\\/g, '/');
+        return normalized.startsWith('/') ? normalized : `/${normalized}`;
+    }
+
+    return fallbackSlug.startsWith('/') ? fallbackSlug : `/${fallbackSlug}`;
+}
+
+function storyRoute(story) {
+    const prettyPath = normalizePrettyPath(story.url_path, `stories-${story.slug}`);
+    const htmlPath = `${prettyPath}.html`;
+
+    return {
+        prettyPath,
+        htmlPath
+    };
+}
+
 async function render() {
     console.log("[L3] Starting Site Generation (Nunjucks Engine)...");
 
@@ -369,9 +388,9 @@ async function render() {
 
         // 5. Render Dynamic Story Detail Pages
         storiesData.stories.forEach(story => {
-            const slug = `stories-${story.slug}.html`;
-            generatedPages.push(slug);
-            console.log(`[L3] Rendering Story: ${slug}`);
+            const route = storyRoute(story);
+            generatedPages.push(route.prettyPath);
+            console.log(`[L3] Rendering Story: ${route.htmlPath}`);
 
             const pageBody = nunjucks.render('story-detail.html', {
                 ...context,
@@ -379,7 +398,7 @@ async function render() {
             });
 
             // Targeted Schema for Stories
-            const storyPath = `/stories-${story.slug}`;
+            const storyPath = route.prettyPath;
             const breadcrumbs = generateBreadcrumbSchema(siteData.seo.site_url, 'stories', story.title, storyPath);
             const article = {
                 "@type": "Article",
@@ -427,13 +446,15 @@ async function render() {
                 page_title: story.title,
                 page_description: story.summary,
                 current_page_id: 'stories',
-                slug: slug,
+                slug: route.htmlPath,
                 page_path: storyPath,
                 global_schema: pageSchema,
                 current_year: new Date().getFullYear()
             });
 
-            fs.writeFileSync(path.join(PUBLIC_DIR, slug), finalHtml);
+            const outputPath = path.join(PUBLIC_DIR, route.htmlPath.replace(/^\//, ''));
+            fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+            fs.writeFileSync(outputPath, finalHtml);
         });
 
         // 5. Generate AEO Artifacts & Infrastructure (L3 logic to L4 output)
@@ -447,7 +468,8 @@ async function render() {
 
         // Add stories to sitemap
         storiesData.stories.forEach(story => {
-            sitemapEntries.push(`  <url><loc>${siteData.seo.site_url}/stories-${story.slug}</loc></url>`);
+            const route = storyRoute(story);
+            sitemapEntries.push(`  <url><loc>${siteData.seo.site_url}${route.prettyPath}</loc></url>`);
         });
 
         const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
@@ -476,7 +498,16 @@ https://dl-new-website.pages.dev/*  https://dandylanecafe.com/:splat  301!
 /location.html   /location        301
 /stories.html    /stories         301
 `;
-        fs.writeFileSync(path.join(PUBLIC_DIR, '_redirects'), redirects);
+        const storyRedirects = storiesData.stories.flatMap(story => {
+            if (!Array.isArray(story.legacy_paths) || story.legacy_paths.length === 0) {
+                return [];
+            }
+
+            const route = storyRoute(story);
+            return story.legacy_paths.map(legacyPath => `${legacyPath}  ${route.prettyPath}  301`);
+        });
+        const finalRedirects = `${redirects.trim()}\n${storyRedirects.join('\n')}\n`;
+        fs.writeFileSync(path.join(PUBLIC_DIR, '_redirects'), finalRedirects);
 
         // 6. Generate Cloudflare Headers (Caching)
         const headers = `/*

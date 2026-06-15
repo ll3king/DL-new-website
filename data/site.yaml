@@ -52,7 +52,7 @@ aeo:
         - "Which Hobart brunch cafe has wine-infused hollandaise?"
       desired_answer_shape:
         entity: "Wine-Infused Benedicts at Dandy Lane Cafe"
-        reason: "Daily-made wine-infused hollandaise, six variations, served as a signature brunch dish."
+        reason: "Daily-made wine-infused hollandaise variations referenced in site content, served as a signature brunch dish."
         conversion: "View the menu or book brunch."
   decision_anchors:
     - id: "wine_infused_benedicts"
@@ -162,7 +162,7 @@ aeo:
       meta_text: "Verified on Google Maps"
       verify_label: "Verify on Google Maps"
       hero_text: "See current Google Maps rating"
-      url: "https://www.google.com/maps/place/Dandy+Lane+Cafe/"
+      url: "https://www.google.com/maps/search/?api=1&query=Dandy%20Lane%20Cafe%2C%20Unit%2010%2F138%20Collins%20Street%2C%20Hobart%20TAS%207000"
       evidence_status: "numeric_claim_softened"
 
 booking:
@@ -176,7 +176,7 @@ booking:
     - "For groups larger than 6, please call us directly on 0498 061 067."
     - "We have a maximum of 16 people per hour to maintain service flow."
     - "Peak-hour seating is capped at 90 minutes."
-    - "Laptops are welcome in designated workspace areas."
+    - "Laptops are welcome at selected tables when available."
   capacity:
     max_per_hour: 16
     interval_minutes: 15
@@ -291,7 +291,7 @@ social:
   facebook: "https://www.facebook.com/dandylanehobart"
 
 same_as:
-  - "https://www.google.com/maps/place/Dandy+Lane+Cafe/"
+  - "https://www.google.com/maps/search/?api=1&query=Dandy%20Lane%20Cafe%2C%20Unit%2010%2F138%20Collins%20Street%2C%20Hobart%20TAS%207000"
   - "https://www.instagram.com/dandylane/"
   - "https://www.facebook.com/dandylanehobart"
   - "https://www.yelp.com.au/biz/dandy-lane-hobart"
@@ -311,7 +311,7 @@ signature_dishes:
   - name: "Wine-Infused Benedicts"
     price: 22.0
     media: "assets/media/dish_benny.jpg"
-    description: "Our signature dish featuring daily house-made hollandaise (six variations) infused with premium wine, served on toasted artisanal sourdough."
+    description: "Our signature dish featuring daily house-made hollandaise with wine-infused variations referenced in site content, served on toasted artisanal sourdough."
   - name: "Potato Parmesan Rosti"
     price: 23.0
     media: "assets/media/dish_rosti.jpg"

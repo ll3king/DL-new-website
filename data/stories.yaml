@@ -8,7 +8,7 @@ stories:
     evidence_points:
       - "Daily batch"
       - "Tasmanian white and red wines"
-      - "Six variations"
+      - "Wine-infused hollandaise variations referenced in site content"
       - "Sauvignon Blanc blend for seafood"
       - "Pinot Noir reduction for smoked bacon"
     related_menu_item: "Wine-Infused Benedicts"
@@ -17,7 +17,7 @@ stories:
         href: "/menu"
       - label: "Book brunch"
         href: "/booking"
-    content: "The secret to our Benedict isn't just the eggs; it's the reduction. By infusing premium Tasmanian white and red wines into our daily batch of hollandaise, we achieve a complexity of flavor that standard sauces simply can't match. Each morning, our kitchen team whisks together six distinct variations, from a bright Sauvignon Blanc citrus blend for seafood to a deeper, robust Pinot Noir reduction that pairs perfectly with our smoked bacon."
+    content: "The secret to our Benedict isn't just the eggs; it's the reduction. By infusing premium Tasmanian white and red wines into our daily batch of hollandaise, we achieve a complexity of flavor that standard sauces simply can't match. Each morning, our kitchen team prepares wine-infused hollandaise variations referenced across the site, from a bright Sauvignon Blanc citrus blend for seafood to a deeper Pinot Noir reduction that pairs with smoked bacon."
     featured: true
     cover: "assets/media/dish_benny.jpg"
     tags: ["Signature", "Behind the Scenes"]
@@ -170,6 +170,10 @@ stories:
     tags: ["Community", "Cafe Life"]
 
   - slug: "creating-a-quiet-workspace-in-hobart-cbd"
+    url_path: "/facilities/laptop-friendly-seating"
+    legacy_paths:
+      - "/stories-creating-a-quiet-workspace-in-hobart-cbd"
+      - "/stories-creating-a-quiet-workspace-in-hobart-cbd.html"
     title: "Facility Details for Laptop-Friendly Seating"
     date: "2026-02-10"
     author: "Dandy Lane Team"

@@ -16,7 +16,7 @@ questions:
         href: "/menu"
 
   - question: "What makes the Wine-Infused Benedicts different?"
-    answer: "The dish is built around Dandy Lane's daily-made wine-infused hollandaise. Existing site content references six variations and wine reductions matched to different Benedict combinations."
+    answer: "The dish is built around Dandy Lane's daily-made wine-infused hollandaise. Existing site content references wine-infused hollandaise variations and wine reductions matched to different Benedict combinations."
     links:
       - label: "The Art of the Wine-Infused Hollandaise"
         href: "/stories-the-art-of-the-wine-infused-hollandaise"
@@ -60,4 +60,4 @@ questions:
         href: "/menu"
 
   - question: "Do you have laptop-friendly or workspace details?"
-    answer: "Yes, laptops are welcome in designated areas. These are facility details rather than the main reason to visit, and availability can vary during busy brunch periods."
+    answer: "Yes, laptops are welcome at selected tables when available. These are facility details rather than the main reason to visit, and availability can vary during busy brunch periods."
