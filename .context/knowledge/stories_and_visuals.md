@@ -1,4 +1,14 @@
-# Architectural Decision Record: Stories & Contextual Heros
+# Stories And Visual Memory
+
+Status: active supporting reference
+
+Current project governance:
+
+- [README.md](../../README.md)
+- [docs/flywheel-2-visual-taste-frontend-performance.md](../../docs/flywheel-2-visual-taste-frontend-performance.md)
+
+This file supports Flywheel 2.
+It should not be treated as a separate design strategy.
 
 ## Context
 1. We need a blog-like system ("Our Stories") for deep AEO content.
@@ -19,7 +29,14 @@
 - This maintains "Rule of Logic Separation": L2 defines the slot, L3 passes the specific data, L0 holds the fact.
 
 ## Visual Reference
-Inspired by `dandylanecafe.com`:
-- High contrast typography.
-- Lifestyle-focused imagery (The "Benedict" in action, the "Lane" atmosphere).
-- Subtle use of auto-playing hero videos for a premium feel.
+
+Current visual direction should support:
+
+- appetite
+- warmth
+- handcrafted food
+- specialty coffee ritual
+- hidden-lane atmosphere
+
+Avoid treating motion or video as the point.
+Media should strengthen memory and appetite first, not create generic premium effects.

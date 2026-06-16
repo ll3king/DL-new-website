@@ -1,29 +1,37 @@
-# Knowledge.md
+# Knowledge
 
-最后更新：2026-06-01
+Last updated: 2026-06-16
 
-## 状态
+## Status
 
-这份文档已降级为历史参考。
+This file is downgraded to historical reference only.
 
-它不再代表当前 `DL new website` 的有效项目入口，也不再代表当前系统中心、功能边界或治理口径。
+It is not the active entry for the `DL new website` project.
+It does not define the current project center, working boundaries, or governance route.
 
-## 当前应改读哪里
+## Read This Instead
 
-请先读：
+Start with:
 
 - [../README.md](../README.md)
 - [project-current-overview-and-doc-governance.zh-CN.md](./project-current-overview-and-doc-governance.zh-CN.md)
 
-如果需要看当前功能模块与 code 边界，再读：
+If the task is visual / frontend / performance related, then read:
+
+- [feature-registry.md](./feature-registry.md)
+- [flywheel-2-visual-taste-frontend-performance.md](./flywheel-2-visual-taste-frontend-performance.md)
+
+If the task needs code ownership boundaries, then read:
 
 - [project-module-code-boundary-map.zh-CN.md](./project-module-code-boundary-map.zh-CN.md)
 
-## 历史定位
+## Historical Position
 
-这份文档保留的只是项目较早阶段的：
+This file only remains as a light marker for earlier website, AI, and AEO framing.
 
-- website / AI / AEO 叙事
-- 初期业务与架构思路
+It should not be used to guide:
 
-它不应用于指导当前实现、当前治理或新的改动边界判断。
+- current implementation
+- current governance
+- current flywheel routing
+- current code-boundary decisions

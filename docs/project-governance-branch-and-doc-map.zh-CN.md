@@ -1,165 +1,88 @@
 # Project Governance Branch And Doc Map
 
-最后更新：2026-06-01
+Last updated: 2026-06-16
 
-## 文档目的
+## Purpose
 
-这份文档只做两件事：
+This file keeps historical branches and older document families in the correct place.
 
-- 给当前仓库的历史分支建立业务关系表
-- 给当前 `docs/` 建立最小治理索引
+It does not define the live project narrative.
 
-它不是主入口。
+Live governance entry:
 
-当前唯一主入口仍然是：
+- [project-current-overview-and-doc-governance.zh-CN.md](./project-current-overview-and-doc-governance.zh-CN.md)
 
-- [project-current-overview-and-doc-governance.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-current-overview-and-doc-governance.zh-CN.md)
+## Current Rule
 
-模块与 code 边界总表见：
+Historical branches may explain where systems came from.
+They do not decide what the website is now.
 
-- [project-module-code-boundary-map.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-module-code-boundary-map.zh-CN.md)
+Current project identity is governed by:
 
-## 一、历史分支关系表
+- Dandy Lane as a Hobart CBD hidden-lane breakfast-to-brunch cafe
+- Flywheel 1: `AEO / GEO / AI Search Optimization`
+- Flywheel 2: `Visual Taste / Frontend / Performance`
 
-### A. Booking System 主线
+Official Flywheel 2 governance doc:
 
-#### `feature/booking-rules-admin-upgrade`
+- [flywheel-2-visual-taste-frontend-performance.md](./flywheel-2-visual-taste-frontend-performance.md)
 
-- 主题：统一 booking rules，升级 admin booking backend
-- 当前地位：`Booking System` 的核心主线来源
-- 已沉淀能力：
-  - `1-6 / 7+ / same-day / capacity` 规则统一
-  - admin 列表 / Today / Calendar / manual entry / edit / cancel / approve
-- 对应核心文档：
-  - [postmortem-booking-rules-admin-upgrade.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/postmortem-booking-rules-admin-upgrade.zh-CN.md)
+## Historical Branch Map
 
-#### `feature/email-confirmation-verification`
+### Booking System historical line
 
-- 主题：booking confirmation email + Sheets CRM
-- 当前地位：`Booking System` 的重要支线，已并入主线能力
-- 已沉淀能力：
-  - confirmation / pending_review / approval_confirmed 邮件
-  - `Guests`
-  - `GuestEvents`
-- 对应核心文档：
-  - [booking-crm-min-path.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/booking-crm-min-path.zh-CN.md)
-  - [postmortem-booking-email-crm.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/postmortem-booking-email-crm.zh-CN.md)
+- `feature/booking-rules-admin-upgrade`
+- `feature/email-confirmation-verification`
 
-### B. Booking 历史子入口主线
+Status:
 
-#### `feature/ai-brain-upgrade`
+- still important as booking subsystem history
+- not the default project entry anymore
 
-- 主题：`/api/chat` 升级为 booking-first AI chat 路径
-- 当前地位：`Booking System` 的历史子入口主线
-- 当前治理状态：
-  - 保留分支历史
-  - 不再保留独立 AI 文档家族
-  - 如需回查，只从本文件进入
+### Historical AI / SMS branch lines
 
-#### `feature/sms-booking-gateway`
+- `feature/ai-brain-upgrade`
+- `feature/sms-booking-gateway`
 
-- 主题：SMS booking 渠道接入与主链路打通
-- 当前地位：`Booking System` 的历史子入口主线
-- 当前治理状态：
-  - 保留分支历史
-  - 不再保留独立 SMS 文档家族
-  - 如需回查，只从本文件进入
+Status:
 
-### C. 其他分支
+- retain as historical implementation lines
+- do not use them as default project framing
+- do not let them redefine the current website governance
 
-#### `content-*`
+### Historical search branch line
 
-- 主题：内容更新
-- 当前地位：属于 `Content` 小模块，不属于 `Booking System` 主线
+- `ai-feature/aeo-geo-optimization`
 
-#### `ai-feature/aeo-geo-optimization`
+Status:
 
-- 主题：SEO / GEO / AEO 相关
-- 当前地位：应收束到 `Search Optimization`
+- should be understood as part of the modern `Search Optimization` lane
+- do not reduce it to an SEO-only branch concept
 
-#### `ai-feature/booking-redirection-manual-alert`
+### Historical experiment and redirection lines
 
-- 主题：早期 booking 引导 / 提醒相关试验
-- 当前地位：前序试验来源，不再作为独立治理对象
+- `ai-feature/booking-redirection-manual-alert`
+- older content-only or test branches
 
-它的主要内容已经被后续主系统吸收或替代：
+Status:
 
-- 已吸收：
-  - admin dashboard calendar / 列结构演进思路
-  - booking schema alignment 思路
-  - manual review / capacity 处理思路
+- historical reference only
+- not active governance anchors
 
-- 已替代：
-  - `7-10 walk-in / >10 manual`
-  - 旧 AI concierge 分层人数规则
-  - 旧 booking redirection 叙事
+## Deprecated Default Contexts
 
-当前治理要求：
+Deprecated default memory is governed at the project-entry layer:
 
-- 只保留它对 `Booking System` 的历史来源说明
-- 不再把它视为当前有效项目
-- 不再单独扩写这条线
+- [project-current-overview-and-doc-governance.zh-CN.md](./project-current-overview-and-doc-governance.zh-CN.md)
 
-## 二、当前 docs 索引
+## Active Workflow Reminder
 
-### 1. 主入口
+For current frontend and design work, the active workflow is:
 
-- [project-current-overview-and-doc-governance.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-current-overview-and-doc-governance.zh-CN.md)
+`Stitch -> Codex via MCP -> repo implementation -> Taste / Impeccable visual QA -> performance QA`
 
-### 2. 核心参考
+This belongs to the current website governance layer, not to historical branch logic.
 
-- [postmortem-booking-rules-admin-upgrade.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/postmortem-booking-rules-admin-upgrade.zh-CN.md)
-- [booking-crm-min-path.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/booking-crm-min-path.zh-CN.md)
-- [postmortem-booking-email-crm.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/postmortem-booking-email-crm.zh-CN.md)
-- [project-module-code-boundary-map.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-module-code-boundary-map.zh-CN.md)
+## One-Line Rule
 
-### 3. 模块直接入口
-
-- [content-update-quick-entry.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/content-update-quick-entry.zh-CN.md)
-- [search-optimization-entry.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/search-optimization-entry.zh-CN.md)
-
-## 三、当前 docs 保留规则
-
-当前 `docs/` 只保留：
-
-- 一个主入口
-- 一组核心参考
-- 一组模块直接入口
-
-不再保留：
-
-- 独立 AI 文档家族
-- 独立 SMS 文档家族
-- 已被后续实现替代的旧 planning 文档
-
-## 四、当前推荐读取路径
-
-### 如果目标是继续推进 `Booking System`
-
-按下面顺序：
-
-1. [project-current-overview-and-doc-governance.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-current-overview-and-doc-governance.zh-CN.md)
-2. [postmortem-booking-rules-admin-upgrade.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/postmortem-booking-rules-admin-upgrade.zh-CN.md)
-3. [booking-crm-min-path.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/booking-crm-min-path.zh-CN.md)
-4. [postmortem-booking-email-crm.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/postmortem-booking-email-crm.zh-CN.md)
-5. [project-module-code-boundary-map.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-module-code-boundary-map.zh-CN.md)
-
-### 如果目标只是更新 `Content`
-
-直接进入：
-
-- [content-update-quick-entry.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/content-update-quick-entry.zh-CN.md)
-
-### 如果目标是 `Search Optimization`
-
-直接进入：
-
-- [search-optimization-entry.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/search-optimization-entry.zh-CN.md)
-
-### 如果目标是回查 AI / SMS / 早期试验历史
-
-先读完总入口，再回到本文件查看最小分支摘要。
-
-## 一句话总结
-
-当前仓库里，真正要被当作主系统历史的，是 `Booking System` 主线；AI、SMS 与早期 booking 试验线只保留最小历史摘要，不再保留独立治理入口。
+Use this file to understand history, not to inherit outdated defaults.

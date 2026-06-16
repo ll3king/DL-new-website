@@ -1,157 +1,174 @@
 # Project Governance Tree Map
 
-最后更新：2026-06-01
+Last updated: 2026-06-16
 
-## 文档目的
+## Purpose
 
-这份文档用于把当前 `DL new website` 的治理结构用树状图固定下来。
+This file fixes the governance structure in tree form so new agents can see:
 
-它服务于两件事：
+- the real project entry
+- the current flywheels
+- the execution modules beneath them
+- the deprecated historical contexts
 
-- 让新的 agent / 开发者 / 维护者能快速看懂项目结构
-- 让后续任何功能更新都能先对齐项目层级，再进入模块边界
+Main governance entry:
 
-它不是新的主入口。
+- [project-current-overview-and-doc-governance.zh-CN.md](./project-current-overview-and-doc-governance.zh-CN.md)
 
-当前项目治理主入口仍然是：
-
-- [project-current-overview-and-doc-governance.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-current-overview-and-doc-governance.zh-CN.md)
-
-## 当前治理树状图
+## Current Governance Tree
 
 ```text
 DL new website
-├─ README.md
-│  └─ 仓库唯一外层入口
-│
-├─ docs/
-│  ├─ project-current-overview-and-doc-governance.zh-CN.md
-│  │  └─ 项目治理主入口
-│  │
-│  ├─ project-module-code-boundary-map.zh-CN.md
-│  │  └─ 模块 -> code 改动边界总表
-│  │
-│  ├─ project-governance-branch-and-doc-map.zh-CN.md
-│  │  └─ 历史分支与文档关系总表
-│  │
-│  ├─ project-governance-tree-map.zh-CN.md
-│  │  └─ 当前治理树状图
-│  │
-│  ├─ postmortem-booking-rules-admin-upgrade.zh-CN.md
-│  │  └─ Booking System 核心 retrospective
-│  │
-│  ├─ booking-crm-min-path.zh-CN.md
-│  │  └─ Booking email + Sheets CRM 最小运行路径
-│  │
-│  ├─ postmortem-booking-email-crm.zh-CN.md
-│  │  └─ Booking email + CRM retrospective
-│  │
-│  ├─ content-update-quick-entry.zh-CN.md
-│  │  └─ Content 小入口
-│  │
-│  ├─ search-optimization-entry.zh-CN.md
-│  │  └─ Search Optimization 直接入口
-│  │
-│  ├─ Knowledge.md
-│  │  └─ 已降级为历史参考
-│  │
-│  └─ system_blueprint.md
-│     └─ 已降级为历史参考
-│
-├─ Website
-│  └─ website shell / structure
-│
-├─ Booking System
-│  ├─ booking rules
-│  ├─ admin bookings dashboard
-│  ├─ booking form
-│  ├─ booking email + CRM
-│  └─ booking table governance
-│
-├─ Search Optimization
-│  └─ SEO / GEO / AEO / schema / redirects / discovery
-│
-├─ Content
-│  └─ stories / posts / media
-│
-├─ AI Chat
-│  └─ website chat entry
-│
-└─ SMS
-   └─ sms booking entry
+|- README.md
+|  \- repository outer entry
+|- docs/
+|  |- project-current-overview-and-doc-governance.zh-CN.md
+|  |  \- project governance entry
+|  |- feature-registry.md
+|  |  \- official feature-area registry
+|  |- flywheel-2-visual-taste-frontend-performance.md
+|  |  \- Flywheel 2 official document
+|  |- deprecated-assumptions.md
+|  |  \- deprecated project defaults
+|  |- project-module-code-boundary-map.zh-CN.md
+|  |  \- module -> code boundary map
+|  |- project-governance-branch-and-doc-map.zh-CN.md
+|  |  \- historical branch and doc relationship map
+|  |- project-governance-tree-map.zh-CN.md
+|  |  \- governance tree
+|  |- search-optimization-entry.zh-CN.md
+|  |  \- AEO / GEO / AI Search Optimization entry
+|  |- content-update-quick-entry.zh-CN.md
+|  |  \- narrow content entry
+|  |- Knowledge.md
+|  |  \- historical reference only
+|  \- system_blueprint.md
+|     \- historical reference only
+|- Flywheel 1: AEO / GEO / AI Search Optimization
+|  \- entity / answerability / schema / canonical / robots / sitemap / search-facing structure
+|- Flywheel 2: Visual Taste / Frontend / Performance
+|  \- Stitch -> Codex via MCP -> repo implementation -> Taste / Impeccable visual QA -> performance QA
+|- Execution Modules
+|  |- Website
+|  |  \- shell / frontend / visual taste / performance
+|  |- Booking System
+|  |  \- booking rules / admin / form / CRM / table governance
+|  |- Search Optimization
+|  |  \- search answerability execution lane
+|  |- Content
+|  |  \- stories / posts / media
+|  |- AI Chat
+|  |  \- website chat entry
+|  \- SMS
+|     \- sms booking entry
+\- Deprecated Default Contexts
+   \- governed at the project-entry layer, not repeated in every module
 ```
 
-## 当前结构理解
+## Global Structure Explanation
 
-### 1. 根入口层
+This project should be read from top to bottom in four layers:
 
-- `README.md` 是仓库唯一外层入口
-- 新 agent 进入项目时，不应跳过 `README.md`
+1. `Project identity layer`
+- answers what the website fundamentally is
+- Dandy Lane is a Hobart CBD hidden-lane breakfast-to-brunch cafe
+- no subsystem is allowed to replace this identity
 
-### 2. 治理层
+2. `Project flywheel layer`
+- answers what the website is being pushed toward
+- Flywheel 1 = future-facing search answerability
+- Flywheel 2 = current visual taste / frontend / performance refresh
+- flywheels are project-level drivers, not code modules
 
-`docs/` 里当前真正活跃的治理主干是：
+3. `Execution module layer`
+- answers where code work actually happens
+- modules exist to keep ownership and edit boundaries clear
+- modules implement work in service of the flywheels, but do not redefine them
 
-- `project-current-overview-and-doc-governance`
-- `project-module-code-boundary-map`
-- `project-governance-branch-and-doc-map`
-- `project-governance-tree-map`
+4. `Historical / deprecated layer`
+- answers what may still exist in history but must not become default context again
+- old systems may remain as references, but they do not govern live work
 
-这四份一起构成当前的治理骨架。
+## Flywheel Placement Rule
 
-### 3. 主系统层
+The two flywheels are intentionally placed above module boundaries.
 
-当前项目的业务中心是：
+That means:
 
-- `Booking System`
+- `AEO / GEO / AI Search Optimization` is not the same thing as the `Search Optimization` module
+- `Visual Taste / Frontend / Performance` is not the same thing as the `Website` module
 
-它是默认的主判断中心。
+Correct relationship:
 
-如果后续问题涉及：
+- flywheel = project-level direction
+- module = execution boundary
 
-- booking rules
-- admin backend
-- booking form
-- booking email + CRM
-- booking table governance
+This distinction must stay stable.
 
-都应优先按 `Booking System` 主线理解。
+## Practical Interpretation
 
-### 4. 模块层
+### 1. Top layer
 
-当前 `Website` 项目按模块治理：
+The top layer is now:
 
+- Dandy Lane Cafe website identity
+- two-flywheel governance
+
+It is no longer:
+
+- booking-first default framing
+- automation-first framing
+- SEO-first framing
+
+### 2. Flywheel layer
+
+The two flywheels sit above module execution:
+
+- search answerability flywheel
+- visual taste / frontend / performance flywheel
+
+Current urgency sits with the second flywheel.
+
+### 3. Module layer
+
+Modules exist to keep execution boundaries clear.
+They do not override the top-layer governance narrative.
+
+In practice:
+
+- `Website` is the main execution surface for the visual flywheel
+- `Search Optimization` is the main execution surface for the answerability flywheel
+- `Content` is a supporting execution lane, not a flywheel
+- `Booking System` is a major subsystem, but not the default website narrative
+- `AI Chat` and `SMS` remain bounded interfaces, not top-layer project drivers
+
+### 4. Historical layer
+
+Old systems and examples may still exist in the repo or in history, but they are deprecated as default memory.
+
+## Practical Tree Reading
+
+If a new task arrives, read the tree in this order:
+
+1. `Is this about website identity or project direction?`
+- stay at `README.md` and the governance entry
+
+2. `Is this about one of the two flywheels?`
+- decide whether the task belongs to search answerability or visual taste / frontend / performance
+- if it belongs to Flywheel 2, read the Flywheel 2 document before implementation
+
+3. `Which execution module owns the actual code?`
 - `Website`
-- `Booking System`
 - `Search Optimization`
 - `Content`
+- `Booking System`
 - `AI Chat`
 - `SMS`
 
-其中：
+4. `Is this only historical context?`
+- if yes, read branch or historical docs only as reference
+- do not inherit the old framing as current project logic
 
-- `Booking System` 是业务主中心
-- `Search Optimization` 是独立功能模块
-- `Content` 是小入口模块
-- `AI Chat` / `SMS` 是功能模块，但不再是项目叙事中心
+## One-Line Rule
 
-### 5. 历史层
-
-下面两份文档只保留为历史参考：
-
-- `docs/Knowledge.md`
-- `docs/system_blueprint.md`
-
-它们不再指导当前实现，不再指导当前入口，也不再代表当前结构。
-
-## 当前治理规则
-
-1. 先走 `README.md`，再走项目治理主入口。
-2. 先判断属于哪个功能模块，再看模块 code 边界。
-3. 历史分支关系只通过 `project-governance-branch-and-doc-map` 回查。
-4. `AI Chat` / `SMS` 不再保留独立项目入口家族。
-5. `Content` 和 `Search Optimization` 可以直接走小入口，但仍受模块边界约束。
-
-## 一句话总结
-
-当前 `DL new website` 的治理结构，已经从“多条平行历史叙事”收束成了“README 外层入口 + docs 治理骨架 + Booking System 主中心 + 模块直接入口”的单一主结构。
+Read the project as a Dandy Lane website with two active flywheels and clear execution modules, not as a booking-first or automation-first project.

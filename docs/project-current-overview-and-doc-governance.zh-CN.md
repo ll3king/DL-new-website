@@ -1,140 +1,108 @@
 # Project Current Overview And Doc Governance
 
-最后更新：2026-06-01
+Last updated: 2026-06-16
 
-## 文档目的
+## Purpose
 
-这份文档是当前项目治理主入口。
+This is the current project governance entry for the Dandy Lane Cafe website.
 
-它只负责四件事：
+It fixes four things:
 
-- 固定当前项目真正的系统中心
-- 固定当前还有效的功能模块入口
-- 固定当前保留的文档集合
-- 固定后续接手时应遵守的最小文档治理规则
+- the real current project identity
+- the active flywheels
+- the official feature areas
+- the direct documentation entrypoints
+- the deprecated default memory that should not guide new work
 
-如果未来重新接手这个项目，先看这份文档，不要先钻进旧 brief，也不要从历史子模块文档开始。
-
-在仓库层面，最外层入口固定为：
-
-- [README.md](../README.md)
-
-也就是说：
-
-- `README.md` = 仓库外层入口
-- 本文档 = 项目治理主入口
-
-## 当前项目中心
-
-当前项目的主系统中心是：
-
-- `Booking System`
-
-它在 `Website` 项目集合里是最核心的业务系统，当前仍以后台 booking 管理系统为中心展开。
-
-当前主系统核心代码包括：
-
-- `functions/api/_booking.js`
-- `functions/api/bookings.js`
-- `functions/api/admin/bookings.js`
-- `src/blocks/booking-form.html`
-- `src/blocks/admin-bookings.html`
-
-## 当前功能模块入口
-
-当前 Website 项目按功能模块进入，不再按旧分支或旧 brief 进入。
-
-当前有效模块为：
-
-- `Website`
-- `Booking System`
-- `Search Optimization`
-- `Content`
-- `AI Chat`
-- `SMS`
-
-模块职责和 code 改动边界总表见：
-
-- [project-module-code-boundary-map.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-module-code-boundary-map.zh-CN.md)
-
-## 当前保留文档
-
-当前 `docs/` 只保留三类：
-
-### 1. 主入口
+Repository outer entry:
 
 - [README.md](../README.md)
-- [project-current-overview-and-doc-governance.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-current-overview-and-doc-governance.zh-CN.md)
 
-### 2. 核心参考
+## Current Project Identity
 
-- [postmortem-booking-rules-admin-upgrade.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/postmortem-booking-rules-admin-upgrade.zh-CN.md)
-- [booking-crm-min-path.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/booking-crm-min-path.zh-CN.md)
-- [postmortem-booking-email-crm.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/postmortem-booking-email-crm.zh-CN.md)
-- [project-governance-branch-and-doc-map.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-governance-branch-and-doc-map.zh-CN.md)
-- [project-module-code-boundary-map.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-module-code-boundary-map.zh-CN.md)
-- [project-governance-tree-map.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-governance-tree-map.zh-CN.md)
+Dandy Lane is a Hobart CBD hidden-lane breakfast-to-brunch cafe.
 
-### 3. 模块直接入口
+This website is not currently governed by a `Booking System`-first narrative.
+Booking remains an important subsystem, but it is no longer the default project center.
 
-- [content-update-quick-entry.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/content-update-quick-entry.zh-CN.md)
-- [search-optimization-entry.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/search-optimization-entry.zh-CN.md)
+The project is now governed by two flywheels:
 
-凡是不在上面这三类中的旧文档，不再作为当前治理入口保留。
+1. `AEO / GEO / AI Search Optimization`
+This is the future-facing search and answerability system.
+Do not call the project an SEO project.
+`SEO` is only infrastructure language for schema, robots, sitemap, redirects, and crawl surfaces.
 
-根目录历史说明文档已经降级到：
+2. `Visual Taste / Frontend / Performance`
+This is the urgent active priority.
+The website needs a major visual taste and frontend refresh.
 
-- [Knowledge.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/Knowledge.md)
-- [system_blueprint.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/system_blueprint.md)
+## Active Workflow
 
-它们只保留历史参考定位，不属于当前活跃入口集合。
+Current design-and-build workflow:
 
-## 当前最推荐的阅读顺序
+`Stitch -> Codex via MCP -> repo implementation -> Taste / Impeccable visual QA -> performance QA`
 
-如果目标是继续推进主系统，按下面顺序看：
+This is the live workflow that should guide current frontend refresh work.
 
-1. [project-current-overview-and-doc-governance.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-current-overview-and-doc-governance.zh-CN.md)
-2. [postmortem-booking-rules-admin-upgrade.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/postmortem-booking-rules-admin-upgrade.zh-CN.md)
-3. [booking-crm-min-path.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/booking-crm-min-path.zh-CN.md)
-4. [postmortem-booking-email-crm.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/postmortem-booking-email-crm.zh-CN.md)
-5. [project-governance-branch-and-doc-map.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-governance-branch-and-doc-map.zh-CN.md)
-6. [project-module-code-boundary-map.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-module-code-boundary-map.zh-CN.md)
-7. [project-governance-tree-map.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-governance-tree-map.zh-CN.md)
+## Current Direct Entry Points
 
-如果只是更新 stories / posts / media，直接走：
+Core governance:
 
-- [content-update-quick-entry.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/content-update-quick-entry.zh-CN.md)
+- [feature-registry.md](./feature-registry.md)
+- [flywheel-2-visual-taste-frontend-performance.md](./flywheel-2-visual-taste-frontend-performance.md)
+- [project-module-code-boundary-map.zh-CN.md](./project-module-code-boundary-map.zh-CN.md)
+- [project-governance-branch-and-doc-map.zh-CN.md](./project-governance-branch-and-doc-map.zh-CN.md)
+- [project-governance-tree-map.zh-CN.md](./project-governance-tree-map.zh-CN.md)
 
-如果这次工作属于 SEO / GEO / AEO / schema / redirects，直接走：
+Direct module entrypoints:
 
-- [search-optimization-entry.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/search-optimization-entry.zh-CN.md)
+- [search-optimization-entry.zh-CN.md](./search-optimization-entry.zh-CN.md)
+- [content-update-quick-entry.zh-CN.md](./content-update-quick-entry.zh-CN.md)
 
-## 文档治理规则
+Historical references that are no longer entrypoints:
 
-### 1. 总入口唯一
+- [Knowledge.md](./Knowledge.md)
+- [system_blueprint.md](./system_blueprint.md)
+- booking retrospective docs
+- branch postmortems that describe older execution phases
 
-后续任何人进入这个项目，先看 `README.md`，再看本文件。
+Deprecated-default assumptions:
 
-### 2. 模块优先于历史分支
+- [deprecated-assumptions.md](./deprecated-assumptions.md)
 
-以后继续开发时，应先确认属于哪个功能模块，再去看模块对应的 code 边界，而不是先按历史分支找路。
+## Deprecated Default Contexts
 
-### 3. 历史子模块不再保留独立入口家族
+The following should not be treated as default project logic anymore:
 
-`AI Chat` 和 `SMS` 可以继续作为功能模块存在，但它们不再拥有独立的接手入口文档家族。
+- SEO-first narrative
+- n8n workflows
+- Google Sheets / Telegram automation as default project logic
+- Gemini workflow
+- Figma workflow
+- wedding / event / styling examples
+- release checks as the main project narrative
 
-### 4. 已被替代的旧 planning 文档不再保留
+These can still exist as historical implementation traces, but they are deprecated as the default project memory.
 
-只保留仍对当前系统有参考价值的 retrospective、最小运行路径文档和模块边界文档。
+## Current Practical Reading Order
 
-### 5. Content 保留一个小入口
+1. Read [README.md](../README.md)
+2. Read this file
+3. Choose the flywheel or module that matches the task
+4. Enter the correct boundary doc before touching code
 
-`Content` 不是主系统中心，但保留一个很小、很直接的入口，避免每次内容更新都绕完整个大治理框架。
+If the task is search-facing and answerability-facing, go to:
 
-### 6. Search Optimization 保留一个直接入口
+- [search-optimization-entry.zh-CN.md](./search-optimization-entry.zh-CN.md)
 
-`Search Optimization` 不是 `Booking System` 的附属说明，应保留自己的直接入口，但仍受模块 code 边界约束。
+If the task is visual refresh, frontend taste, or performance, treat the website shell and frontend blocks as the primary working area and use the current Stitch-to-Codex workflow.
 
-## 当前最重要的一句话
+Before visual implementation, read:
 
-`DL new website` 现在应被理解成一个以 `Booking System` 为业务中心、以功能模块治理为更新入口的 `Website` 主项目，而不是若干平行小项目的集合。
+1. [feature-registry.md](./feature-registry.md)
+2. [flywheel-2-visual-taste-frontend-performance.md](./flywheel-2-visual-taste-frontend-performance.md)
+3. [project-module-code-boundary-map.zh-CN.md](./project-module-code-boundary-map.zh-CN.md)
+
+## One-Line Rule
+
+Treat this project as a Dandy Lane website governed by `AEO / GEO / AI Search Optimization` plus `Visual Taste / Frontend / Performance`, with visual refresh as the current urgent priority.

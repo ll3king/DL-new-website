@@ -1,59 +1,192 @@
 # Project Module Code Boundary Map
 
-最后更新：2026-06-01
+Last updated: 2026-06-16
 
-## 文档目的
+## Purpose
 
-这份文档用于固定：
+This document fixes three things:
 
-- 当前 `Website` 主项目下的一级模块
-- 每个模块下的具体功能模块
-- 每个功能模块允许改动的代码边界
-- 每个功能模块默认不应触碰的代码区域
+- the current working modules
+- the code boundaries each module is allowed to touch
+- the layer where current project rules should be interpreted
 
-这份文档不负责解释历史决策。  
-历史来源和分支关系请看：
+This file is about boundaries, not project history.
 
-- [project-governance-branch-and-doc-map.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-governance-branch-and-doc-map.zh-CN.md)
+Project governance entry:
 
-当前项目总入口请看：
+- [project-current-overview-and-doc-governance.zh-CN.md](./project-current-overview-and-doc-governance.zh-CN.md)
 
-- [project-current-overview-and-doc-governance.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-current-overview-and-doc-governance.zh-CN.md)
+## Interpretation Order
 
-## 使用规则
+When updating this website:
 
-以后任何功能更新，先找对应模块，再只在该模块允许的代码边界内工作。
+1. read the repository and governance entry first
+2. identify which flywheel or module owns the task
+3. only then enter the allowed code boundary
 
-如果某次需求必须跨边界改动，必须先明确：
+Important:
 
-- 为什么必须跨边界
-- 影响的是哪个主系统关系
-- 是一次联动修复，还是模块边界需要正式调整
+- project identity and default narrative belong to `README.md` and `project-current-overview-and-doc-governance`
+- active frontend urgency belongs to `Website`
+- future-facing search answerability belongs to `Search Optimization`
+- historical branch logic belongs to `project-governance-branch-and-doc-map`
 
-## 一、Website
+## Quick Routing Table
 
-### 1. website shell / structure
+Use this table before touching code.
 
-职责：
+For any frontend-facing task, read this first:
 
-- 全站页面壳层
-- 全站共享样式与脚本
-- 首页 / FAQ / Menu / Location 等页面结构
+- [flywheel-2-visual-taste-frontend-performance.md](./flywheel-2-visual-taste-frontend-performance.md)
 
-主要可改文件：
+### 1. Homepage positioning / visual refresh / UX polish / performance feel
 
+Owner:
+
+- `Website`
+
+Required pre-read:
+
+- `flywheel-2-visual-taste-frontend-performance.md`
+
+Typical files:
+
+- `src/layouts/base.html`
+- `src/assets/css/style.css`
+- `src/assets/js/main.js`
+- `src/blocks/identity-hero.html`
+- other homepage and shared frontend blocks
+
+Do not expand into by default:
+
+- booking backend
+- chat routing
+- SMS routing
+
+### 2. Schema / canonical / entity proof / robots / sitemap / answerability
+
+Owner:
+
+- `Search Optimization`
+
+Typical files:
+
+- `data/site.yaml`
+- `scripts/generate.js`
+- `public/robots.txt`
+- `public/sitemap.xml`
+- `public/_redirects`
+- `public/_headers`
+
+Allowed narrow cross-over:
+
+- FAQ and story answerability reinforcement
+
+### 3. Story copy / image swap / story ordering / post refresh
+
+Owner:
+
+- `Content`
+
+Typical files:
+
+- `data/stories.yaml`
+- `src/blocks/story-list.html`
+- `src/blocks/story-detail.html`
+- `src/assets/media`
+
+Do not expand into by default:
+
+- booking rules
+- search infrastructure
+
+### 4. Booking form / booking admin / booking rules / duplicate handling
+
+Owner:
+
+- `Booking System`
+
+Typical files:
+
+- `functions/api/_booking.js`
+- `functions/api/bookings.js`
+- `functions/api/admin/bookings.js`
+- `functions/api/janitor.js`
+- `src/blocks/booking-form.html`
+- `src/blocks/admin-bookings.html`
+
+Do not expand into by default:
+
+- homepage visual system
+- stories positioning
+- SMS entry logic
+
+### 5. Website assistant conversation behavior
+
+Owner:
+
+- `AI Chat`
+
+Typical files:
+
+- `functions/api/chat.js`
+- `src/blocks/chatbot-widget.html`
+
+Do not expand into by default:
+
+- booking table truth
+- website shell redesign
+
+### 6. SMS inbound / gateway / thread continuation
+
+Owner:
+
+- `SMS`
+
+Typical files:
+
+- `functions/api/sms/inbound.js`
+- `functions/api/sms/telerivet-inbound.js`
+- `functions/api/sms/telerivet-sample.js`
+
+Do not expand into by default:
+
+- website frontend
+- search-facing positioning
+
+## Website
+
+### 1. website shell / visual taste / frontend / performance
+
+Responsibility:
+
+- overall page shell
+- shared layout and visual system
+- homepage / FAQ / Menu / Location structure
+- frontend refresh
+- visual taste upgrade
+- performance-facing page polish
+
+Current priority:
+
+- this is the urgent active lane
+- current workflow is `Stitch -> Codex via MCP -> repo implementation -> Taste / Impeccable visual QA -> performance QA`
+
+Main editable files:
+
+- [src/layouts/base.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/layouts/base.html)
+- [src/assets/css/style.css](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/assets/css/style.css)
+- [src/assets/js/main.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/assets/js/main.js)
+- [src/blocks/identity-hero.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/identity-hero.html)
+- [src/blocks/signature-trio.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/signature-trio.html)
+- [src/blocks/social-proof-reviews.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/social-proof-reviews.html)
+- [src/blocks/menu-grid.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/menu-grid.html)
 - [public/index.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/public/index.html)
 - [public/menu.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/public/menu.html)
 - [public/location.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/public/location.html)
 - [public/faq.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/public/faq.html)
-- [src/assets/css/style.css](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/assets/css/style.css)
-- [src/assets/js/main.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/assets/js/main.js)
-- [src/blocks/menu-grid.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/menu-grid.html)
-- [src/blocks/social-proof-reviews.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/social-proof-reviews.html)
-- [src/blocks/signature-trio.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/signature-trio.html)
-- [src/blocks/identity-hero.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/identity-hero.html)
 
-默认不该碰：
+Do not touch by default:
 
 - [functions/api/_booking.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/_booking.js)
 - [functions/api/bookings.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/bookings.js)
@@ -61,218 +194,62 @@
 - [functions/api/chat.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/chat.js)
 - [functions/api/sms/inbound.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/inbound.js)
 
-例外说明：
-- `Search Optimization` 默认不直接修改 `stories / posts / media`
-- 但如果任务已经明确批准为 `AEO / GEO` 锚点迁移、Answer Summary 增强、stories 排序重构、search-facing 内部链接补强
-- 则允许最小范围跨到：
-- [data/stories.yaml](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/data/stories.yaml)
-- [src/blocks/story-list.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/story-list.html)
-- [src/blocks/story-detail.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/story-detail.html)
-- 前提是：不新增页面、不新增长期文件路径，只服务于 Search Optimization 本身
-- [functions/api/sms/telerivet-inbound.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/telerivet-inbound.js)
+## Booking System
 
-## 二、Booking System
+### 1. booking rules / admin / form / CRM / table governance
 
-### 1. booking rules
+Responsibility:
 
-职责：
+- booking rules
+- admin bookings dashboard
+- booking form
+- booking email + CRM
+- booking table governance
 
-- booking 状态规则
-- 人数 / same-day / capacity 等规则判断
-- `Confirmed / Manual_Review / Cancelled` 等核心状态约束
+Important status:
 
-主要可改文件：
+- booking is still an important subsystem
+- booking is no longer the default project narrative
+- do not enter booking docs unless the task is truly booking-owned
 
-- [functions/api/_booking.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/_booking.js)
-- [functions/api/bookings.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/bookings.js)
-- [functions/api/admin/bookings.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/admin/bookings.js)
-
-关联可改文件：
-
-- [src/blocks/booking-form.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/booking-form.html)
-- [src/blocks/admin-bookings.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/admin-bookings.html)
-
-默认不该碰：
-
-- [functions/api/chat.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/chat.js)
-- [functions/api/sms/inbound.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/inbound.js)
-- [functions/api/sms/telerivet-inbound.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/telerivet-inbound.js)
-- [data/stories.yaml](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/data/stories.yaml)
-
-### 2. admin bookings dashboard
-
-职责：
-
-- booking 列表
-- `Today`
-- `Calendar`
-- search / filter
-- manual entry
-- edit / cancel / approve
-
-主要可改文件：
-
-- [src/blocks/admin-bookings.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/admin-bookings.html)
-- [functions/api/admin/bookings.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/admin/bookings.js)
-- [public/admin.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/public/admin.html)
-
-关联可改文件：
-
-- [functions/api/_booking.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/_booking.js)
-- [src/assets/js/main.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/assets/js/main.js)
-- [src/assets/css/style.css](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/assets/css/style.css)
-
-默认不该碰：
-
-- [functions/api/chat.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/chat.js)
-- [functions/api/sms/inbound.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/inbound.js)
-- [functions/api/sms/telerivet-inbound.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/telerivet-inbound.js)
-- [data/stories.yaml](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/data/stories.yaml)
-
-### 3. booking form
-
-职责：
-
-- 前台 booking 提交入口
-- 表单字段
-- 提交体验
-
-主要可改文件：
-
-- [src/blocks/booking-form.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/booking-form.html)
-- [functions/api/bookings.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/bookings.js)
-- [public/booking.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/public/booking.html)
-
-关联可改文件：
-
-- [functions/api/_booking.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/_booking.js)
-- [src/assets/js/main.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/assets/js/main.js)
-- [src/assets/css/style.css](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/assets/css/style.css)
-
-默认不该碰：
-
-- [src/blocks/admin-bookings.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/admin-bookings.html)
-- [functions/api/admin/bookings.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/admin/bookings.js)
-- [functions/api/chat.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/chat.js)
-- [functions/api/sms/inbound.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/inbound.js)
-- [functions/api/sms/telerivet-inbound.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/telerivet-inbound.js)
-
-### 4. booking email + CRM
-
-职责：
-
-- confirmation / pending_review / approval_confirmed 邮件
-- `Guests`
-- `GuestEvents`
-- 邮件状态追踪
-
-主要可改文件：
-
-- [functions/api/_booking.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/_booking.js)
-- [functions/api/bookings.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/bookings.js)
-- [functions/api/admin/bookings.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/admin/bookings.js)
-
-默认不该碰：
-
-- [functions/api/chat.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/chat.js)
-- [functions/api/sms/inbound.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/inbound.js)
-- [functions/api/sms/telerivet-inbound.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/telerivet-inbound.js)
-- [data/stories.yaml](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/data/stories.yaml)
-
-### 5. booking table governance
-
-职责：
-
-- booking 主表一致性治理
-- append row 后 cleanup
-- dedupe
-- archival / janitor 相关治理
-
-主要可改文件：
+Main editable files:
 
 - [functions/api/_booking.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/_booking.js)
 - [functions/api/bookings.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/bookings.js)
 - [functions/api/admin/bookings.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/admin/bookings.js)
 - [functions/api/janitor.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/janitor.js)
+- [src/blocks/booking-form.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/booking-form.html)
+- [src/blocks/admin-bookings.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/admin-bookings.html)
 
-默认不该碰：
+Do not touch by default:
 
 - [src/blocks/story-list.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/story-list.html)
 - [src/blocks/story-detail.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/story-detail.html)
-- [functions/api/chat.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/chat.js)
-- [functions/api/sms/inbound.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/inbound.js)
-- [functions/api/sms/telerivet-inbound.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/telerivet-inbound.js)
+- [src/assets/css/style.css](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/assets/css/style.css)
 
-## 三、AI Chat
+## Search Optimization
 
-### 1. AI chat bot
+### 1. AEO / GEO / AI Search Optimization
 
-职责：
+Responsibility:
 
-- 网站 chat 入口
-- booking-first chat 流程
-- `general / create / lookup / cancel`
-
-主要可改文件：
-
-- [functions/api/chat.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/chat.js)
-- [src/blocks/chatbot-widget.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/chatbot-widget.html)
-
-关联可改文件：
-
-- [functions/api/_booking.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/_booking.js)
-
-默认不该碰：
-
-- [src/blocks/admin-bookings.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/admin-bookings.html)
-- [functions/api/admin/bookings.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/admin/bookings.js)
-- [functions/api/sms/inbound.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/inbound.js)
-- [functions/api/sms/telerivet-inbound.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/telerivet-inbound.js)
-- [data/stories.yaml](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/data/stories.yaml)
-
-## 四、SMS
-
-### 1. SMS booking
-
-职责：
-
-- SMS inbound / outbound
-- thread
-- gateway
-- booking bridge
-
-主要可改文件：
-
-- [functions/api/sms/inbound.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/inbound.js)
-- [functions/api/sms/telerivet-inbound.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/telerivet-inbound.js)
-- [functions/api/sms/telerivet-sample.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/telerivet-sample.js)
-
-关联可改文件：
-
-- [functions/api/_booking.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/_booking.js)
-- [functions/api/chat.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/chat.js)
-
-默认不该碰：
-
-- [src/blocks/admin-bookings.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/admin-bookings.html)
-- [src/blocks/booking-form.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/booking-form.html)
-- [data/stories.yaml](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/data/stories.yaml)
-
-## 五、Search Optimization
-
-### 1. schema / SEO / GEO / AEO
-
-职责：
-
-- search-facing 结构优化
-- entity / NAP
+- search answerability
+- entity / NAP alignment
 - schema
+- canonical surfaces
 - redirects
-- crawling / discovery 辅助
+- robots / sitemap
+- search-facing structure
 
-主要可改文件：
+Naming rule:
+
+- do not treat this as an SEO-first project lane
+- `SEO` is only infrastructure language
+
+Main editable files:
 
 - [data/site.yaml](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/data/site.yaml)
+- [scripts/generate.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/scripts/generate.js)
 - [public/robots.txt](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/public/robots.txt)
 - [public/sitemap.xml](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/public/sitemap.xml)
 - [public/_redirects](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/public/_redirects)
@@ -282,11 +259,14 @@
 - [src/blocks/identity-hero.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/identity-hero.html)
 - [src/blocks/intent-match.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/intent-match.html)
 
-关联可改文件：
+Allowed cross-boundary exception:
 
-- [functions/api/janitor.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/janitor.js)
+- approved story ordering or answer-summary reinforcement for answerability
+- [data/stories.yaml](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/data/stories.yaml)
+- [src/blocks/story-list.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/story-list.html)
+- [src/blocks/story-detail.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/story-detail.html)
 
-默认不该碰：
+Do not touch by default:
 
 - [functions/api/_booking.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/_booking.js)
 - [functions/api/bookings.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/bookings.js)
@@ -294,44 +274,69 @@
 - [functions/api/chat.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/chat.js)
 - [functions/api/sms/inbound.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/inbound.js)
 
-## 六、Content
+## Content
 
-### 1. stories / posts
+### 1. stories / posts / media
 
-职责：
+Responsibility:
 
-- stories 更新
-- story 封面 / 配图更新
-- story list / detail 呈现
+- stories updates
+- media swaps
+- story list / detail presentation
 
-主要可改文件：
+Important status:
+
+- this is a narrow execution lane
+- it is not the main project narrative
+- it should not override the two-flywheel governance model
+
+Main editable files:
 
 - [data/stories.yaml](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/data/stories.yaml)
 - [src/blocks/story-list.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/story-list.html)
 - [src/blocks/story-detail.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/story-detail.html)
 - [src/assets/media](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/assets/media)
 
-关联生成结果：
+## AI Chat
 
-- [public/stories.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/public/stories.html)
-- [public/stories-the-pulse-of-the-lane.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/public/stories-the-pulse-of-the-lane.html)
-- 其他 `public/stories-*.html`
+### 1. website chat entry
 
-默认不该碰：
+Responsibility:
 
-- [functions/api/_booking.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/_booking.js)
-- [functions/api/bookings.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/bookings.js)
-- [functions/api/admin/bookings.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/admin/bookings.js)
+- website chat entry
+- booking conversation handling
+- `general / create / lookup / cancel`
+
+Important status:
+
+- this is no longer a default project entry
+- do not route new general project work through old AI-branch assumptions
+
+Main editable files:
+
 - [functions/api/chat.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/chat.js)
+- [src/blocks/chatbot-widget.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/chatbot-widget.html)
+
+## SMS
+
+### 1. sms booking entry
+
+Responsibility:
+
+- SMS inbound / outbound
+- thread / gateway / booking bridge
+
+Important status:
+
+- this is no longer a default project entry
+- do not let SMS history redefine the website narrative
+
+Main editable files:
+
 - [functions/api/sms/inbound.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/inbound.js)
 - [functions/api/sms/telerivet-inbound.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/telerivet-inbound.js)
+- [functions/api/sms/telerivet-sample.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/telerivet-sample.js)
 
-## 七、当前最重要的治理规则
+## One-Line Rule
 
-以后每次更新某个功能模块，先做三件事：
-
-1. 先确认这次属于哪个模块
-2. 先看这个模块允许改哪些文件
-3. 如果要跨边界，先说明为什么
-
-如果这三步没做，就不应直接开始改代码。
+Use this file to decide who owns the code boundary, not to decide the project narrative. The project narrative is fixed at the governance-entry layer.

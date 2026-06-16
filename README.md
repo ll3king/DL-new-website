@@ -1,87 +1,82 @@
 # Dandy Lane Cafe Website
 
-最后更新：2026-06-01
+Last updated: 2026-06-16
 
-## 主入口
+## Main Entry
 
-这是当前仓库的唯一外层入口。
+This repository is the single project entry for the Dandy Lane Cafe website.
 
-任何新的 agent、开发者或维护者进入这个项目时，先从这里开始，不要先读旧分支文档，也不要先从历史架构说明进入。
+Dandy Lane is a Hobart CBD hidden-lane breakfast-to-brunch cafe.
 
-## 当前项目中心
-
-当前 `DL new website` 应被理解为一个 `Website` 主项目。
-
-它的业务中心是：
-
-- `Booking System`
-
-当前最重要的系统事实是：
-
-- `Booking System` 仍是整个项目最核心的功能主线
-- 当前开发与治理默认按“功能模块”进入
-- 不再按旧 AI / SMS / 早期试验线作为项目入口理解
-
-## 当前推荐阅读顺序
-
-### 1. 项目总入口
+Any new agent or maintainer should start here, then continue into the current governance entry:
 
 - [docs/project-current-overview-and-doc-governance.zh-CN.md](docs/project-current-overview-and-doc-governance.zh-CN.md)
 
-### 2. 功能模块与 code 边界
+## Active Project Model
 
-- [docs/project-module-code-boundary-map.zh-CN.md](docs/project-module-code-boundary-map.zh-CN.md)
+This website is now governed by two flywheels:
 
-### 3. 分支与历史关系
+1. `AEO / GEO / AI Search Optimization`
+This is the future-facing search and answerability system.
+Do not describe the project itself as an SEO project.
+`SEO` is only infrastructure language when discussing schema, robots, sitemap, redirects, or crawl surfaces.
 
-- [docs/project-governance-branch-and-doc-map.zh-CN.md](docs/project-governance-branch-and-doc-map.zh-CN.md)
+2. `Visual Taste / Frontend / Performance`
+This is the current urgent priority.
+The website needs a major visual taste and frontend refresh, using Stitch design exploration and Codex implementation through MCP.
 
-### 4. 治理树状图
+Official feature-area registry:
 
-- [docs/project-governance-tree-map.zh-CN.md](docs/project-governance-tree-map.zh-CN.md)
+- [docs/feature-registry.md](docs/feature-registry.md)
 
-### 5. `Booking System` 核心参考
+Official Flywheel 2 document:
 
-- [docs/postmortem-booking-rules-admin-upgrade.zh-CN.md](docs/postmortem-booking-rules-admin-upgrade.zh-CN.md)
-- [docs/booking-crm-min-path.zh-CN.md](docs/booking-crm-min-path.zh-CN.md)
-- [docs/postmortem-booking-email-crm.zh-CN.md](docs/postmortem-booking-email-crm.zh-CN.md)
+- [docs/flywheel-2-visual-taste-frontend-performance.md](docs/flywheel-2-visual-taste-frontend-performance.md)
 
-### 6. `Content` 小入口
+## Current Priority
 
-如果只是更新 stories / posts / media，直接进入：
+The most important current work is:
 
-- [docs/content-update-quick-entry.zh-CN.md](docs/content-update-quick-entry.zh-CN.md)
+- visual taste upgrade
+- frontend refresh
+- performance QA
 
-### 7. `Search Optimization` 入口
+The active workflow is:
 
-如果这次工作属于 SEO / GEO / AEO / schema / redirects，直接进入：
+`Stitch -> Codex via MCP -> repo implementation -> Taste / Impeccable visual QA -> performance QA`
 
-- [docs/search-optimization-entry.zh-CN.md](docs/search-optimization-entry.zh-CN.md)
+## Deprecated Default Contexts
 
-## 当前功能模块
+Do not treat these as the default project frame anymore:
 
-当前 Website 项目集合按下面模块治理：
+- SEO-first narrative
+- n8n workflows
+- Google Sheets / Telegram automation as default project logic
+- Gemini workflow
+- Figma workflow
+- wedding / event / styling examples
+- release checks as the main project narrative
 
-- `Website`
-- `Booking System`
-- `Search Optimization`
-- `Content`
-- `AI Chat`
-- `SMS`
+These may still exist as historical traces or narrow implementation details, but they are not the default project memory.
 
-详细职责和允许改动的文件边界，统一看：
+## Recommended Reading Order
 
-- [docs/project-module-code-boundary-map.zh-CN.md](docs/project-module-code-boundary-map.zh-CN.md)
+1. [docs/project-current-overview-and-doc-governance.zh-CN.md](docs/project-current-overview-and-doc-governance.zh-CN.md)
+2. [docs/feature-registry.md](docs/feature-registry.md)
+3. [docs/flywheel-2-visual-taste-frontend-performance.md](docs/flywheel-2-visual-taste-frontend-performance.md)
+4. [docs/project-module-code-boundary-map.zh-CN.md](docs/project-module-code-boundary-map.zh-CN.md)
+5. [docs/project-governance-branch-and-doc-map.zh-CN.md](docs/project-governance-branch-and-doc-map.zh-CN.md)
+6. [docs/project-governance-tree-map.zh-CN.md](docs/project-governance-tree-map.zh-CN.md)
 
-## 根目录历史文档说明
+Direct module entrypoints:
 
-下面两份文档不再是当前入口，并已降级到 `docs/`：
+- Search / answerability work:
+  [docs/search-optimization-entry.zh-CN.md](docs/search-optimization-entry.zh-CN.md)
+- Visual / frontend / performance work:
+  [docs/flywheel-2-visual-taste-frontend-performance.md](docs/flywheel-2-visual-taste-frontend-performance.md)
+- Content-only updates:
+  [docs/content-update-quick-entry.zh-CN.md](docs/content-update-quick-entry.zh-CN.md)
 
-- `docs/Knowledge.md`
-- `docs/system_blueprint.md`
+## One-Line Rule
 
-它们现在只保留为历史参考，不代表当前有效项目结构，也不应作为新的接手入口。
-
-## 一句话规则
-
-先看 `README.md`，再看 `docs/project-current-overview-and-doc-governance.zh-CN.md`，再按功能模块进入具体文档和代码边界。
+Start from the website flywheels and the current visual-priority workflow, not from old booking-first, automation-first, or SEO-first default memory.
