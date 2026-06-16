@@ -218,21 +218,29 @@ async function render() {
         function generateBaseBusinessSchema(siteData) {
             const decisionAnchors = (siteData.aeo && siteData.aeo.decision_anchors) || [];
             const restaurant = {
-                "@type": "Restaurant",
+                "@type": ["Restaurant", "LocalBusiness"],
                 "@id": siteData.seo.site_url + "/#restaurant",
                 "name": siteData.identity.name,
                 "image": siteData.seo.site_url + "/assets/media/home_hero.jpg",
-                "url": siteData.seo.site_url,
+                "url": siteData.seo.site_url + "/",
                 "logo": {
                     "@type": "ImageObject",
                     "url": siteData.seo.site_url + "/assets/media/logo.png",
                     "width": "200",
                     "height": "200"
                 },
-                "telephone": "+61 498 061 067",
+                "telephone": "+61498061067",
                 "priceRange": siteData.identity.price_range,
-                "servesCuisine": siteData.seo.schema.cuisine,
+                "servesCuisine": siteData.seo.schema.cuisine_labels || [siteData.seo.schema.cuisine],
                 "acceptsReservations": siteData.seo.schema.accepts_reservations,
+                "menu": siteData.seo.schema.has_menu_url,
+                "potentialAction": {
+                    "@type": "ReserveAction",
+                    "target": {
+                        "@type": "EntryPoint",
+                        "urlTemplate": siteData.seo.schema.has_booking_url
+                    }
+                },
                 "address": {
                     "@type": "PostalAddress",
                     "streetAddress": "Unit 10 / 138 Collins Street",
@@ -269,6 +277,16 @@ async function render() {
             }
 
             return [restaurant];
+        }
+
+        function generateWebsiteSchema(siteData) {
+            return {
+                "@type": "WebSite",
+                "@id": siteData.seo.site_url + "/#website",
+                "name": siteData.identity.name,
+                "alternateName": siteData.identity.alternate_names || [],
+                "url": siteData.seo.site_url + "/"
+            };
         }
 
         function generateFaqSchema(faqData, siteUrl) {
@@ -350,6 +368,7 @@ async function render() {
 
             // 2. Primary Page Entities
             if (page.id === 'index') {
+                schemas.push(generateWebsiteSchema(siteData));
                 schemas.push(...generateBaseBusinessSchema(siteData));
             } else if (page.id === 'faq') {
                 schemas.push(generateFaqSchema(faqData, siteData.seo.site_url));
@@ -462,7 +481,7 @@ async function render() {
         
         // Sitemap - Standardize URLs (Pretty URLs)
         const sitemapEntries = pages.map(p => {
-            const path = p.id === 'index' ? '' : `/${p.id}`;
+            const path = p.id === 'index' ? '/' : `/${p.id}`;
             return `  <url><loc>${siteData.seo.site_url}${path}</loc></url>`;
         });
 

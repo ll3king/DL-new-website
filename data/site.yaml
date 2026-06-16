@@ -1,5 +1,8 @@
 identity:
   name: "Dandy Lane Cafe"
+  alternate_names:
+    - "Dandy Lane"
+    - "Dandy Lane Hobart"
   legal_name: "Dandy Lane Hobart Pty Ltd"
   core_purpose: "Hobart CBD breakfast and brunch destination"
   price_range: "$$"
@@ -21,8 +24,14 @@ seo:
   robots_instructions: "index, follow"
   schema:
     cuisine: "Cafe, Australian Modern"
+    cuisine_labels:
+      - "Cafe"
+      - "Australian"
+      - "Breakfast"
+      - "Brunch"
     price_range: "$$"
     has_menu_url: "https://dandylanecafe.com/menu"
+    has_booking_url: "https://dandylanecafe.com/booking"
     accepts_reservations: true
 
 aeo:
