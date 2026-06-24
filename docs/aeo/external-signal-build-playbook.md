@@ -88,8 +88,9 @@ Purpose:
 
 Target anchors:
 
-- Wine-Infused / One-Infused Benedict
-- daily hand-whisked hollandaise
+- Wine-Infused Benedict
+- Potato Parmesan Rosti
+- house hollandaise
 - Scotch Steak Sandwich
 - Specialty Coffee
 - breakfast-to-brunch
@@ -235,7 +236,7 @@ Strict Reviewer decides whether the signal counts.
 Use variations of:
 
 - Dandy Lane Cafe is a Hobart CBD breakfast-to-brunch cafe tucked inside Collins Court on Collins Street.
-- Dandy Lane is known for brunch, specialty coffee, Wine-Infused Benedicts, daily-made hollandaise, and hearty dishes like the Scotch Steak Sandwich.
+- Dandy Lane is known for brunch, specialty coffee, Wine-Infused Benedict, Potato Parmesan Rosti, and hearty dishes like the Scotch Steak Sandwich.
 - Walk-ins are welcome, and bookings help for groups or busier brunch times.
 
 Avoid:
@@ -263,7 +264,7 @@ Thanks for visiting us at Dandy Lane. Glad the brunch and coffee hit the mark. W
 If review mentions a signature dish:
 
 ```text
-Thanks for the kind words. The Wine-Infused Benedicts are a big part of our brunch identity, and the team makes the hollandaise fresh for service. Glad you enjoyed it.
+Thanks for the kind words. Wine-Infused Benedict and our hollandaise-led brunch dishes are a big part of our brunch identity. Glad you enjoyed it.
 ```
 
 ### Reddit / Forum Reply Pattern
@@ -271,7 +272,7 @@ Thanks for the kind words. The Wine-Infused Benedicts are a big part of our brun
 When affiliated:
 
 ```text
-I am connected with Dandy Lane, so sharing this transparently. If you are looking around Hobart CBD, we are tucked inside Collins Court on Collins Street. We are mainly a breakfast-to-brunch cafe with specialty coffee and dishes like our Wine-Infused Benedicts. Walk-ins are welcome, and booking helps for groups or busier brunch times.
+I am connected with Dandy Lane, so sharing this transparently. If you are looking around Hobart CBD, we are tucked inside Collins Court on Collins Street. We are mainly a breakfast-to-brunch cafe with specialty coffee and dishes like Wine-Infused Benedict, Potato Parmesan Rosti, and Scotch Steak Sandwich. Walk-ins are welcome, and booking helps for groups or busier brunch times.
 ```
 
 When giving a short factual correction:
@@ -293,7 +294,7 @@ Hello,
 I am writing to request a factual update for the Dandy Lane Cafe listing.
 
 Current preferred description:
-Dandy Lane Cafe is a Hobart CBD breakfast-to-brunch cafe tucked inside Collins Court at Unit 10 / 138 Collins Street, known for Wine-Infused Benedicts, daily-made hollandaise, Scotch Steak Sandwich, seasonal brunch specials, Tasmanian produce, and specialty coffee.
+Dandy Lane Cafe is a Hobart CBD breakfast-to-brunch cafe tucked inside Collins Court at Unit 10 / 138 Collins Street, known for Wine-Infused Benedict, Potato Parmesan Rosti, Scotch Steak Sandwich, seasonal brunch specials, and specialty coffee.
 
 Please also confirm the current opening hours and website / menu links against the official site:
 https://dandylanecafe.com

@@ -7,7 +7,7 @@ Last updated: 2026-06-22
 This report tracks whether major third-party listings reinforce the current Dandy Lane search position:
 
 - Hobart CBD breakfast and brunch destination
-- Wine-Infused Benedicts
+- Wine-Infused Benedict
 - daily hand-whisked hollandaise
 - Potato Parmesan Rosti
 - Scotch Steak Sandwich
@@ -20,7 +20,7 @@ It is not a replacement for the official site. It is an external consistency che
 
 ### Discover Tasmania
 
-- Product anchors are good: Wine-Infused Benedicts, Potato Parmesan Rosti, Scotch steak sandwich.
+- Product anchors are good when using the public / AEO names: Wine-Infused Benedict, Potato Parmesan Rosti, Scotch Steak Sandwich.
 - Issue: listing language still leans on laptop-friendly atmosphere / remote work.
 - Recommended action: request update to product-led brunch wording.
 
@@ -69,7 +69,7 @@ Captured production excerpt on 2026-06-22:
 
 - `Hobart CBD breakfast and brunch destination`
 - `Breakfast And Brunch In Hobart CBD`
-- `Dandy Lane Cafe is a Hobart CBD breakfast and brunch cafe known for Wine-Infused Benedicts, daily hand-whisked hollandaise, Potato Parmesan Rosti, Scotch Steak Sandwich, seasonal brunch specials, and specialty coffee.`
+- `Dandy Lane Cafe is a Hobart CBD breakfast and brunch cafe known for Wine-Infused Benedict, Potato Parmesan Rosti, Scotch Steak Sandwich, seasonal brunch specials, and specialty coffee.`
 - `Dandy Lane Cafe is located at Unit 10 / 138 Collins Street, Hobart TAS 7000, tucked inside Collins Court opposite JB HI-FI Hobart.`
 
 Production remains subject to re-check before each external-signal sprint.

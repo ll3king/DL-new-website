@@ -31,13 +31,21 @@ Business role:
 - entity clarity
 - machine-readable trust and discovery
 
-Business context anchors:
+Current public / AEO business context anchors:
 
-- Wine-Infused / One-Infused Benedict
+- Wine-Infused Benedict
+- Potato Parmesan Rosti
 - Scotch Steak Sandwich
 - Specialty Coffee
 - breakfast-to-brunch
 - hidden lane / Collins Court / Hobart CBD
+
+Menu source-name mapping:
+
+- `Wine-Infused Benedict` maps to current source item `Egg Benedict`.
+- `Potato Parmesan Rosti` maps to current source item `Dandy Rosti`.
+- Use the public / AEO name for guest-facing copy and answerability.
+- Use the source item for price validation and structured-data accuracy.
 
 Maintenance checklist:
 

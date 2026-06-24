@@ -35,7 +35,8 @@ Primary Dandy Lane anchors:
 - Hobart CBD
 - Collins Court
 - hidden-lane breakfast-to-brunch cafe
-- Wine-Infused / One-Infused Benedict
+- Wine-Infused Benedict
+- Potato Parmesan Rosti
 - Scotch Steak Sandwich
 - Specialty Coffee
 

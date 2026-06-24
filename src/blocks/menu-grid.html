@@ -57,7 +57,7 @@
                 {% for item in category.items %}
                 <div class="menu-item" style="padding-bottom: 1.5rem; border-bottom: 1px solid #f0f0f0;">
                     <div class="menu-item-heading">
-                        <h4 style="margin: 0; font-size: 1.1rem; font-weight: 700;">{{ item.name }}</h4>
+                        <h4 style="margin: 0; font-size: 1.1rem; font-weight: 700;">{{ item.display_name or item.name }}</h4>
                         {% if item.price_display %}
                         <span class="menu-item-price">{{ item.price_display }}</span>
                         {% elif item.price %}

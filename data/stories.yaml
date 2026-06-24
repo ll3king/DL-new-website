@@ -4,14 +4,14 @@ stories:
     date: "2026-02-15"
     author: "Head Chef"
     summary: "Discover why we spend 2 hours every morning perfecting our signature wine-infused sauces."
-    answer_summary: "This story explains the sauce behind Dandy Lane's Wine-Infused Benedicts. The hollandaise is made daily and infused with Tasmanian wine reductions, making it the core craft element behind one of the cafe's signature brunch dishes."
+    answer_summary: "This story explains Dandy Lane's hollandaise craft and supports the Wine-Infused Benedict story anchor."
     evidence_points:
       - "Daily batch"
       - "Tasmanian white and red wines"
       - "Wine-infused hollandaise"
       - "Sauvignon Blanc blend for seafood"
       - "Pinot Noir reduction for smoked bacon"
-    related_menu_item: "Wine-Infused Benedicts"
+    related_menu_item: "Wine-Infused Benedict"
     related_links:
       - label: "View the menu"
         href: "/menu"
@@ -27,13 +27,13 @@ stories:
     date: "2026-02-22"
     author: "Kitchen Lead"
     summary: "A deep dive into the physical craft and labour behind our daily hollandaise ritual."
-    answer_summary: "This story supports Dandy Lane's daily hollandaise craft. The hand-whisking ritual is part of the cafe's brunch identity and connects directly to the Wine-Infused Benedicts and hollandaise-led dishes."
+    answer_summary: "This story supports Dandy Lane's hollandaise craft. The hand-whisking ritual is part of the cafe's brunch identity and connects to Wine-Infused Benedict and Potato Parmesan Rosti."
     evidence_points:
       - "Hand-whisked daily"
       - "Copper whisk rhythm"
       - "Regional wine reductions"
       - "Core culinary identity"
-    related_menu_item: "Wine-Infused Benedicts"
+    related_menu_item: "Wine-Infused Benedict and Potato Parmesan Rosti"
     related_links:
       - label: "View the menu"
         href: "/menu"
@@ -49,7 +49,7 @@ stories:
     date: "2026-02-01"
     author: "Operations Manager"
     summary: "How local and seasonal ingredients shape our savoury brunch dishes."
-    answer_summary: "Local and seasonal ingredients help shape Dandy Lane's savoury brunch dishes, including the Potato Parmesan Rosti and Scotch Steak Sandwich."
+    answer_summary: "Local and seasonal ingredients help shape Dandy Lane's savoury brunch dishes, including Potato Parmesan Rosti and Scotch Steak Sandwich."
     evidence_points:
       - "Local Tassie growers"
       - "Local sourdough bakers"

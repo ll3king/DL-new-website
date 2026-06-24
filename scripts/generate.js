@@ -372,9 +372,17 @@ async function render() {
                     cat.items.map(item => {
                         const menuItem = {
                             "@type": "MenuItem",
-                            "name": item.name,
+                            "name": item.display_name || item.name,
+                            "alternateName": item.display_name ? item.name : undefined,
                             "description": item.description || ""
                         };
+                        if (Array.isArray(item.aliases) && item.aliases.length > 0) {
+                            const alternateNames = [
+                                ...(Array.isArray(menuItem.alternateName) ? menuItem.alternateName : [menuItem.alternateName].filter(Boolean)),
+                                ...item.aliases
+                            ];
+                            menuItem.alternateName = [...new Set(alternateNames)];
+                        }
                         const offers = generateMenuOffers(item);
                         if (offers) menuItem.offers = offers;
                         return menuItem;

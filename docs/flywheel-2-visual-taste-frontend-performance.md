@@ -27,10 +27,12 @@ while protecting:
 
 ## Core Product And Memory Anchors
 
-Frontend work should strengthen these anchors:
+Frontend work should strengthen these public / AEO menu and place anchors:
 
 - `Wine-Infused Benedict`
-  - primary brunch memory anchor
+  - branded hollandaise-led brunch anchor
+- `Potato Parmesan Rosti`
+  - branded savoury brunch anchor
 - `Scotch Steak Sandwich`
   - hearty brunch-to-lunch anchor
 - `Specialty Coffee`
@@ -103,13 +105,44 @@ Tooling rule:
 - Gemini is not part of the current workflow
 - n8n / Google Sheets / Telegram workflows are deprecated historical context and should not be introduced here
 
+## Visual Knowledge Base
+
+Flywheel 2 now has a dedicated visual knowledge layer:
+
+- [../visual-knowledge-base/README.md](../visual-knowledge-base/README.md)
+
+This is where:
+
+- real visual assets
+- reusable signals
+- shot grammar
+- theme calling rules
+- future visual workflows
+
+should be governed.
+
+Important:
+
+- this is a Flywheel 2 subsystem
+- it is not a new project root
+- project entry still stays at the website governance layer first
+
+Current Stitch exploration inputs:
+
+- [flywheel-2-stitch-design-brief-v1.md](./flywheel-2-stitch-design-brief-v1.md)
+- [flywheel-2-stitch-DESIGN-v1.md](./flywheel-2-stitch-DESIGN-v1.md)
+- [flywheel-2-stitch-media-motion-pack-v1.md](./flywheel-2-stitch-media-motion-pack-v1.md)
+
+The media motion pack is required for design exploration that should feel specifically like Dandy Lane.
+Do not run Stitch from text-only instructions when the task is about visual taste.
+
 ## Visual QA Checklist
 
 Before approving frontend work, check:
 
 1. Does the page create appetite?
 2. Does it feel like Dandy Lane, not a generic cafe?
-3. Are Benedict, Steak Sandwich, Specialty Coffee, and hidden-lane location more memorable?
+3. Are Wine-Infused Benedict, Potato Parmesan Rosti, Steak Sandwich, Specialty Coffee, and hidden-lane location more memorable?
 4. Is the mobile CTA clearer?
 5. Is there unnecessary icon, sticker, or decorative clutter?
 6. Does the page avoid SaaS-template structure?
@@ -121,6 +154,20 @@ Before approving frontend work, check:
 Flywheel 2 mainly operates through:
 
 - `Website`
+
+It may also use two narrow supporting lanes:
+
+- `Content`
+- small presentation-side support from `Search Optimization` only when needed for brand-positioning consistency
+
+Flywheel 2 does not own:
+
+- booking rules
+- booking backend truth
+- AI chat logic
+- SMS gateway logic
+- CRM or admin data systems
+- Flywheel 1 expansion work
 
 Typical editable files:
 
@@ -136,6 +183,124 @@ Typical editable files:
 Use the formal boundary map before touching code:
 
 - [project-module-code-boundary-map.zh-CN.md](./project-module-code-boundary-map.zh-CN.md)
+
+## Active Implementation Zones
+
+For actual Flywheel 2 implementation, the core movable zones are limited.
+
+### 1. Website shell
+
+Purpose:
+
+- overall page frame
+- shared visual system
+- global rhythm, spacing, typography, motion feel
+- mobile usability and performance feel
+
+Main files:
+
+- `src/layouts/base.html`
+- `src/assets/css/style.css`
+- `src/assets/js/main.js`
+
+### 2. Homepage and core marketing surface
+
+Purpose:
+
+- first impression
+- appetite and warmth
+- brand memory
+- product-led emphasis
+- CTA clarity
+
+Main files:
+
+- `src/blocks/identity-hero.html`
+- `src/blocks/signature-trio.html`
+- `src/blocks/social-proof-reviews.html`
+
+### 3. Menu / FAQ / Stories presentation layer
+
+Purpose:
+
+- help guests decide what to order
+- make key products more memorable
+- improve decision clarity without turning pages into generic content templates
+
+Main files:
+
+- `src/blocks/menu-grid.html`
+- `src/blocks/faq-list.html`
+- `src/blocks/story-list.html`
+- `src/blocks/story-detail.html`
+
+### 4. Media and performance layer
+
+Purpose:
+
+- hero image strategy
+- media hierarchy
+- below-the-fold media handling
+- intentional lightweight motion
+- mobile-first performance protection
+- real visual asset selection and signal reuse through the visual knowledge base
+
+Main files:
+
+- `src/assets/media`
+- image and media references used by homepage, menu, stories, and other presentation blocks
+- `visual-knowledge-base`
+
+## Limited Supporting Zones
+
+These are allowed only when they directly support Flywheel 2 presentation goals.
+
+### 1. Content support
+
+Allowed use:
+
+- story ordering
+- story framing
+- media swaps
+
+Typical files:
+
+- `data/stories.yaml`
+
+### 2. Search-facing presentation support
+
+Allowed use:
+
+- small brand-positioning or page-emphasis sync needed for the visible frontend
+
+Typical files:
+
+- `data/site.yaml`
+
+This is not permission to reopen Flywheel 1.
+
+## Explicit Non-Boundary Zones
+
+Do not enter these zones during Flywheel 2 implementation unless the task scope is explicitly expanded:
+
+- `functions/api/_booking.js`
+- `functions/api/bookings.js`
+- `functions/api/admin/bookings.js`
+- `functions/api/janitor.js`
+- `functions/api/chat.js`
+- `functions/api/sms/*`
+
+## Practical Priority Groups
+
+To keep implementation focused, Flywheel 2 should be read in four practical groups:
+
+1. `Global frontend skeleton`
+2. `Homepage and main narrative modules`
+3. `Menu / FAQ / Stories presentation`
+4. `Media and performance execution`
+
+These are the real active work surfaces.
+Everything else is secondary or out of boundary by default.
 
 ## Non-Goals
 

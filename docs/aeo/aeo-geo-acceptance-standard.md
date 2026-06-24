@@ -64,12 +64,16 @@ The site fails if primary surfaces frame Dandy Lane as:
 
 The following anchors must remain visible, consistent, and internally linked where relevant:
 
-- Wine-Infused / One-Infused Benedict
-- daily hand-whisked hollandaise
+- Wine-Infused Benedict
+- Potato Parmesan Rosti
+- house hollandaise
 - Scotch Steak Sandwich
 - Specialty Coffee
 - breakfast-to-brunch
 - hidden lane / Collins Court / Hobart CBD
+
+Public / AEO names may differ from source item names when staff-approved branded language is stronger.
+For the current menu source, `Wine-Infused Benedict` maps to `Egg Benedict`, and `Potato Parmesan Rosti` maps to `Dandy Rosti`.
 
 Passing standard:
 
@@ -129,7 +133,7 @@ Target communities should be evaluated before any participation:
 |---|---|---|---|
 | Hobart local recommendations | Confirm Dandy Lane as a real local option | Locals mention Dandy Lane when asked for brunch, breakfast, coffee, or CBD cafe recommendations. | Owner-created posts pretending to be customers. |
 | Tasmania travel planning | Connect Dandy Lane with visitor intent | Visitors ask where to eat in Hobart CBD and receive natural Dandy Lane mentions. | Repeated link drops to the official site. |
-| Food / brunch discussion | Reinforce product anchors | Users discuss Wine-Infused Benedicts, Scotch Steak Sandwich, coffee, or hidden-lane brunch. | Generic "best cafe" claims with no product detail. |
+| Food / brunch discussion | Reinforce product anchors | Users discuss Wine-Infused Benedict, Potato Parmesan Rosti, Scotch Steak Sandwich, coffee, or hidden-lane brunch. | Generic "best cafe" claims with no product detail. |
 | Coffee-specific discovery | Support specialty coffee memory | Users mention coffee quality, flat white, brunch pairing, or location convenience. | Over-claiming awards or ratings without proof. |
 | Reputation correction | Reduce factual drift | Wrong hours, wrong location, or wrong identity are corrected with source-backed facts. | Argumentative or defensive replies. |
 

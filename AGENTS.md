@@ -55,12 +55,19 @@ while protecting:
 - mobile usability
 - performance
 
-Core memory anchors to strengthen:
+Current public/AEO memory anchors to strengthen:
 
 - Wine-Infused Benedict
+- Potato Parmesan Rosti
 - Scotch Steak Sandwich
 - Specialty Coffee
 - hidden lane / Collins Court / Hobart CBD
+
+Menu source-name mapping:
+
+- `Wine-Infused Benedict` maps to the current source item `Egg Benedict`.
+- `Potato Parmesan Rosti` maps to the current source item `Dandy Rosti`.
+- Public copy should preserve the stronger AEO/GEO-facing names while prices and structured data stay aligned to the governed menu source.
 
 ## Website Fact Boundary
 

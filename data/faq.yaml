@@ -2,7 +2,7 @@ intro: "Answers about Dandy Lane's signature brunch dishes, daily-made hollandai
 
 questions:
   - question: "What is Dandy Lane Cafe known for?"
-    answer: "Dandy Lane Cafe is known for breakfast and brunch in Hobart CBD, especially its Wine-Infused Benedicts, daily-made hollandaise, Potato Parmesan Rosti, Scotch Steak Sandwich, seasonal brunch specials, and specialty coffee."
+    answer: "Dandy Lane Cafe is known for breakfast and brunch in Hobart CBD, including Wine-Infused Benedict, Potato Parmesan Rosti, Scotch Steak Sandwich, all-day breakfast, seasonal brunch specials, and specialty coffee."
     links:
       - label: "See the menu"
         href: "/menu"
@@ -10,13 +10,13 @@ questions:
         href: "/stories-the-art-of-the-wine-infused-hollandaise"
 
   - question: "What should first-time visitors order?"
-    answer: "First-time visitors often start with the Wine-Infused Benedicts. Other signature options include the Potato Parmesan Rosti and Scotch Steak Sandwich."
+    answer: "First-time visitors often start with Wine-Infused Benedict, Potato Parmesan Rosti, Scotch Steak Sandwich, or a specialty coffee with all-day breakfast."
     links:
       - label: "View signature brunch dishes"
         href: "/menu"
 
-  - question: "What makes the Wine-Infused Benedicts different?"
-    answer: "The dish is built around Dandy Lane's daily-made wine-infused hollandaise, served with poached eggs and artisanal sourdough."
+  - question: "What makes the Wine-Infused Benedict different?"
+    answer: "Wine-Infused Benedict is our hollandaise-led Benedict with poached eggs, crispy bacon or salmon (+$1), sourdough, and house hollandaise. Our hollandaise changes daily and may contain alcohol."
     links:
       - label: "The Art of the Wine-Infused Hollandaise"
         href: "/stories-the-art-of-the-wine-infused-hollandaise"
@@ -30,7 +30,7 @@ questions:
         href: "/location"
 
   - question: "What are the signature brunch dishes?"
-    answer: "The signature brunch dishes include the Wine-Infused Benedicts, Potato Parmesan Rosti, and Scotch Steak Sandwich, supported by seasonal brunch specials."
+    answer: "Current signature brunch dishes include Wine-Infused Benedict, Potato Parmesan Rosti, and Scotch Steak Sandwich, supported by seasonal brunch specials."
     links:
       - label: "Browse the menu"
         href: "/menu"

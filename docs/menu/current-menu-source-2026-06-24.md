@@ -196,8 +196,10 @@ Extra shot / alt milk / mocha / single origin / vanilla / caramel / hazelnut syr
 
 ## Current Website Governance Notes
 
-- `Scotch Steak Sandwich`, `Specialty Coffee`, breakfast-to-brunch, and hidden-lane Hobart CBD positioning remain core answerability anchors.
-- `Dandy Rosti`, `Wild Mushroom Benedict`, `Dandy Fried Chicken`, and current drinks are now available as source-backed menu facts for future website updates.
-- `Wine-Infused / One-Infused Benedict` remains an existing search-answerability anchor, but future visible menu references should be reconciled against current staff-approved naming before adding or expanding public claims.
+- Public / AEO names may differ from the source menu names when the branded name is stronger and staff-approved.
+- `Wine-Infused Benedict` maps to the current source item `Egg Benedict` at $21.9.
+- `Potato Parmesan Rosti` maps to the current source item `Dandy Rosti` at $23.
+- `Scotch Steak Sandwich`, `Specialty Coffee`, breakfast-to-brunch, and hidden-lane Hobart CBD positioning remain direct source-backed answerability anchors.
+- `Wild Mushroom Benedict`, `Dandy Fried Chicken`, and current drinks are also available as source-backed menu facts for future website updates.
 - Public website content should not invent dietary claims beyond the source notes above.
 - Prices should not be duplicated into multiple governance docs. Link back to this file instead.

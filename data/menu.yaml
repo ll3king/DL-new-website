@@ -38,12 +38,16 @@ categories:
         price_display: "$20.5"
         description: "Chili jam, poached egg, tomato-avocado salsa; bacon +$3.5; salmon +$7; haloumi +$6."
       - name: "Egg Benedict"
+        display_name: "Wine-Infused Benedict"
+        aliases: ["Egg Benedict", "Wine Infused Benedict"]
         price: 21.9
         price_display: "$21.9"
-        description: "Poached eggs, crispy bacon or salmon (+$1), sourdough, hollandaise."
+        description: "Poached eggs, crispy bacon or salmon (+$1), sourdough, and house hollandaise."
         dietary: ["GFO"]
         is_signature: true
       - name: "Dandy Rosti"
+        display_name: "Potato Parmesan Rosti"
+        aliases: ["Dandy Rosti"]
         price: 23
         price_display: "$23"
         description: "Parmesan-dill rosti, spinach, poached egg, hollandaise with bacon or haloumi and avocado."

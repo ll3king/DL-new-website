@@ -35,7 +35,7 @@ It should be integrated as the first website self-control cleanup pass before br
 | Claim | Verification needed | Decision |
 |---|---|---|
 | Instagram / Hello Hobart still show inconsistent weekend hours. | Live external capture required. | Put into Sprint 1 Reference Capture. |
-| True signature dishes may be Fried Chicken Benny, Dandy Rosti, Zucchini Fritters, French Toast / Dutch Pancake. | Needs POS, recent reviews, current menu, and staff confirmation. | Do not change core anchors yet. |
+| True signature dishes may be Fried Chicken Benny, Potato Parmesan Rosti, Zucchini Fritters, French Toast / Dutch Pancake. | Needs POS, recent reviews, current menu, and staff confirmation. | Do not change core anchors yet. |
 | Full menu should include every current item and price. | Current menu source now exists in [../menu/current-menu-source-2026-06-24.md](../menu/current-menu-source-2026-06-24.md). | Use the governed source for the next public menu rebuild. |
 | Homepage should be fully reordered. | Needs visual/Flywheel 2 alignment and conversion brief. | Defer; do not do as first Search Optimization change. |
 | Stories should be removed from main nav. | Broader navigation / UX decision. | Defer to visual/frontend workflow. |

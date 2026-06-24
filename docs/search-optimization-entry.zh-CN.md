@@ -20,11 +20,19 @@ Dandy Lane is a Hobart CBD hidden-lane breakfast-to-brunch cafe.
 
 Core answerability anchors:
 
-- Wine-Infused / One-Infused Benedict
+- Wine-Infused Benedict
+- Potato Parmesan Rosti
 - Scotch Steak Sandwich
 - Specialty Coffee
 - breakfast-to-brunch
 - hidden lane / Collins Court / Hobart CBD
+
+Source-name mapping:
+
+- `Wine-Infused Benedict` maps to current source item `Egg Benedict`.
+- `Potato Parmesan Rosti` maps to current source item `Dandy Rosti`.
+- Public / AEO wording should preserve the stronger branded names.
+- Price and structured-data validation should use the governed current menu source.
 
 Do not frame Dandy Lane as:
 
@@ -133,7 +141,7 @@ Detailed tracking:
 | Source | Current public claim | Matches official site? | Risk | Recommended action |
 |---|---|---|---|---|
 | Tripadvisor | Correct Dandy Lane Cafe listing exists and supports breakfast / lunch / brunch, Cafe / Australian, 4.6/5, and 231 reviews. | Yes for current proof target. | Low | Keep the corrected Dandy Lane listing URL everywhere visible proof is rendered. Do not reintroduce the wrong Tripadvisor entity. |
-| Discover Tasmania | Product anchors are good: Wine-Infused Benedicts, Potato Parmesan Rosti, Scotch steak sandwich. Listing language still leans on laptop-friendly atmosphere / remote work. | Partially. | Medium | Request update to product-led brunch wording. |
+| Discover Tasmania | Product wording can keep Wine-Infused Benedict and Potato Parmesan Rosti as public / AEO names, while prices and source mapping come from Egg Benedict and Dandy Rosti in the governed current menu source. Listing language still leans on laptop-friendly atmosphere / remote work. | Partially. | Medium | Request update to current product-led brunch wording. |
 | Hobart & Beyond | Product anchors are good, but listing language still leans on laptop-friendly atmosphere / remote work. | Partially. | Medium | Request update to product-led brunch wording. |
 | Hello Hobart | Sunday is listed as closed, while the official site and Tripadvisor show Sunday 9:00 AM - 2:00 PM. | No. | Medium | Request opening-hours update. |
 
