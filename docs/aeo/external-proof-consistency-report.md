@@ -1,6 +1,6 @@
 # External Proof Consistency Report
 
-Last updated: 2026-06-15
+Last updated: 2026-06-22
 
 ## Purpose
 
@@ -50,13 +50,26 @@ It is not a replacement for the official site. It is an external consistency che
 - Google Maps numeric review claim softened until a current verified source is stored.
 - Workspace / laptop content demoted to a secondary practical-details area instead of the main story collection.
 
-## Production Warning
+## Production Verification
 
-As of 2026-06-15, the production domain still shows the older workspace-heavy homepage version.
+As of 2026-06-22, the production homepage has been live-checked and matches the current product-led AEO / GEO direction.
 
-Do not mark AEO/GEO green until production is updated and confirmed to match the new preview direction:
+Observed production signals:
 
 - homepage identity = Hobart CBD breakfast and brunch destination
 - no primary `Remote Work & Focus` section
 - FAQ starts with product-led brunch questions
 - stories index prioritizes hollandaise, signature dishes, produce, seasonal specials, and coffee
+
+Production verification source:
+
+- https://dandylanecafe.com/
+
+Captured production excerpt on 2026-06-22:
+
+- `Hobart CBD breakfast and brunch destination`
+- `Breakfast And Brunch In Hobart CBD`
+- `Dandy Lane Cafe is a Hobart CBD breakfast and brunch cafe known for Wine-Infused Benedicts, daily hand-whisked hollandaise, Potato Parmesan Rosti, Scotch Steak Sandwich, seasonal brunch specials, and specialty coffee.`
+- `Dandy Lane Cafe is located at Unit 10 / 138 Collins Street, Hobart TAS 7000, tucked inside Collins Court opposite JB HI-FI Hobart.`
+
+Production remains subject to re-check before each external-signal sprint.

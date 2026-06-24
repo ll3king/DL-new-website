@@ -20,12 +20,12 @@
         {% if active_story.answer_summary %}
         <section style="margin-bottom: 2.5rem; padding: 1.5rem 1.75rem; background: #faf7f3; border-left: 4px solid var(--accent); border-radius: 10px;">
             <div style="font-size: 0.78rem; color: var(--primary); font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.75rem;">
-                Answer Summary
+                In Short
             </div>
             <p style="margin: 0 0 1rem; font-size: 1.05rem; line-height: 1.7; color: var(--text);">{{ active_story.answer_summary }}</p>
             {% if active_story.evidence_points %}
             <div style="margin-bottom: 1rem;">
-                <strong style="display: block; margin-bottom: 0.4rem;">Why this matters</strong>
+                <strong style="display: block; margin-bottom: 0.4rem;">Good to know</strong>
                 <ul style="margin: 0; padding-left: 1.25rem; color: var(--secondary);">
                     {% for point in active_story.evidence_points %}
                     <li>{{ point }}</li>

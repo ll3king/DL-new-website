@@ -1,6 +1,6 @@
 # Feature Registry
 
-Last updated: 2026-06-16
+Last updated: 2026-06-21
 
 ## Purpose
 
@@ -20,7 +20,8 @@ It exists so future agents can distinguish:
 Status:
 
 - active
-- first optimization and validation pass completed
+- Initial optimization completed and validated; maintain factual consistency and answerability.
+- maintenance mode
 - not the main expansion target in this phase
 
 Business role:
@@ -29,6 +30,24 @@ Business role:
 - entity clarity
 - machine-readable trust and discovery
 
+Business context anchors:
+
+- Wine-Infused / One-Infused Benedict
+- Scotch Steak Sandwich
+- Specialty Coffee
+- breakfast-to-brunch
+- hidden lane / Collins Court / Hobart CBD
+
+Maintenance checklist:
+
+- keep business entity facts consistent
+- keep menu / product anchors consistent
+- keep local intent clear
+- keep schema / structured data aligned with visible content
+- avoid generic content expansion
+- avoid SEO-first wording
+- avoid creating low-value AI-search pages
+
 Primary execution lane:
 
 - `Search Optimization`
@@ -36,6 +55,18 @@ Primary execution lane:
 Primary entry:
 
 - [search-optimization-entry.zh-CN.md](./search-optimization-entry.zh-CN.md)
+
+Acceptance standard:
+
+- [aeo/aeo-geo-acceptance-standard.md](./aeo/aeo-geo-acceptance-standard.md)
+
+Agent swarm control plan:
+
+- [aeo/geo-agent-swarm-control-plan.md](./aeo/geo-agent-swarm-control-plan.md)
+
+External signal build playbook:
+
+- [aeo/external-signal-build-playbook.md](./aeo/external-signal-build-playbook.md)
 
 ### 2. Flywheel 2: Visual Taste / Frontend / Performance
 
@@ -51,6 +82,13 @@ Business role:
 - strengthen product memory and local discovery memory
 - improve mobile-first decision-making without harming performance
 
+Core implementation boundary:
+
+- global frontend skeleton
+- homepage and main narrative modules
+- menu / FAQ / stories presentation
+- media and performance execution
+
 Primary execution lane:
 
 - `Website`
@@ -64,6 +102,10 @@ Primary entry:
 
 - [flywheel-2-visual-taste-frontend-performance.md](./flywheel-2-visual-taste-frontend-performance.md)
 
+Derived visual-asset and signal entry:
+
+- [../visual-knowledge-base/README.md](../visual-knowledge-base/README.md)
+
 ## Project Rule
 
 The website is now governed by a two-flywheel system.
@@ -74,6 +116,12 @@ This means:
 - Flywheel 2 is the visual taste, frontend quality, and performance driver
 
 Current urgency belongs to Flywheel 2.
+
+Naming rule:
+
+- use `AEO / GEO / AI Search Optimization` as the strategic language
+- replace `SEO optimization` with `AEO / GEO / AI Search Optimization`
+- `SEO` may only appear when describing technical infrastructure, not strategic direction
 
 ## Related Governance
 

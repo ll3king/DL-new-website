@@ -11,6 +11,10 @@ This repo is governed by two flywheels:
 1. `AEO / GEO / AI Search Optimization`
 2. `Visual Taste / Frontend / Performance`
 
+Flywheel 1 is a standalone feature area.
+Its initial optimization has already been completed and validated.
+Default Flywheel 1 work is maintenance mode: keep factual consistency and answerability.
+
 ## Current Priority
 
 `Visual Taste / Frontend / Performance` is the current urgent priority.
@@ -69,6 +73,11 @@ Do not treat these as default project logic:
 - Figma workflow
 - wedding / event / styling examples
 - release checks as the main project narrative
+
+Language rule:
+
+- use `AEO / GEO / AI Search Optimization` as the strategic language
+- `SEO` may only appear for technical infrastructure such as schema, crawlability, canonical URLs, metadata, internal links, robots, sitemap, or structured data
 
 ## Boundaries
 

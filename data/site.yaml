@@ -61,7 +61,7 @@ aeo:
         - "Which Hobart brunch cafe has wine-infused hollandaise?"
       desired_answer_shape:
         entity: "Wine-Infused Benedicts at Dandy Lane Cafe"
-        reason: "Daily-made wine-infused hollandaise variations referenced in site content, served as a signature brunch dish."
+        reason: "Daily-made wine-infused hollandaise served as a signature brunch dish."
         conversion: "View the menu or book brunch."
   decision_anchors:
     - id: "wine_infused_benedicts"
@@ -72,7 +72,7 @@ aeo:
       evidence_points:
         - "Daily house-made hollandaise."
         - "Wine-infused hollandaise."
-        - "Six variations referenced in site content."
+        - "Choice of smoked salmon or bacon."
         - "Featured on the menu as Signature Brunch."
       related_pages:
         - "/menu"
@@ -158,9 +158,9 @@ aeo:
     tripadvisor:
       platform_label: "Tripadvisor"
       badge_label: "TRIPADVISOR"
-      award_label: "Tripadvisor Travellers' Choice"
-      summary_text: "Tripadvisor Travellers' Choice. Rated 4.6/5 from 231 reviews on Tripadvisor."
-      meta_text: "4.6/5 · 231 Reviews"
+      award_label: "Public Tripadvisor reviews"
+      summary_text: "Rated 4.6/5 from 231 Tripadvisor reviews, checked June 2026."
+      meta_text: "4.6/5 from 231 reviews"
       verify_label: "Verify on Tripadvisor"
       url: "https://www.tripadvisor.com.au/Restaurant_Review-g255097-d11801652-Reviews-Dandy_Lane_Cafe-Hobart_Greater_Hobart_Tasmania.html"
       evidence_status: "verified_current"
@@ -175,7 +175,7 @@ aeo:
       evidence_status: "numeric_claim_softened"
 
 booking:
-  title: "Secure Your Sanctuary"
+  title: "Book a Table"
   subtitle: "Reserve a Table."
   emphasis: "Guarantee your spot for brunch in the heart of Hobart CBD."
   media: "assets/media/home_hero.mp4"
@@ -250,8 +250,8 @@ pages:
       - label: "Why the Hollandaise Matters"
         href: "/stories-the-art-of-the-wine-infused-hollandaise"
   menu:
-    title: "Signature Flavours"
-    subtitle: "Handcrafted. Local. Consistent."
+    title: "Breakfast & Brunch Menu"
+    subtitle: "Dandy Lane Cafe Hobart."
     emphasis: "Our menu is built around daily-made hollandaise, signature brunch plates, seasonal specials, Tasmanian produce, and specialty coffee."
     media: "assets/media/menu_hero.mp4"
     focal_point: "center 60%"
@@ -261,7 +261,7 @@ pages:
     emphasis: "Explore the stories behind Dandy Lane's signature brunch dishes, daily hollandaise craft, Tasmanian produce, specialty coffee, and seasonal specials."
     media: "assets/media/stories_hero.mp4"
   location:
-    title: "Find the Path"
+    title: "Location, Hours & Directions"
     subtitle: "Collins Court, Hobart."
     emphasis: "Located at Unit 10 / 138 Collins Street in Collins Court, opposite JB HI-FI Hobart."
     media: "assets/media/location_hero.jpg"
@@ -320,7 +320,7 @@ signature_dishes:
   - name: "Wine-Infused Benedicts"
     price: 22.0
     media: "assets/media/dish_benny.jpg"
-    description: "Our signature dish featuring daily house-made hollandaise with wine-infused variations referenced in site content, served on toasted artisanal sourdough."
+    description: "Our signature dish featuring daily house-made wine-infused hollandaise, served on toasted artisanal sourdough."
   - name: "Potato Parmesan Rosti"
     price: 23.0
     media: "assets/media/dish_rosti.jpg"

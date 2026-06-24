@@ -8,7 +8,7 @@ stories:
     evidence_points:
       - "Daily batch"
       - "Tasmanian white and red wines"
-      - "Wine-infused hollandaise variations referenced in site content"
+      - "Wine-infused hollandaise"
       - "Sauvignon Blanc blend for seafood"
       - "Pinot Noir reduction for smoked bacon"
     related_menu_item: "Wine-Infused Benedicts"
@@ -17,7 +17,7 @@ stories:
         href: "/menu"
       - label: "Book brunch"
         href: "/booking"
-    content: "The secret to our Benedict isn't just the eggs; it's the reduction. By infusing premium Tasmanian white and red wines into our daily batch of hollandaise, we achieve a complexity of flavor that standard sauces simply can't match. Each morning, our kitchen team prepares wine-infused hollandaise variations referenced across the site, from a bright Sauvignon Blanc citrus blend for seafood to a deeper Pinot Noir reduction that pairs with smoked bacon."
+    content: "The secret to our Benedict isn't just the eggs; it's the reduction. By infusing premium Tasmanian white and red wines into our daily batch of hollandaise, we achieve a complexity of flavor that standard sauces simply can't match. Each morning, our kitchen team prepares wine-infused hollandaise for brunch service, from a bright Sauvignon Blanc citrus blend for seafood to a deeper Pinot Noir reduction that pairs with smoked bacon."
     featured: true
     cover: "assets/media/dish_benny.jpg"
     tags: ["Signature", "Behind the Scenes"]
@@ -71,7 +71,7 @@ stories:
     date: "2026-05-19"
     author: "Dandy Lane Team"
     summary: "This week at Dandy Lane, we're leaning into a warmer, more satisfying brunch moment with our Croissant Scramble."
-    answer_summary: "This story documents a seasonal brunch special at Dandy Lane and supports the cafe's freshness signal: the menu changes with limited-time brunch moments."
+    answer_summary: "This story documents a seasonal brunch special at Dandy Lane: a limited-time Croissant Scramble made for a warmer, satisfying brunch moment."
     evidence_points:
       - "Limited-time brunch moment"
       - "Croissant Scramble"
@@ -179,7 +179,7 @@ stories:
     author: "Dandy Lane Team"
     index_group: "facilities"
     summary: "Facility details for guests who need laptop-friendly seating."
-    answer_summary: "This page exists for practical guest details around laptop-friendly seating, WiFi access, and selected power-accessible tables. It is not part of Dandy Lane's primary brunch story set."
+    answer_summary: "Laptop-friendly seating is available at selected tables when the cafe is quieter. Availability can vary during busy brunch periods."
     evidence_points:
       - "Laptop-friendly seating"
       - "Fast WiFi"
@@ -190,7 +190,7 @@ stories:
         href: "/faq"
       - label: "View the menu"
         href: "/menu"
-    content: "Some guests occasionally need to open a laptop while they are in for coffee or brunch. For those cases, Dandy Lane offers fast WiFi and selected seating with nearby power access.<br><br>This page is a practical note rather than a core Dandy Lane story. The cafe's primary identity remains breakfast, brunch, signature dishes, and specialty coffee in Hobart CBD.<br><br>If laptop-friendly seating matters for your visit, check with staff on arrival and we will point you toward the most suitable available table."
+    content: "Some guests occasionally need to open a laptop while they are in for coffee or brunch. For those cases, Dandy Lane offers fast WiFi and selected seating with nearby power access.<br><br>Availability can vary during busy brunch periods, so check with staff on arrival and we will point you toward the most suitable available table."
     featured: false
     cover: "assets/media/faq_hero.jpg"
     tags: ["Facilities", "Practical Details"]

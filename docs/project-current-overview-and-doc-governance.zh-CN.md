@@ -1,6 +1,6 @@
 # Project Current Overview And Doc Governance
 
-Last updated: 2026-06-16
+Last updated: 2026-06-21
 
 ## Purpose
 
@@ -31,6 +31,7 @@ The project is now governed by two flywheels:
 This is the future-facing search and answerability system.
 Do not call the project an SEO project.
 `SEO` is only infrastructure language for schema, robots, sitemap, redirects, and crawl surfaces.
+Initial optimization completed and validated; this flywheel is now in maintenance mode.
 
 2. `Visual Taste / Frontend / Performance`
 This is the urgent active priority.
@@ -50,6 +51,7 @@ Core governance:
 
 - [feature-registry.md](./feature-registry.md)
 - [flywheel-2-visual-taste-frontend-performance.md](./flywheel-2-visual-taste-frontend-performance.md)
+- [../visual-knowledge-base/README.md](../visual-knowledge-base/README.md)
 - [project-module-code-boundary-map.zh-CN.md](./project-module-code-boundary-map.zh-CN.md)
 - [project-governance-branch-and-doc-map.zh-CN.md](./project-governance-branch-and-doc-map.zh-CN.md)
 - [project-governance-tree-map.zh-CN.md](./project-governance-tree-map.zh-CN.md)
@@ -95,13 +97,22 @@ If the task is search-facing and answerability-facing, go to:
 
 - [search-optimization-entry.zh-CN.md](./search-optimization-entry.zh-CN.md)
 
+Flywheel 1 should now be understood as:
+
+- a standalone feature area
+- strategic language = `AEO / GEO / AI Search Optimization`
+- maintenance goal = factual consistency and answerability
+- not a content-expansion lane
+- not an SEO-first project frame
+
 If the task is visual refresh, frontend taste, or performance, treat the website shell and frontend blocks as the primary working area and use the current Stitch-to-Codex workflow.
 
 Before visual implementation, read:
 
 1. [feature-registry.md](./feature-registry.md)
 2. [flywheel-2-visual-taste-frontend-performance.md](./flywheel-2-visual-taste-frontend-performance.md)
-3. [project-module-code-boundary-map.zh-CN.md](./project-module-code-boundary-map.zh-CN.md)
+3. [../visual-knowledge-base/README.md](../visual-knowledge-base/README.md)
+4. [project-module-code-boundary-map.zh-CN.md](./project-module-code-boundary-map.zh-CN.md)
 
 ## One-Line Rule
 

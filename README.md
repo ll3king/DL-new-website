@@ -1,6 +1,6 @@
 # Dandy Lane Cafe Website
 
-Last updated: 2026-06-16
+Last updated: 2026-06-21
 
 ## Main Entry
 
@@ -20,6 +20,8 @@ This website is now governed by two flywheels:
 This is the future-facing search and answerability system.
 Do not describe the project itself as an SEO project.
 `SEO` is only infrastructure language when discussing schema, robots, sitemap, redirects, or crawl surfaces.
+The initial optimization has already been completed and validated.
+This flywheel is currently in maintenance mode.
 
 2. `Visual Taste / Frontend / Performance`
 This is the current urgent priority.
@@ -32,6 +34,10 @@ Official feature-area registry:
 Official Flywheel 2 document:
 
 - [docs/flywheel-2-visual-taste-frontend-performance.md](docs/flywheel-2-visual-taste-frontend-performance.md)
+
+Official visual knowledge base entry:
+
+- [visual-knowledge-base/README.md](visual-knowledge-base/README.md)
 
 ## Current Priority
 
@@ -64,9 +70,10 @@ These may still exist as historical traces or narrow implementation details, but
 1. [docs/project-current-overview-and-doc-governance.zh-CN.md](docs/project-current-overview-and-doc-governance.zh-CN.md)
 2. [docs/feature-registry.md](docs/feature-registry.md)
 3. [docs/flywheel-2-visual-taste-frontend-performance.md](docs/flywheel-2-visual-taste-frontend-performance.md)
-4. [docs/project-module-code-boundary-map.zh-CN.md](docs/project-module-code-boundary-map.zh-CN.md)
-5. [docs/project-governance-branch-and-doc-map.zh-CN.md](docs/project-governance-branch-and-doc-map.zh-CN.md)
-6. [docs/project-governance-tree-map.zh-CN.md](docs/project-governance-tree-map.zh-CN.md)
+4. [visual-knowledge-base/README.md](visual-knowledge-base/README.md)
+5. [docs/project-module-code-boundary-map.zh-CN.md](docs/project-module-code-boundary-map.zh-CN.md)
+6. [docs/project-governance-branch-and-doc-map.zh-CN.md](docs/project-governance-branch-and-doc-map.zh-CN.md)
+7. [docs/project-governance-tree-map.zh-CN.md](docs/project-governance-tree-map.zh-CN.md)
 
 Direct module entrypoints:
 
@@ -74,6 +81,8 @@ Direct module entrypoints:
   [docs/search-optimization-entry.zh-CN.md](docs/search-optimization-entry.zh-CN.md)
 - Visual / frontend / performance work:
   [docs/flywheel-2-visual-taste-frontend-performance.md](docs/flywheel-2-visual-taste-frontend-performance.md)
+- Visual asset and signal governance:
+  [visual-knowledge-base/README.md](visual-knowledge-base/README.md)
 - Content-only updates:
   [docs/content-update-quick-entry.zh-CN.md](docs/content-update-quick-entry.zh-CN.md)
 

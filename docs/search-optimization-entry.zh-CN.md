@@ -1,16 +1,37 @@
 # Search Optimization Entry
 
-Last updated: 2026-06-16
+Last updated: 2026-06-21
 
 ## Purpose
 
 This is the direct entrypoint for `AEO / GEO / AI Search Optimization`.
+It is the standalone governance and execution entry for Flywheel 1.
 
 Important naming rule:
 
 - do not describe this module as an SEO project
 - `SEO` is only infrastructure language
 - the real active concept is search answerability and entity alignment
+- replace `SEO optimization` with `AEO / GEO / AI Search Optimization`
+
+## Business Context
+
+Dandy Lane is a Hobart CBD hidden-lane breakfast-to-brunch cafe.
+
+Core answerability anchors:
+
+- Wine-Infused / One-Infused Benedict
+- Scotch Steak Sandwich
+- Specialty Coffee
+- breakfast-to-brunch
+- hidden lane / Collins Court / Hobart CBD
+
+Do not frame Dandy Lane as:
+
+- a wedding business
+- an event styling business
+- a generic cafe
+- an SEO project
 
 This module covers:
 
@@ -41,10 +62,22 @@ It does not own:
 
 This search flywheel is future-facing.
 It is not the same thing as the current urgent frontend priority, but it remains a core governance lane.
+Initial optimization completed and validated; maintain factual consistency and answerability.
+Current status is maintenance mode, not expansion mode.
 
 Project-level deprecated defaults and top-layer identity are governed in:
 
 - [project-current-overview-and-doc-governance.zh-CN.md](./project-current-overview-and-doc-governance.zh-CN.md)
+
+## Maintenance Checklist
+
+- keep business entity facts consistent
+- keep menu / product anchors consistent
+- keep local intent clear
+- keep schema / structured data aligned with visible content
+- avoid generic content expansion
+- avoid SEO-first wording
+- avoid creating low-value AI-search pages
 
 ## Allowed Files
 
@@ -81,6 +114,11 @@ Allowed minimum cross-boundary files in those cases:
 Detailed tracking:
 
 - [aeo/external-proof-consistency-report.md](./aeo/external-proof-consistency-report.md)
+- [aeo/aeo-geo-acceptance-standard.md](./aeo/aeo-geo-acceptance-standard.md)
+- [aeo/geo-agent-swarm-control-plan.md](./aeo/geo-agent-swarm-control-plan.md)
+- [aeo/external-signal-build-playbook.md](./aeo/external-signal-build-playbook.md)
+- [aeo/geo-sprint-1-swarm-brief.md](./aeo/geo-sprint-1-swarm-brief.md)
+- [aeo/operator-chatgpt-answer-comparison-2026-06-24.md](./aeo/operator-chatgpt-answer-comparison-2026-06-24.md)
 
 | Source | Current public claim | Matches official site? | Risk | Recommended action |
 |---|---|---|---|---|

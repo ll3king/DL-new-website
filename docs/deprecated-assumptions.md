@@ -1,6 +1,6 @@
 # Deprecated Assumptions
 
-Last updated: 2026-06-16
+Last updated: 2026-06-21
 
 ## Purpose
 
@@ -19,6 +19,12 @@ Deprecated because:
 Replace with:
 
 - two-flywheel governance
+- `AEO / GEO / AI Search Optimization` as the strategic language
+
+Deprecated-language rule:
+
+- replace `SEO optimization` with `AEO / GEO / AI Search Optimization`
+- `SEO` may only appear when describing technical infrastructure, not strategic direction
 
 ### 2. n8n default workflow
 

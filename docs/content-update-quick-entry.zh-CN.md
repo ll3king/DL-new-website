@@ -1,35 +1,34 @@
 # Content Update Quick Entry
 
-最后更新：2026-06-01
+Last updated: 2026-06-21
 
-## 文档目的
+## Purpose
 
-这份文档是 `Content` 的小入口。
+This file is the narrow entrypoint for `Content`.
+It only covers one kind of work:
 
-它只服务一种工作：
+- update story / post / media
 
-- 更新 story / post / media
-
-它不负责：
+It does not own:
 
 - booking system
 - admin backend
 - AI chat
 - SMS
-- search optimization 主体规则
+- `AEO / GEO / AI Search Optimization` core governance
 
-如果这次工作不是内容更新，请回到：
+If the task is not a content update, return to:
 
 - [project-current-overview-and-doc-governance.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/project-current-overview-and-doc-governance.zh-CN.md)
 
-## 允许改动的主要文件
+## Main Editable Files
 
 - [data/stories.yaml](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/data/stories.yaml)
 - [src/blocks/story-list.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/story-list.html)
 - [src/blocks/story-detail.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/story-detail.html)
 - [src/assets/media](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/assets/media)
 
-## 默认不要碰
+## Default No-Touch Area
 
 - [functions/api/_booking.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/_booking.js)
 - [functions/api/bookings.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/bookings.js)
@@ -41,13 +40,13 @@
 - [public/robots.txt](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/public/robots.txt)
 - [public/sitemap.xml](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/public/sitemap.xml)
 
-## 标准动作
+## Standard Actions
 
-1. 确认这次只属于 `Content`
-2. 只改 stories / story 呈现 / media
-3. 不顺手碰 booking、AI、SMS、SEO
-4. 更新完成后，回看 story list 和 story detail 是否都正确
+1. Confirm the task belongs only to `Content`.
+2. Change only stories / story presentation / media.
+3. Do not opportunistically touch booking, AI, SMS, or `AEO / GEO / AI Search Optimization`.
+4. After the update, check story list and story detail surfaces.
 
-## 一句话规则
+## One-Line Rule
 
-`Content` 是一个小窗口，不是一个大项目入口。
+`Content` is a narrow window, not a project-wide entrypoint.
