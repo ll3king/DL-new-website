@@ -58,7 +58,7 @@ Controlled facts:
 
 - current food menu items
 - current drink menu items
-- visible prices
+- internally governed menu prices
 - dietary labels and surcharge notes
 - source-backed menu anchors for future AEO / GEO updates
 
@@ -66,6 +66,8 @@ Rules:
 
 - Do not duplicate full menu prices in multiple governance docs.
 - Public menu, schema, FAQ, and story claims should check against the current menu source before publishing.
+- Current public website menu presentation is `Menu Highlights`, not a full price list.
+- Public website pages and public menu schema should not display or expose item-level prices unless the owner explicitly asks to re-enable them.
 - If staff supplies a newer menu, create a new dated menu source and mark the older source as superseded rather than editing history without context.
 
 ### 3. Local Entity / NAP Facts

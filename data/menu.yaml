@@ -4,7 +4,7 @@ source:
   governance_doc: "docs/menu/current-menu-source-2026-06-24.md"
 
 notes:
-  - "Menu items, prices and availability may change."
+  - "Menu items and availability may change."
   - "Please let our team know any dietary preferences or food allergies."
   - "VO: Vegan. GFO: Gluten Free. DFO: Dairy Free."
   - "Change to gluten free bread: +$1."
@@ -28,6 +28,7 @@ categories:
         price_display: "Half $14.8 / Full $20.9"
         description: "Avocado, goats feta, pistachio dukkah, beetroot hummus; bacon +$3.5; egg +$3.5."
         dietary: ["GFO", "VO"]
+        is_highlight: true
         offers:
           - name: "Half"
             price: 14.8
@@ -99,6 +100,7 @@ categories:
         price: 25.5
         price_display: "$25.5"
         description: "Pancakes, bananas, bacon, egg, maple syrup, honeycomb butter."
+        is_highlight: true
       - name: "Granola"
         price: 15.5
         price_display: "$15.5"
@@ -127,6 +129,7 @@ categories:
     items:
       - name: "Latte / Flat White / Cap"
         price_display: "$4.5 / $5.1 / $5.7"
+        is_highlight: true
         offers:
           - name: "Small"
             price: 4.5
@@ -175,6 +178,7 @@ categories:
             price: 5.7
       - name: "Batch Brew"
         price_display: "$5 / $5.6"
+        is_highlight: true
         offers:
           - name: "Regular"
             price: 5
@@ -183,6 +187,7 @@ categories:
       - name: "Cold Brew"
         price: 5.5
         price_display: "$5.5"
+        is_highlight: true
 
   - name: "Iced Drinks, Tea & Cold Drinks"
     items:

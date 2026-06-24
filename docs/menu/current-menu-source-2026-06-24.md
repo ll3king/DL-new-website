@@ -31,6 +31,13 @@ The images are source evidence, but this Markdown file is the website project's 
 
 If the public website menu, FAQ, schema, stories, or AI-search answer modules mention menu items or prices, they should be checked against this file unless a newer owner-approved menu source exists.
 
+Current public display rule:
+
+- Keep prices in this source for internal governance and owner validation.
+- The public website menu should present `Menu Highlights`, not a full price list.
+- Public pages and public menu schema should not expose item-level prices unless the owner explicitly asks to re-enable them.
+- Use current prices to prevent internal drift, not as the customer-facing selling point.
+
 ## Brand Line
 
 Dandy Lane Cafe
@@ -203,3 +210,4 @@ Extra shot / alt milk / mocha / single origin / vanilla / caramel / hazelnut syr
 - `Wild Mushroom Benedict`, `Dandy Fried Chicken`, and current drinks are also available as source-backed menu facts for future website updates.
 - Public website content should not invent dietary claims beyond the source notes above.
 - Prices should not be duplicated into multiple governance docs. Link back to this file instead.
+- Prices are internal validation data for the website project; current public presentation should hide them.

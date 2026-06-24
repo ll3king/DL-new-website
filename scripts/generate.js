@@ -77,6 +77,18 @@ env.addFilter('money', function (value) {
     return Number.isInteger(number) ? number.toFixed(0) : number.toFixed(2);
 });
 
+env.addFilter('hide_price_details', function (value) {
+    if (typeof value !== 'string') return value;
+
+    return value
+        .replace(/\s*\(\s*\+\s*\$[\d.]+\s*\)/g, '')
+        .replace(/\s*;\s*[^.;]*\+\s*\$[\d.]+/g, '')
+        .replace(/\s*\+\s*\$[\d.]+/g, '')
+        .replace(/\s*\$[\d.]+(?:\s*\/\s*\$[\d.]+)*/g, '')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+});
+
 function expandDayRange(dayRange) {
     if (typeof dayRange !== 'string') return [];
 
@@ -149,6 +161,21 @@ function prepareStoriesData(rawStoriesData) {
     };
 }
 
+function prepareMenuHighlightsData(rawMenuData) {
+    const categories = Array.isArray(rawMenuData.categories) ? rawMenuData.categories : [];
+
+    return {
+        ...rawMenuData,
+        categories: categories
+            .map(category => ({
+                ...category,
+                items: (Array.isArray(category.items) ? category.items : [])
+                    .filter(item => item.is_signature || item.is_highlight)
+            }))
+            .filter(category => category.items.length > 0)
+    };
+}
+
 async function render() {
     console.log("[L3] Starting Site Generation (Nunjucks Engine)...");
 
@@ -161,12 +188,14 @@ async function render() {
         // 1. Load All Data (L0)
         const siteData = yaml.load(fs.readFileSync(DATA_PATH, 'utf8'));
         const menuData = yaml.load(fs.readFileSync(path.join(__dirname, '../data/menu.yaml'), 'utf8'));
+        const menuHighlightsData = prepareMenuHighlightsData(menuData);
         const faqData = yaml.load(fs.readFileSync(path.join(__dirname, '../data/faq.yaml'), 'utf8'));
         const storiesData = prepareStoriesData(yaml.load(fs.readFileSync(path.join(__dirname, '../data/stories.yaml'), 'utf8')));
 
         const context = {
             site: siteData,
             menu: menuData,
+            menu_highlights: menuHighlightsData,
             faq: faqData,
             stories: storiesData
         };
@@ -220,7 +249,6 @@ async function render() {
                 "@id": siteData.seo.site_url + "/#restaurant",
                 "url": siteData.seo.site_url,
                 "telephone": siteData.contact.nap.phone,
-                "priceRange": siteData.identity.price_range,
                 "menu": siteData.seo.site_url + "/menu",
                 "servesCuisine": siteData.seo.schema.cuisine,
                 "acceptsReservations": siteData.seo.schema.accepts_reservations,
@@ -263,7 +291,6 @@ async function render() {
                     "height": "200"
                 },
                 "telephone": "+61498061067",
-                "priceRange": siteData.identity.price_range,
                 "servesCuisine": siteData.seo.schema.cuisine_labels || [siteData.seo.schema.cuisine],
                 "acceptsReservations": siteData.seo.schema.accepts_reservations,
                 "menu": siteData.seo.schema.has_menu_url,
@@ -337,36 +364,11 @@ async function render() {
             };
         }
 
-        function generateMenuOffers(item) {
-            const priceCurrency = item.price_currency || "AUD";
-
-            if (Array.isArray(item.offers) && item.offers.length > 0) {
-                return item.offers
-                    .filter(offer => Number.isFinite(Number(offer.price)))
-                    .map(offer => ({
-                        "@type": "Offer",
-                        "name": offer.name,
-                        "price": Number(offer.price),
-                        "priceCurrency": offer.price_currency || priceCurrency
-                    }));
-            }
-
-            if (Number.isFinite(Number(item.price))) {
-                return {
-                    "@type": "Offer",
-                    "price": Number(item.price),
-                    "priceCurrency": priceCurrency
-                };
-            }
-
-            return null;
-        }
-
         function generateMenuSchema(menuData, siteData) {
             return {
                 "@type": "Menu",
                 "@id": siteData.seo.site_url + "/menu#menu",
-                "name": siteData.identity.name + " Current Menu",
+                "name": siteData.identity.name + " Menu Highlights",
                 "mainEntityOfPage": siteData.seo.site_url + "/menu",
                 "hasMenuItem": menuData.categories.flatMap(cat => 
                     cat.items.map(item => {
@@ -374,7 +376,7 @@ async function render() {
                             "@type": "MenuItem",
                             "name": item.display_name || item.name,
                             "alternateName": item.display_name ? item.name : undefined,
-                            "description": item.description || ""
+                            "description": env.getFilter('hide_price_details')(item.description || "")
                         };
                         if (Array.isArray(item.aliases) && item.aliases.length > 0) {
                             const alternateNames = [
@@ -383,8 +385,6 @@ async function render() {
                             ];
                             menuItem.alternateName = [...new Set(alternateNames)];
                         }
-                        const offers = generateMenuOffers(item);
-                        if (offers) menuItem.offers = offers;
                         return menuItem;
                     })
                 )
@@ -439,7 +439,7 @@ async function render() {
             } else if (page.id === 'faq') {
                 schemas.push(generateFaqSchema(faqData, siteData.seo.site_url));
             } else if (page.id === 'menu') {
-                schemas.push(generateMenuSchema(menuData, siteData));
+                schemas.push(generateMenuSchema(menuHighlightsData, siteData));
             }
 
             const pageSchema = `<!-- AEO: Targeted Page Schema -->\n<script type="application/ld+json">\n${JSON.stringify({

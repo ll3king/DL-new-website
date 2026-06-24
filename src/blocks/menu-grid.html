@@ -13,40 +13,15 @@
         }
 
         .menu-grid .menu-item-heading {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) max-content;
-            gap: 1rem;
-            align-items: baseline;
             margin-bottom: 0.5rem;
-        }
-
-        .menu-grid .menu-item-price {
-            color: var(--primary);
-            font-weight: 800;
-            font-variant-numeric: tabular-nums;
-            min-width: 5.5rem;
-            text-align: right;
-            white-space: nowrap;
-        }
-
-        @media (max-width: 520px) {
-            .menu-grid .menu-item-heading {
-                grid-template-columns: minmax(0, 1fr);
-                gap: 0.25rem;
-            }
-
-            .menu-grid .menu-item-price {
-                min-width: 0;
-                text-align: left;
-            }
         }
     </style>
     <div class="container">
-        <h2 style="text-align: center; margin-bottom: 3rem;">Current Menu</h2>
+        <h2 style="text-align: center; margin-bottom: 3rem;">Menu Highlights</h2>
         <p style="text-align: center; color: var(--secondary); margin: -2rem auto 3rem; max-width: 680px;">
-            Menu items, prices and availability may change. Ask our team about daily specials, allergies and dietary needs.
+            A selected taste of our breakfast-to-brunch menu. Items and availability may change, and our team can help with daily specials, allergies and dietary needs.
         </p>
-        {% for category in menu.categories %}
+        {% for category in menu_highlights.categories %}
         <div class="menu-category" style="margin-bottom: 3rem;">
             <h3 class="menu-category-heading">{{ category.name }}</h3>
             {% if category.description %}
@@ -58,15 +33,10 @@
                 <div class="menu-item" style="padding-bottom: 1.5rem; border-bottom: 1px solid #f0f0f0;">
                     <div class="menu-item-heading">
                         <h4 style="margin: 0; font-size: 1.1rem; font-weight: 700;">{{ item.display_name or item.name }}</h4>
-                        {% if item.price_display %}
-                        <span class="menu-item-price">{{ item.price_display }}</span>
-                        {% elif item.price %}
-                        <span class="menu-item-price">${{ item.price | money }}</span>
-                        {% endif %}
                     </div>
                     {% if item.description %}
                     <p style="margin: 0; font-size: 0.9rem; color: var(--secondary); line-height: 1.4;">{{
-                        item.description }}</p>
+                        item.description | hide_price_details }}</p>
                     {% endif %}
                     <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.8rem;">
                         {% if item.is_signature %}
@@ -97,7 +67,7 @@
         </div>
         {% endfor %}
         <p style="color: var(--secondary); font-size: 0.85rem; margin-top: 1rem;">
-            Dietary guide: VO = Vegan, GFO = Gluten Free, DFO = Dairy Free. Change to gluten free bread +$1. House hollandaise changes daily and may contain alcohol. 10% weekend surcharge. 15% public holidays.
+            Dietary guide: VO = Vegan, GFO = Gluten Free, DFO = Dairy Free. House hollandaise changes daily and may contain alcohol.
         </p>
     </div>
 </section>

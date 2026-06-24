@@ -68,6 +68,9 @@ Menu source-name mapping:
 - `Wine-Infused Benedict` maps to the current source item `Egg Benedict`.
 - `Potato Parmesan Rosti` maps to the current source item `Dandy Rosti`.
 - Public copy should preserve the stronger AEO/GEO-facing names while prices and structured data stay aligned to the governed menu source.
+- Current public menu presentation is `Menu Highlights`, not a full price list.
+- Do not display item-level menu prices on public website pages or public menu schema unless the owner explicitly asks to re-enable them.
+- Keep prices in the governed menu source for internal validation only.
 
 ## Website Fact Boundary
 

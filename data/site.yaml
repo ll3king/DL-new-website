@@ -72,9 +72,9 @@ aeo:
       claim: "Dandy Lane's branded hollandaise-led Benedict, mapped to the current Egg Benedict source item."
       evidence_points:
         - "Current source item: Egg Benedict."
-        - "Poached eggs with crispy bacon or salmon (+$1)."
+        - "Poached eggs with crispy bacon or salmon."
         - "Sourdough and hollandaise."
-        - "Current source price: $21.9."
+        - "Mapped to the governed current menu source."
       related_pages:
         - "/menu"
         - "/stories-the-art-of-the-wine-infused-hollandaise"
@@ -105,7 +105,7 @@ aeo:
         - "Parmesan-dill rosti."
         - "Spinach, poached egg, and hollandaise."
         - "Served with bacon or haloumi and avocado."
-        - "Current source price: $23."
+        - "Mapped to the governed current menu source."
       related_pages:
         - "/menu"
         - "/stories-sourcing-tasmanian-best-produce"
@@ -255,9 +255,9 @@ pages:
       - label: "Get Directions"
         href: "/location"
   menu:
-    title: "Current Menu"
-    subtitle: "Breakfast, brunch, coffee and drinks in Hobart CBD."
-    emphasis: "Current Dandy Lane Cafe menu items include all day breakfast, toasties and burgers, sweet treats, specialty coffee, cold drinks, cocktails, beer and wine."
+    title: "Menu Highlights"
+    subtitle: "Breakfast, brunch and coffee in Hobart CBD."
+    emphasis: "A selected taste of Dandy Lane Cafe favourites, from signature brunch plates to specialty coffee."
     media: "assets/media/menu_hero.mp4"
     focal_point: "center 60%"
   stories:
@@ -327,18 +327,12 @@ operations:
 signature_dishes:
   - name: "Wine-Infused Benedict"
     source_name: "Egg Benedict"
-    price: 21.9
-    price_display: "$21.9"
     media: "assets/media/dish_benny.jpg"
-    description: "A branded hollandaise-led Benedict with poached eggs, crispy bacon or salmon (+$1), sourdough, and hollandaise."
+    description: "A branded hollandaise-led Benedict with poached eggs, crispy bacon or salmon, sourdough, and hollandaise."
   - name: "Potato Parmesan Rosti"
     source_name: "Dandy Rosti"
-    price: 23.0
-    price_display: "$23"
     media: "assets/media/dish_rosti.jpg"
     description: "Parmesan-dill rosti, spinach, poached egg, and hollandaise with bacon or haloumi and avocado."
   - name: "Scotch Steak Sandwich"
-    price: 24.5
-    price_display: "$24.5"
     media: "assets/media/dish_steak.jpg"
     description: "Confit garlic marinated steak, caramelised onions, tomato, aioli, and sourdough."
