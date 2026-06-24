@@ -1,6 +1,6 @@
 # Project Governance Tree Map
 
-Last updated: 2026-06-16
+Last updated: 2026-06-24
 
 ## Purpose
 
@@ -9,6 +9,7 @@ This file fixes the governance structure in tree form so new agents can see:
 - the real project entry
 - the current flywheels
 - the execution modules beneath them
+- the website-owned factual source boundary
 - the deprecated historical contexts
 
 Main governance entry:
@@ -26,6 +27,11 @@ DL new website
 |  |  \- project governance entry
 |  |- feature-registry.md
 |  |  \- official feature-area registry
+|  |- website-information-structure.zh-CN.md
+|  |  \- website-owned factual source boundary
+|  |- menu/
+|  |  \- current-menu-source-2026-06-24.md
+|  |     \- current menu facts and prices
 |  |- flywheel-2-visual-taste-frontend-performance.md
 |  |  \- Flywheel 2 official document
 |  |- deprecated-assumptions.md
@@ -51,6 +57,8 @@ DL new website
 |- Execution Modules
 |  |- Website
 |  |  \- shell / frontend / visual taste / performance
+|  |- Website Information Structure
+|  |  \- current website facts / menu source / factual boundaries
 |  |- Booking System
 |  |  \- booking rules / admin / form / CRM / table governance
 |  |- Search Optimization
@@ -137,6 +145,7 @@ They do not override the top-layer governance narrative.
 In practice:
 
 - `Website` is the main execution surface for the visual flywheel
+- `Website Information Structure` owns current website facts such as menu source, prices, dietary notes, and factual routing
 - `Search Optimization` is the main execution surface for the answerability flywheel
 - `Content` is a supporting execution lane, not a flywheel
 - `Booking System` is a major subsystem, but not the default website narrative
@@ -159,6 +168,7 @@ If a new task arrives, read the tree in this order:
 
 3. `Which execution module owns the actual code?`
 - `Website`
+- `Website Information Structure`
 - `Search Optimization`
 - `Content`
 - `Booking System`

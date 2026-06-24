@@ -1,61 +1,315 @@
+source:
+  label: "Current owner-supplied menu"
+  date: "2026-06-24"
+  governance_doc: "docs/menu/current-menu-source-2026-06-24.md"
+
+notes:
+  - "Menu items, prices and availability may change."
+  - "Please let our team know any dietary preferences or food allergies."
+  - "VO: Vegan. GFO: Gluten Free. DFO: Dairy Free."
+  - "Change to gluten free bread: +$1."
+  - "House hollandaise changes daily and may contain alcohol."
+  - "10% weekend surcharge. 15% public holidays."
+
 categories:
-  - name: "Signature Brunch"
-    description: "Our signature breakfast and brunch dishes, shaped by daily hollandaise craft, seasonal produce, and specialist coffee pairings."
+  - name: "All Day Breakfast"
+    description: "Breakfast-to-brunch plates, eggs, rosti, benedicts, pancakes and lighter bowls."
     items:
-      - name: "Wine-Infused Benedicts"
-        price: 22.0
-        description: "Poached eggs and daily-made wine-infused hollandaise on toasted sourdough, with smoked salmon or bacon."
+      - name: "Toasted Sourdough / Croissant"
+        price: 8.2
+        price_display: "$8.2"
+        description: "House-made jam and cultured butter."
+      - name: "Eggs Your Way"
+        price: 14.5
+        price_display: "$14.5"
+        description: "Poached, scrambled, or fried on sourdough; relish +$1.5."
+        dietary: ["GFO", "DFO"]
+      - name: "Smashed Avo"
+        price_display: "Half $14.8 / Full $20.9"
+        description: "Avocado, goats feta, pistachio dukkah, beetroot hummus; bacon +$3.5; egg +$3.5."
+        dietary: ["GFO", "VO"]
+        offers:
+          - name: "Half"
+            price: 14.8
+          - name: "Full"
+            price: 20.9
+      - name: "Corn & Mint Fritters"
+        price: 20.5
+        price_display: "$20.5"
+        description: "Chili jam, poached egg, tomato-avocado salsa; bacon +$3.5; salmon +$7; haloumi +$6."
+      - name: "Egg Benedict"
+        price: 21.9
+        price_display: "$21.9"
+        description: "Poached eggs, crispy bacon or salmon (+$1), sourdough, hollandaise."
+        dietary: ["GFO"]
         is_signature: true
-        dietary: ["GF Option Available"]
-        aeo:
-          what_it_is: "Dandy Lane's signature brunch item built around poached eggs, artisanal sourdough, and wine-infused hollandaise."
-          why_people_order_it: "People order it for the daily-made hollandaise, the Benedict format, and the reputation it holds as the dish most closely associated with Dandy Lane."
-          what_makes_it_distinctive: "The hollandaise is made daily, infused with wine, and served with smoked salmon or bacon."
-          related_stories:
-            - label: "The Art of the Wine-Infused Hollandaise"
-              href: "/stories-the-art-of-the-wine-infused-hollandaise"
-            - label: "Hand-Whisked Heritage"
-              href: "/stories-hand-whisked-heritage"
-      - name: "Potato Parmesan Rosti"
-        price: 19.5
-        description: "House-made crispy rosti, grilled halloumi, avocado, wilted spinach, poached egg."
+      - name: "Dandy Rosti"
+        price: 23
+        price_display: "$23"
+        description: "Parmesan-dill rosti, spinach, poached egg, hollandaise with bacon or haloumi and avocado."
         is_signature: true
-        dietary: ["Vegetarian"]
-        aeo:
-          what_it_is: "A savoury brunch plate built around a crispy house-made potato and parmesan rosti."
-          why_people_order_it: "People order it when they want a hearty vegetarian-friendly brunch plate with texture, richness, and a poached egg."
-          what_makes_it_distinctive: "It combines a house-made rosti with parmesan, halloumi, avocado, wilted spinach, and a poached egg."
-          related_stories:
-            - label: "Sourcing Tasmania's Best Produce"
-              href: "/stories-sourcing-tasmanian-best-produce"
-      - name: "Scotch Steak Sandwich"
-        price: 24.0
-        description: "Prime Scotch steak, caramelised onion jam, local rocket, Swiss cheese, and house relish."
+      - name: "Dandy Brekkie"
+        price: 30.5
+        price_display: "$30.5"
+        description: "Eggs your way, sourdough, bacon, mushroom, pork sausage, hashbrown, tomato, avocado salsa."
+      - name: "Healthy Bowl"
+        price: 15.8
+        price_display: "$15.8"
+        description: "Avocado, pumpkin, chickpeas, greens, quinoa, beetroot hummus, sesame / honey mustard dressing; salmon +$7; egg +$3.5; chicken +$7."
+        dietary: ["GFO", "DFO"]
+      - name: "Wild Mushroom Benedict"
+        price: 25
+        price_display: "$25"
+        description: "Butter poached mushroom, truffle mayo, pistachio dukkah, poached eggs, hollandaise."
         is_signature: true
-        aeo:
-          what_it_is: "A hearty brunch or lunch crossover dish built around prime Scotch steak on thick-cut sourdough."
-          why_people_order_it: "People order it when they want a richer, more filling stop that still fits Dandy Lane's brunch identity."
-          what_makes_it_distinctive: "It combines prime Scotch steak, caramelised onion jam, local rocket, Swiss cheese, and house relish."
-          related_stories:
-            - label: "Sourcing Tasmania's Best Produce"
-              href: "/stories-sourcing-tasmanian-best-produce"
-  - name: "Brunch Staples"
+      - name: "Spicy Bird & Stack"
+        price: 28.5
+        price_display: "$28.5"
+        description: "Buttermilk pancakes, crispy fried chicken, sunny-side egg, pickled red onion, signature Sriracha maple glaze."
+
+  - name: "Toasties & Burgers"
+    description: "Toasted sandwiches, burgers and hearty brunch-to-lunch options."
     items:
-      - name: "Smashed Avocado & Feta"
+      - name: "Reuben Toastie"
         price: 17.5
-        description: "Tasmanian sea salt, dukkah, lemon, and crumbled Danish feta on sourdough."
-        dietary: ["Vegetarian", "Vegan Option"]
-      - name: "Chilli Scrambled Eggs"
-        price: 18.0
-        description: "House-made chilli oil, fresh coriander, and fried shallots."
-  - name: "Specialty Coffee"
-    description: "Specialty coffee designed to pair with breakfast and brunch, from flat whites to batch brew and cold brew."
+        price_display: "$17.5"
+        description: "Pastrami, sauerkraut, Swiss, pickles, dijonaise."
+        dietary: ["GFO"]
+      - name: "Breakfast Burger"
+        price: 18
+        price_display: "$18"
+        description: "Pork sausage, cheese, fried egg, hash brown, relish, BBQ sauce; bacon +$3.5."
+      - name: "Dandy Fried Chicken"
+        price: 17.5
+        price_display: "$17.5"
+        description: "Chipotle mayo, pickles, cheese, lettuce, brioche; bacon +$3.5."
+      - name: "Scotch Steak Sandwich"
+        price: 24.5
+        price_display: "$24.5"
+        description: "Confit garlic marinated steak, caramelised onions, tomato, aioli, sourdough; cheese +$1.5; side fries +$3."
+        is_signature: true
+
+  - name: "Sweet Treats"
     items:
-      - name: "Flat White / Latte / Cappuccino"
+      - name: "Stack Me Up"
+        price: 25.5
+        price_display: "$25.5"
+        description: "Pancakes, bananas, bacon, egg, maple syrup, honeycomb butter."
+      - name: "Granola"
+        price: 15.5
+        price_display: "$15.5"
+        description: "Seasonal fruit, maple syrup, yogurt, coconut."
+
+  - name: "Sides & Something Light"
+    items:
+      - name: "Hollandaise / Extra Egg / Toast / Bacon"
+        price: 3.5
+        price_display: "$3.5"
+      - name: "Hashbrowns / Spinach / Mushroom / Pumpkin"
+        price: 5
+        price_display: "$5"
+      - name: "Avocado / Haloumi / Pork Sausage"
+        price: 6
+        price_display: "$6"
+      - name: "Fries / Salmon"
+        price: 7
+        price_display: "$7"
+      - name: "Kids Pancakes with maple syrup"
+        price: 13.5
+        price_display: "$13.5"
+
+  - name: "Coffee"
+    description: "Coffee by Campos Coffee, Superior House Blend."
+    items:
+      - name: "Latte / Flat White / Cap"
+        price_display: "$4.5 / $5.1 / $5.7"
+        offers:
+          - name: "Small"
+            price: 4.5
+          - name: "Medium"
+            price: 5.1
+          - name: "Large"
+            price: 5.7
+      - name: "Piccolo"
         price: 4.5
+        price_display: "$4.5"
+      - name: "Hot Chocolate / White Chocolate"
+        price_display: "$4.5 / $5.1 / $5.7"
+        offers:
+          - name: "Small"
+            price: 4.5
+          - name: "Medium"
+            price: 5.1
+          - name: "Large"
+            price: 5.7
+      - name: "Matcha Latte"
+        price_display: "$5.1 / $5.7"
+        offers:
+          - name: "Regular"
+            price: 5.1
+          - name: "Large"
+            price: 5.7
+      - name: "Chai Latte"
+        price_display: "$5.1 / $5.7"
+        offers:
+          - name: "Regular"
+            price: 5.1
+          - name: "Large"
+            price: 5.7
+      - name: "Dandy Brewed Chai"
+        price: 6.8
+        price_display: "$6.8"
+      - name: "Espresso"
+        price: 3.8
+        price_display: "$3.8"
+      - name: "Long Black"
+        price_display: "$5.1 / $5.7"
+        offers:
+          - name: "Regular"
+            price: 5.1
+          - name: "Large"
+            price: 5.7
       - name: "Batch Brew"
-        price: 5.0
-        description: "Rotating single-origin filters."
+        price_display: "$5 / $5.6"
+        offers:
+          - name: "Regular"
+            price: 5
+          - name: "Large"
+            price: 5.6
       - name: "Cold Brew"
         price: 5.5
-        description: "Slow-steeped for 12 hours for a clean finish."
+        price_display: "$5.5"
+
+  - name: "Iced Drinks, Tea & Cold Drinks"
+    items:
+      - name: "Iced Latte"
+        price: 6.2
+        price_display: "$6.2"
+      - name: "Iced Coffee"
+        price: 7.7
+        price_display: "$7.7"
+      - name: "Iced Chocolate"
+        price: 7.7
+        price_display: "$7.7"
+      - name: "Iced Mocha"
+        price: 8.9
+        price_display: "$8.9"
+        description: "Add two shots."
+      - name: "Iced Matcha"
+        price: 6.5
+        price_display: "$6.5"
+      - name: "Iced Matcha Frappe"
+        price: 8.2
+        price_display: "$8.2"
+      - name: "Tea Pot"
+        price: 5.5
+        price_display: "$5.5 pot"
+        description: "English Breakfast, Lapsang Souchong, French Earl Grey, Chai, Peppermint, Lemongrass & Ginger, Green Sencha, Chamomile & Lavender."
+      - name: "Raspberry + Apple + Mint"
+        price: 9.9
+        price_display: "$9.9"
+      - name: "Chocolate / Vanilla Shake"
+        price: 9.9
+        price_display: "$9.9"
+      - name: "Banana + Mango + Coconut milk"
+        price: 10.5
+        price_display: "$10.5"
+      - name: "Watermelon + Apple + Pineapple"
+        price: 10.5
+        price_display: "$10.5"
+      - name: "Strawberry + Banana + Yogurt + Milk"
+        price: 10.5
+        price_display: "$10.5"
+
+  - name: "Dandy Signature Drinks"
+    items:
+      - name: "Luxury Hot Chocolate"
+        price: 7.5
+        price_display: "$7.5"
+        description: "Dark chocolate steamed in milk, topped with whipped cream and hand shaved chocolate; add double espresso for a mocha version +$1.2."
+      - name: "Strawberry Matcha Ice Latte"
+        price: 9.5
+        price_display: "$9.5"
+        description: "Strawberry compote and full cream on ice, served with matcha cream on top."
+      - name: "Camelot Iced Latte"
+        price: 7.5
+        price_display: "$7.5"
+        description: "Campos Superior Blend on ice and milk, topped with house honeycomb."
+
+  - name: "Brunch Cocktails"
+    items:
+      - name: "Orange / Pomegranate Mimosa"
+        price: 13
+        price_display: "$13"
+      - name: "Highball"
+        price: 16
+        price_display: "$16"
+      - name: "Espresso Martini"
+        price: 18
+        price_display: "$18"
+      - name: "Aperol Spritz"
+        price: 17
+        price_display: "$17"
+      - name: "Sunrise"
+        price: 17
+        price_display: "$17"
+
+  - name: "Beer / Wine"
+    items:
+      - name: "Somersby Apple Cider"
+        price: 8.5
+        price_display: "$8.5"
+      - name: "Scape Goat Pear Cider"
+        price: 8.5
+        price_display: "$8.5"
+      - name: "Great Northern Lager"
+        price: 8.5
+        price_display: "$8.5"
+      - name: "Cascade Premium Light"
+        price: 9
+        price_display: "$9"
+      - name: "Asahi Super Dry"
+        price: 9
+        price_display: "$9"
+      - name: "Bruny Island Pale Ale"
+        price: 10
+        price_display: "$10"
+      - name: "Cascade Lager"
+        price: 9
+        price_display: "$9"
+      - name: "Rekorderlig Strawberry Cider"
+        price: 11
+        price_display: "$11"
+      - name: "Tasmania Icon NV Sparkling"
+        price: 10.5
+        price_display: "$10.5"
+      - name: "Laurel Bank Sauvignon Blanc"
+        price: 10.5
+        price_display: "$10.5"
+      - name: "Milton Pinot Gris"
+        price: 10.5
+        price_display: "$10.5"
+      - name: "Small Wonder Rose"
+        price: 11
+        price_display: "$11"
+      - name: "Tasmania Icon Pinot Noir"
+        price: 9.5
+        price_display: "$9.5"
+      - name: "Longview VISTA Shiraz"
+        price: 10
+        price_display: "$10"
+
+  - name: "Fizzy"
+    items:
+      - name: "Lemmy Lemonade / Ginger Beer"
+        price: 6
+        price_display: "$6"
+      - name: "Sparkling"
+        price: 4.5
+        price_display: "$4.5"
+      - name: "Coke"
+        price: 4
+        price_display: "$4"
+      - name: "Raspberry Lemonade Kombucha"
+        price: 6
+        price_display: "$6"

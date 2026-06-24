@@ -1,6 +1,6 @@
 # Dandy Lane Cafe Website
 
-Last updated: 2026-06-21
+Last updated: 2026-06-24
 
 ## Main Entry
 
@@ -30,6 +30,14 @@ The website needs a major visual taste and frontend refresh, using Stitch design
 Official feature-area registry:
 
 - [docs/feature-registry.md](docs/feature-registry.md)
+
+Official website information structure:
+
+- [docs/website-information-structure.zh-CN.md](docs/website-information-structure.zh-CN.md)
+
+Official current menu source:
+
+- [docs/menu/current-menu-source-2026-06-24.md](docs/menu/current-menu-source-2026-06-24.md)
 
 Official Flywheel 2 document:
 
@@ -69,16 +77,21 @@ These may still exist as historical traces or narrow implementation details, but
 
 1. [docs/project-current-overview-and-doc-governance.zh-CN.md](docs/project-current-overview-and-doc-governance.zh-CN.md)
 2. [docs/feature-registry.md](docs/feature-registry.md)
-3. [docs/flywheel-2-visual-taste-frontend-performance.md](docs/flywheel-2-visual-taste-frontend-performance.md)
-4. [visual-knowledge-base/README.md](visual-knowledge-base/README.md)
-5. [docs/project-module-code-boundary-map.zh-CN.md](docs/project-module-code-boundary-map.zh-CN.md)
-6. [docs/project-governance-branch-and-doc-map.zh-CN.md](docs/project-governance-branch-and-doc-map.zh-CN.md)
-7. [docs/project-governance-tree-map.zh-CN.md](docs/project-governance-tree-map.zh-CN.md)
+3. [docs/website-information-structure.zh-CN.md](docs/website-information-structure.zh-CN.md)
+4. [docs/flywheel-2-visual-taste-frontend-performance.md](docs/flywheel-2-visual-taste-frontend-performance.md)
+5. [visual-knowledge-base/README.md](visual-knowledge-base/README.md)
+6. [docs/project-module-code-boundary-map.zh-CN.md](docs/project-module-code-boundary-map.zh-CN.md)
+7. [docs/project-governance-branch-and-doc-map.zh-CN.md](docs/project-governance-branch-and-doc-map.zh-CN.md)
+8. [docs/project-governance-tree-map.zh-CN.md](docs/project-governance-tree-map.zh-CN.md)
 
 Direct module entrypoints:
 
 - Search / answerability work:
   [docs/search-optimization-entry.zh-CN.md](docs/search-optimization-entry.zh-CN.md)
+- Website information structure:
+  [docs/website-information-structure.zh-CN.md](docs/website-information-structure.zh-CN.md)
+- Current menu source:
+  [docs/menu/current-menu-source-2026-06-24.md](docs/menu/current-menu-source-2026-06-24.md)
 - Visual / frontend / performance work:
   [docs/flywheel-2-visual-taste-frontend-performance.md](docs/flywheel-2-visual-taste-frontend-performance.md)
 - Visual asset and signal governance:

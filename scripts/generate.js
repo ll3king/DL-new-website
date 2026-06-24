@@ -337,23 +337,48 @@ async function render() {
             };
         }
 
+        function generateMenuOffers(item) {
+            const priceCurrency = item.price_currency || "AUD";
+
+            if (Array.isArray(item.offers) && item.offers.length > 0) {
+                return item.offers
+                    .filter(offer => Number.isFinite(Number(offer.price)))
+                    .map(offer => ({
+                        "@type": "Offer",
+                        "name": offer.name,
+                        "price": Number(offer.price),
+                        "priceCurrency": offer.price_currency || priceCurrency
+                    }));
+            }
+
+            if (Number.isFinite(Number(item.price))) {
+                return {
+                    "@type": "Offer",
+                    "price": Number(item.price),
+                    "priceCurrency": priceCurrency
+                };
+            }
+
+            return null;
+        }
+
         function generateMenuSchema(menuData, siteData) {
             return {
                 "@type": "Menu",
                 "@id": siteData.seo.site_url + "/menu#menu",
-                "name": siteData.identity.name + " Signature Menu",
+                "name": siteData.identity.name + " Current Menu",
                 "mainEntityOfPage": siteData.seo.site_url + "/menu",
                 "hasMenuItem": menuData.categories.flatMap(cat => 
-                    cat.items.map(item => ({
-                        "@type": "MenuItem",
-                        "name": item.name,
-                        "description": item.description || "",
-                        "offers": {
-                            "@type": "Offer",
-                            "price": item.price,
-                            "priceCurrency": "AUD"
-                        }
-                    }))
+                    cat.items.map(item => {
+                        const menuItem = {
+                            "@type": "MenuItem",
+                            "name": item.name,
+                            "description": item.description || ""
+                        };
+                        const offers = generateMenuOffers(item);
+                        if (offers) menuItem.offers = offers;
+                        return menuItem;
+                    })
                 )
             };
         }

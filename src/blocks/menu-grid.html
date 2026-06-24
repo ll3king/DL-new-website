@@ -1,22 +1,67 @@
 <section class="menu-grid" style="padding: 4rem 0; background: #fff;">
+    <style>
+        .menu-grid .menu-category-heading {
+            border-bottom: 2px solid var(--accent);
+            display: inline-block;
+            padding-bottom: 0.5rem;
+        }
+
+        .menu-grid .menu-category-description {
+            color: var(--secondary);
+            max-width: 720px;
+            margin: -0.25rem 0 1.75rem;
+        }
+
+        .menu-grid .menu-item-heading {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) max-content;
+            gap: 1rem;
+            align-items: baseline;
+            margin-bottom: 0.5rem;
+        }
+
+        .menu-grid .menu-item-price {
+            color: var(--primary);
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            min-width: 5.5rem;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 520px) {
+            .menu-grid .menu-item-heading {
+                grid-template-columns: minmax(0, 1fr);
+                gap: 0.25rem;
+            }
+
+            .menu-grid .menu-item-price {
+                min-width: 0;
+                text-align: left;
+            }
+        }
+    </style>
     <div class="container">
-        <h2 style="text-align: center; margin-bottom: 3rem;">Menu Highlights</h2>
+        <h2 style="text-align: center; margin-bottom: 3rem;">Current Menu</h2>
         <p style="text-align: center; color: var(--secondary); margin: -2rem auto 3rem; max-width: 680px;">
-            Menu items, prices and availability may change. Ask our team about daily specials.
+            Menu items, prices and availability may change. Ask our team about daily specials, allergies and dietary needs.
         </p>
         {% for category in menu.categories %}
         <div class="menu-category" style="margin-bottom: 3rem;">
-            <h3 style="border-bottom: 2px solid var(--accent); padding-bottom: 0.5rem; display: inline-block;">{{
-                category.name }}</h3>
+            <h3 class="menu-category-heading">{{ category.name }}</h3>
+            {% if category.description %}
+            <p class="menu-category-description">{{ category.description }}</p>
+            {% endif %}
             <div class="menu-items"
                 style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
                 {% for item in category.items %}
                 <div class="menu-item" style="padding-bottom: 1.5rem; border-bottom: 1px solid #f0f0f0;">
-                    <div
-                        style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
+                    <div class="menu-item-heading">
                         <h4 style="margin: 0; font-size: 1.1rem; font-weight: 700;">{{ item.name }}</h4>
-                        {% if item.price %}
-                        <span style="font-weight: 800; color: var(--primary); margin-left: 1rem;">${{ item.price | money }}</span>
+                        {% if item.price_display %}
+                        <span class="menu-item-price">{{ item.price_display }}</span>
+                        {% elif item.price %}
+                        <span class="menu-item-price">${{ item.price | money }}</span>
                         {% endif %}
                     </div>
                     {% if item.description %}
@@ -52,7 +97,7 @@
         </div>
         {% endfor %}
         <p style="color: var(--secondary); font-size: 0.85rem; margin-top: 1rem;">
-            Dietary guide: Vegetarian, Vegan Option and GF Option Available are listed where they apply. Please ask our team about allergies or ingredient changes before ordering.
+            Dietary guide: VO = Vegan, GFO = Gluten Free, DFO = Dairy Free. Change to gluten free bread +$1. House hollandaise changes daily and may contain alcohol. 10% weekend surcharge. 15% public holidays.
         </p>
     </div>
 </section>

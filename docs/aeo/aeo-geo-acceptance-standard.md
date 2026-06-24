@@ -1,6 +1,6 @@
 # AEO / GEO Acceptance Standard
 
-Last updated: 2026-06-21
+Last updated: 2026-06-24
 
 ## Purpose
 
@@ -16,6 +16,7 @@ Current project status:
 - Internal website-controlled AEO / GEO is in maintenance mode.
 - External proof expansion remains the main open workstream.
 - Production homepage re-verified on 2026-06-22 against the product-led direction.
+- Current menu source added to website governance on 2026-06-24.
 
 Control model:
 
@@ -74,8 +75,9 @@ Passing standard:
 
 - each priority anchor has a visible page-level mention
 - each priority anchor has at least one supporting explanation surface
-- each priority menu anchor connects back to either menu, FAQ, story, or homepage evidence
+- each priority menu anchor connects back to either menu, FAQ, story, homepage evidence, or the governed current menu source
 - no priority anchor contradicts `data/site.yaml`
+- current menu facts, prices, and dietary notes reconcile with [../menu/current-menu-source-2026-06-24.md](../menu/current-menu-source-2026-06-24.md) unless a newer owner-approved source exists
 
 ## Controlled Acceptance Scorecard
 
@@ -177,6 +179,7 @@ Run a Flywheel 1 acceptance check when:
 
 - `data/site.yaml` changes
 - menu anchors change
+- [../menu/current-menu-source-2026-06-24.md](../menu/current-menu-source-2026-06-24.md) changes or is superseded
 - opening hours change
 - address, phone, booking, or Google Maps links change
 - story ordering or answer summaries change

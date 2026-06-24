@@ -62,6 +62,17 @@ Core memory anchors to strengthen:
 - Specialty Coffee
 - hidden lane / Collins Court / Hobart CBD
 
+## Website Fact Boundary
+
+Website-owned factual sources belong inside this repo.
+
+For menu items, prices, dietary notes, and current product descriptions, use:
+
+- [docs/website-information-structure.zh-CN.md](./docs/website-information-structure.zh-CN.md)
+- [docs/menu/current-menu-source-2026-06-24.md](./docs/menu/current-menu-source-2026-06-24.md)
+
+Do not route website menu governance through rowboat KB, booking retrospectives, SMS docs, or old AI-chat branches unless the user explicitly asks for that boundary.
+
 ## Deprecated Defaults
 
 Do not treat these as default project logic:

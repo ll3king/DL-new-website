@@ -1,6 +1,6 @@
 # Project Module Code Boundary Map
 
-Last updated: 2026-06-16
+Last updated: 2026-06-24
 
 ## Purpose
 
@@ -28,6 +28,7 @@ Important:
 
 - project identity and default narrative belong to `README.md` and `project-current-overview-and-doc-governance`
 - active frontend urgency belongs to `Website`
+- website-owned factual sources belong to `Website Information Structure`
 - future-facing search answerability belongs to `Search Optimization`
 - historical branch logic belongs to `project-governance-branch-and-doc-map`
 
@@ -81,6 +82,31 @@ Typical files:
 Allowed narrow cross-over:
 
 - FAQ and story answerability reinforcement
+
+### 2A. Website facts / current menu source / information structure
+
+Owner:
+
+- `Website Information Structure`
+
+Typical files:
+
+- `docs/website-information-structure.zh-CN.md`
+- `docs/menu/current-menu-source-2026-06-24.md`
+
+Used by:
+
+- `Website`
+- `Search Optimization`
+- `Content`
+- `AI Chat`, only when customer-facing answers need current website facts
+
+Do not expand into by default:
+
+- frontend redesign
+- booking logic
+- SMS routing
+- external knowledge-base ownership
 
 ### 3. Story copy / image swap / story ordering / post refresh
 
@@ -240,6 +266,7 @@ Responsibility:
 - redirects
 - robots / sitemap
 - search-facing structure
+- consistency between answerability modules and website-owned menu facts
 
 Naming rule:
 
@@ -249,6 +276,8 @@ Naming rule:
 Main editable files:
 
 - [data/site.yaml](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/data/site.yaml)
+- [docs/website-information-structure.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/website-information-structure.zh-CN.md)
+- [docs/menu/current-menu-source-2026-06-24.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/menu/current-menu-source-2026-06-24.md)
 - [scripts/generate.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/scripts/generate.js)
 - [public/robots.txt](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/public/robots.txt)
 - [public/sitemap.xml](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/public/sitemap.xml)
@@ -273,6 +302,32 @@ Do not touch by default:
 - [functions/api/admin/bookings.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/admin/bookings.js)
 - [functions/api/chat.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/chat.js)
 - [functions/api/sms/inbound.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/functions/api/sms/inbound.js)
+
+## Website Information Structure
+
+### 1. current website facts / menu source / factual boundaries
+
+Responsibility:
+
+- current menu source
+- website factual source boundaries
+- routing facts into Website, Search Optimization, Content, and AI Chat without duplicating them
+- protecting website-owned facts from older automation or external KB assumptions
+
+Main editable files:
+
+- [docs/website-information-structure.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/website-information-structure.zh-CN.md)
+- [docs/menu/current-menu-source-2026-06-24.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/menu/current-menu-source-2026-06-24.md)
+
+Do not touch by default:
+
+- [data/menu.yaml](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/data/menu.yaml)
+- [src/blocks/menu-grid.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/menu-grid.html)
+- booking, SMS, or AI-chat implementation files
+
+Implementation note:
+
+- syncing the documented menu source into public website data or frontend presentation is a separate Website / Search Optimization implementation task.
 
 ## Content
 

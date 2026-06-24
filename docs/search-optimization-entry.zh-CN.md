@@ -1,6 +1,6 @@
 # Search Optimization Entry
 
-Last updated: 2026-06-21
+Last updated: 2026-06-24
 
 ## Purpose
 
@@ -72,16 +72,26 @@ Project-level deprecated defaults and top-layer identity are governed in:
 ## Maintenance Checklist
 
 - keep business entity facts consistent
-- keep menu / product anchors consistent
+- keep menu / product anchors consistent with the website-owned current menu source
 - keep local intent clear
 - keep schema / structured data aligned with visible content
 - avoid generic content expansion
 - avoid SEO-first wording
 - avoid creating low-value AI-search pages
 
+Menu facts, menu prices, dietary labels, and current product descriptions are governed by:
+
+- [website-information-structure.zh-CN.md](./website-information-structure.zh-CN.md)
+- [menu/current-menu-source-2026-06-24.md](./menu/current-menu-source-2026-06-24.md)
+
+Search Optimization may reference those facts for answerability, schema alignment, FAQ consistency, and internal evidence reinforcement.
+It should not duplicate the full menu into this file or use the menu source as a reason to create generic AI-search pages.
+
 ## Allowed Files
 
 - [data/site.yaml](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/data/site.yaml)
+- [docs/website-information-structure.zh-CN.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/website-information-structure.zh-CN.md)
+- [docs/menu/current-menu-source-2026-06-24.md](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/docs/menu/current-menu-source-2026-06-24.md)
 - [public/robots.txt](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/public/robots.txt)
 - [public/sitemap.xml](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/public/sitemap.xml)
 - [public/_redirects](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/public/_redirects)

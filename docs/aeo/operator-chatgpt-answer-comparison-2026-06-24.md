@@ -24,7 +24,7 @@ It should be integrated as the first website self-control cleanup pass before br
 | Do not keep adding stories. | Our Flywheel 1 is in maintenance mode, not expansion mode. | Adopt. |
 | Clean SEO / AI internal language visible to guests. | Matches people-first content and reviewer gates. | Adopt immediately. |
 | Hours and listing consistency matter before content expansion. | Matches external signal Layer 1 and acceptance standard. | Adopt as external-signal sprint item. |
-| Menu needs prices and clearer decision support. | Matches real guest decision value and LocalBusiness menu guidance. | Adopt partially now; full menu needs current menu source. |
+| Menu needs prices and clearer decision support. | Matches real guest decision value and LocalBusiness menu guidance. | Current menu source is now governed in [../menu/current-menu-source-2026-06-24.md](../menu/current-menu-source-2026-06-24.md); public menu sync is a separate implementation task. |
 | Location page should solve the hidden-lane friction. | Matches Sprint 1 target and Location / FAQ pilot direction. | Adopt as next website pilot. |
 | Booking page should reduce uncertainty. | Matches customer-first conversion; copy-only updates are safe. | Adopt copy cleanup; do not change booking rules here. |
 | Laptop-friendly should be secondary. | Matches current demoted-facility anchor. | Adopt. |
@@ -36,7 +36,7 @@ It should be integrated as the first website self-control cleanup pass before br
 |---|---|---|
 | Instagram / Hello Hobart still show inconsistent weekend hours. | Live external capture required. | Put into Sprint 1 Reference Capture. |
 | True signature dishes may be Fried Chicken Benny, Dandy Rosti, Zucchini Fritters, French Toast / Dutch Pancake. | Needs POS, recent reviews, current menu, and staff confirmation. | Do not change core anchors yet. |
-| Full menu should include every current item and price. | Needs current official menu source. | Show existing known prices now; full rebuild later. |
+| Full menu should include every current item and price. | Current menu source now exists in [../menu/current-menu-source-2026-06-24.md](../menu/current-menu-source-2026-06-24.md). | Use the governed source for the next public menu rebuild. |
 | Homepage should be fully reordered. | Needs visual/Flywheel 2 alignment and conversion brief. | Defer; do not do as first Search Optimization change. |
 | Stories should be removed from main nav. | Broader navigation / UX decision. | Defer to visual/frontend workflow. |
 | UTM tracking and GA4 events should be configured. | Needs analytics access and tracking plan. | Tracker backlog, not immediate content patch. |
@@ -75,7 +75,7 @@ Best next sequence:
    - add answer blocks only where they help real guests
 
 4. Menu expansion:
-   - requires current menu source
+   - use [../menu/current-menu-source-2026-06-24.md](../menu/current-menu-source-2026-06-24.md)
    - include full HTML menu, prices, dietary notes, add-ons, drinks, and update date
 
 5. Signature-product validation:

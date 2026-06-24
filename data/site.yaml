@@ -250,9 +250,9 @@ pages:
       - label: "Get Directions"
         href: "/location"
   menu:
-    title: "Menu Highlights"
-    subtitle: "Dandy Lane Cafe Hobart."
-    emphasis: "Our menu is built around daily-made hollandaise, signature brunch plates, seasonal specials, Tasmanian produce, and specialty coffee."
+    title: "Current Menu"
+    subtitle: "Breakfast, brunch, coffee and drinks in Hobart CBD."
+    emphasis: "Current Dandy Lane Cafe menu items include all day breakfast, toasties and burgers, sweet treats, specialty coffee, cold drinks, cocktails, beer and wine."
     media: "assets/media/menu_hero.mp4"
     focal_point: "center 60%"
   stories:

@@ -1,6 +1,6 @@
 # Feature Registry
 
-Last updated: 2026-06-21
+Last updated: 2026-06-24
 
 ## Purpose
 
@@ -11,6 +11,7 @@ It exists so future agents can distinguish:
 - project-level flywheels
 - active priority
 - execution ownership
+- website-owned factual source boundaries
 - non-default historical assumptions
 
 ## Official Feature Areas
@@ -41,7 +42,7 @@ Business context anchors:
 Maintenance checklist:
 
 - keep business entity facts consistent
-- keep menu / product anchors consistent
+- keep menu / product anchors consistent with [menu/current-menu-source-2026-06-24.md](./menu/current-menu-source-2026-06-24.md) unless a newer owner-approved menu source exists
 - keep local intent clear
 - keep schema / structured data aligned with visible content
 - avoid generic content expansion
@@ -55,6 +56,11 @@ Primary execution lane:
 Primary entry:
 
 - [search-optimization-entry.zh-CN.md](./search-optimization-entry.zh-CN.md)
+
+Website factual source boundary:
+
+- [website-information-structure.zh-CN.md](./website-information-structure.zh-CN.md)
+- [menu/current-menu-source-2026-06-24.md](./menu/current-menu-source-2026-06-24.md)
 
 Acceptance standard:
 
@@ -126,5 +132,6 @@ Naming rule:
 ## Related Governance
 
 - [project-current-overview-and-doc-governance.zh-CN.md](./project-current-overview-and-doc-governance.zh-CN.md)
+- [website-information-structure.zh-CN.md](./website-information-structure.zh-CN.md)
 - [project-module-code-boundary-map.zh-CN.md](./project-module-code-boundary-map.zh-CN.md)
 - [deprecated-assumptions.md](./deprecated-assumptions.md)
