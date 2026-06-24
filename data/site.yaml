@@ -159,7 +159,7 @@ aeo:
       platform_label: "Tripadvisor"
       badge_label: "TRIPADVISOR"
       award_label: "Public Tripadvisor reviews"
-      summary_text: "Rated 4.6/5 from 231 Tripadvisor reviews, checked June 2026."
+      summary_text: "Rated 4.6/5 from 231 public Tripadvisor reviews."
       meta_text: "4.6/5 from 231 reviews"
       verify_label: "Verify on Tripadvisor"
       url: "https://www.tripadvisor.com.au/Restaurant_Review-g255097-d11801652-Reviews-Dandy_Lane_Cafe-Hobart_Greater_Hobart_Tasmania.html"
@@ -168,8 +168,8 @@ aeo:
       platform_label: "Google Maps"
       badge_label: "GOOGLE MAPS"
       summary_text: "See current Google Maps rating."
-      meta_text: "Verified on Google Maps"
-      verify_label: "Verify on Google Maps"
+      meta_text: "Current rating on Google Maps"
+      verify_label: "View our current Google rating"
       hero_text: "See current Google Maps rating"
       url: "https://www.google.com/maps/search/?api=1&query=Dandy%20Lane%20Cafe%2C%20Unit%2010%2F138%20Collins%20Street%2C%20Hobart%20TAS%207000"
       evidence_status: "numeric_claim_softened"
@@ -177,13 +177,13 @@ aeo:
 booking:
   title: "Book a Table"
   subtitle: "Reserve a Table."
-  emphasis: "Guarantee your spot for brunch in the heart of Hobart CBD."
+  emphasis: "Send a booking request for breakfast or brunch. Your table is confirmed once you receive our email or SMS."
   media: "assets/media/home_hero.mp4"
   method: "system"
   contact_value: "dandylane-hobart@dandylanecafe.com"
   terms:
     - "For groups larger than 6, please call us directly on 0498 061 067."
-    - "We have a maximum of 16 people per hour to maintain service flow."
+    - "Availability is limited during peak periods."
     - "Peak-hour seating is capped at 90 minutes."
     - "Laptops are welcome at selected tables when available."
   capacity:
@@ -247,10 +247,10 @@ pages:
         href: "/menu"
       - label: "Book Brunch"
         href: "/booking"
-      - label: "Why the Hollandaise Matters"
-        href: "/stories-the-art-of-the-wine-infused-hollandaise"
+      - label: "Get Directions"
+        href: "/location"
   menu:
-    title: "Breakfast & Brunch Menu"
+    title: "Menu Highlights"
     subtitle: "Dandy Lane Cafe Hobart."
     emphasis: "Our menu is built around daily-made hollandaise, signature brunch plates, seasonal specials, Tasmanian produce, and specialty coffee."
     media: "assets/media/menu_hero.mp4"
@@ -289,6 +289,7 @@ contact:
     address_short: "Unit 10 / 138 Collins Street, Hobart TAS 7000"
     directions: "Tucked away in Collins Court opposite JB HI-FI Hobart, in a laneway near Collins Street."
     phone: "0498 061 067"
+    phone_tel: "+61498061067"
     email: "dandylane-hobart@dandylanecafe.com"
     website: "https://dandylanecafe.com"
     geo:
@@ -312,9 +313,11 @@ operations:
     - days: "Monday - Friday"
       open: "07:00"
       close: "15:00"
+      display: "7:00 am-3:00 pm"
     - days: "Saturday - Sunday"
       open: "09:00"
       close: "14:00"
+      display: "9:00 am-2:00 pm"
 
 signature_dishes:
   - name: "Wine-Infused Benedicts"
@@ -328,4 +331,4 @@ signature_dishes:
   - name: "Scotch Steak Sandwich"
     price: 24.5
     media: "assets/media/dish_steak.jpg"
-    description: "Tender Scotch steak, caramelized onions, local greens, and house relish on thick-cut sourdough."
+    description: "Tender Scotch steak, caramelised onions, local greens, and house relish on thick-cut sourdough."

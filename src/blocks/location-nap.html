@@ -3,8 +3,7 @@
         <div
             style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 4rem; align-items: flex-start;">
             <div class="info">
-                <h2 style="margin-top: 0; font-weight: 900; font-size: 2.5rem; text-transform: uppercase;">{{
-                    page_context.title or 'Find Us' }}</h2>
+                <h2 style="margin-top: 0; font-weight: 900; font-size: 2.5rem; text-transform: uppercase;">Visit Dandy Lane</h2>
                 <p style="font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 600;">
                     <span>{{ site.contact.nap.address }}</span>
                 </p>
@@ -13,11 +12,21 @@
                 </p>
 
                 <div style="margin: 2.5rem 0; border-top: 2px solid #f0f0f0; padding-top: 2rem;">
+                    <div style="margin-bottom: 1.8rem;">
+                        <strong
+                            style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.1em; color: #666; display: block; margin-bottom: 0.5rem;">Opening
+                            Hours</strong>
+                        {% for hours in site.operations.opening_hours %}
+                        <p style="margin: 0.2rem 0; color: var(--primary); font-size: 1rem; font-weight: 700;">
+                            {{ hours.days }}: {{ hours.display or (hours.open ~ '-' ~ hours.close) }}
+                        </p>
+                        {% endfor %}
+                    </div>
                     <p style="margin-bottom: 0.8rem;">
                         <strong
                             style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.1em; color: #666; display: block; margin-bottom: 0.3rem;">Call
                             Us</strong>
-                        <a href="tel:{{ site.contact.nap.phone }}"
+                        <a href="tel:{{ site.contact.nap.phone_tel or site.contact.nap.phone }}"
                             style="color: var(--primary); text-decoration: none; font-size: 1.1rem; font-weight: 700;">{{
                             site.contact.nap.phone }}</a>
                     </p>

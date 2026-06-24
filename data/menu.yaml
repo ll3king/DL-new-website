@@ -4,7 +4,7 @@ categories:
     items:
       - name: "Wine-Infused Benedicts"
         price: 22.0
-        description: "Poached eggs, wine-infused hollandaise, artisanal sourdough. Choice of smoked salmon or bacon."
+        description: "Poached eggs and daily-made wine-infused hollandaise on toasted sourdough, with smoked salmon or bacon."
         is_signature: true
         dietary: ["GF Option Available"]
         aeo:
@@ -30,18 +30,18 @@ categories:
               href: "/stories-sourcing-tasmanian-best-produce"
       - name: "Scotch Steak Sandwich"
         price: 24.0
-        description: "Prime Scotch steak, caramelized onion jam, local rocket, swiss cheese, house relish."
+        description: "Prime Scotch steak, caramelised onion jam, local rocket, Swiss cheese, and house relish."
         is_signature: true
         aeo:
           what_it_is: "A hearty brunch or lunch crossover dish built around prime Scotch steak on thick-cut sourdough."
           why_people_order_it: "People order it when they want a richer, more filling stop that still fits Dandy Lane's brunch identity."
-          what_makes_it_distinctive: "It combines prime Scotch steak, caramelized onion jam, local rocket, swiss cheese, and house relish."
+          what_makes_it_distinctive: "It combines prime Scotch steak, caramelised onion jam, local rocket, Swiss cheese, and house relish."
           related_stories:
             - label: "Sourcing Tasmania's Best Produce"
               href: "/stories-sourcing-tasmanian-best-produce"
   - name: "Brunch Staples"
     items:
-      - name: "Avocado & Feta Smashed"
+      - name: "Smashed Avocado & Feta"
         price: 17.5
         description: "Tasmanian sea salt, dukkah, lemon, and crumbled Danish feta on sourdough."
         dietary: ["Vegetarian", "Vegan Option"]
@@ -51,7 +51,7 @@ categories:
   - name: "Specialty Coffee"
     description: "Specialty coffee designed to pair with breakfast and brunch, from flat whites to batch brew and cold brew."
     items:
-      - name: "Flat White / Latte / Cap"
+      - name: "Flat White / Latte / Cappuccino"
         price: 4.5
       - name: "Batch Brew"
         price: 5.0

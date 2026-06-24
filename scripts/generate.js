@@ -71,6 +71,12 @@ env.addFilter('endswith', function (str, suffix) {
     return str.endsWith(suffix);
 });
 
+env.addFilter('money', function (value) {
+    const number = Number(value);
+    if (!Number.isFinite(number)) return value;
+    return Number.isInteger(number) ? number.toFixed(0) : number.toFixed(2);
+});
+
 function expandDayRange(dayRange) {
     if (typeof dayRange !== 'string') return [];
 
@@ -116,6 +122,33 @@ function storyRoute(story) {
     };
 }
 
+function formatDisplayDate(dateValue) {
+    if (typeof dateValue !== 'string') return dateValue;
+    const date = new Date(`${dateValue}T00:00:00`);
+    if (Number.isNaN(date.getTime())) return dateValue;
+
+    return new Intl.DateTimeFormat('en-AU', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        timeZone: 'Australia/Hobart'
+    }).format(date);
+}
+
+function prepareStoriesData(rawStoriesData) {
+    const stories = Array.isArray(rawStoriesData.stories) ? rawStoriesData.stories : [];
+
+    return {
+        ...rawStoriesData,
+        stories: stories
+            .map(story => ({
+                ...story,
+                display_date: formatDisplayDate(story.date)
+            }))
+            .sort((a, b) => new Date(`${b.date}T00:00:00`) - new Date(`${a.date}T00:00:00`))
+    };
+}
+
 async function render() {
     console.log("[L3] Starting Site Generation (Nunjucks Engine)...");
 
@@ -129,7 +162,7 @@ async function render() {
         const siteData = yaml.load(fs.readFileSync(DATA_PATH, 'utf8'));
         const menuData = yaml.load(fs.readFileSync(path.join(__dirname, '../data/menu.yaml'), 'utf8'));
         const faqData = yaml.load(fs.readFileSync(path.join(__dirname, '../data/faq.yaml'), 'utf8'));
-        const storiesData = yaml.load(fs.readFileSync(path.join(__dirname, '../data/stories.yaml'), 'utf8'));
+        const storiesData = prepareStoriesData(yaml.load(fs.readFileSync(path.join(__dirname, '../data/stories.yaml'), 'utf8')));
 
         const context = {
             site: siteData,
@@ -143,7 +176,7 @@ async function render() {
             {
                 id: 'index',
                 slug: 'index.html',
-                blocks: ['identity-hero.html', 'social-proof-reviews.html', 'signature-trio.html', 'intent-match.html', 'faq-list.html', 'location-nap.html']
+                blocks: ['identity-hero.html', 'signature-trio.html', 'location-nap.html', 'social-proof-reviews.html', 'faq-list.html']
             },
             {
                 id: 'menu',

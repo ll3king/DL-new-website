@@ -1,8 +1,8 @@
 <section class="menu-grid" style="padding: 4rem 0; background: #fff;">
     <div class="container">
-        <h2 style="text-align: center; margin-bottom: 3rem;">Our Menu</h2>
+        <h2 style="text-align: center; margin-bottom: 3rem;">Menu Highlights</h2>
         <p style="text-align: center; color: var(--secondary); margin: -2rem auto 3rem; max-width: 680px;">
-            Menu prices shown are current from the website menu data. Please check with staff for daily specials and availability.
+            Menu items, prices and availability may change. Ask our team about daily specials.
         </p>
         {% for category in menu.categories %}
         <div class="menu-category" style="margin-bottom: 3rem;">
@@ -16,22 +16,27 @@
                         style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
                         <h4 style="margin: 0; font-size: 1.1rem; font-weight: 700;">{{ item.name }}</h4>
                         {% if item.price %}
-                        <span style="font-weight: 800; color: var(--primary); margin-left: 1rem;">${{ item.price }}</span>
+                        <span style="font-weight: 800; color: var(--primary); margin-left: 1rem;">${{ item.price | money }}</span>
                         {% endif %}
                     </div>
                     {% if item.description %}
                     <p style="margin: 0; font-size: 0.9rem; color: var(--secondary); line-height: 1.4;">{{
                         item.description }}</p>
                     {% endif %}
-                    {% if item.is_signature %}
-                    <span
-                        style="font-size: 0.7rem; background: var(--accent); color: white; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">Signature</span>
-                    {% endif %}
-                    {% if item.aeo %}
-                    <div style="margin-top: 1rem; padding: 1rem; background: #faf7f3; border-left: 3px solid var(--accent); border-radius: 8px;">
-                        <p style="margin: 0 0 0.5rem; font-size: 0.88rem;"><strong>What it is:</strong> {{ item.aeo.what_it_is }}</p>
-                        <p style="margin: 0 0 0.5rem; font-size: 0.88rem;"><strong>Why guests order it:</strong> {{ item.aeo.why_people_order_it }}</p>
-                        <p style="margin: 0; font-size: 0.88rem;"><strong>What makes it different:</strong> {{ item.aeo.what_makes_it_distinctive }}</p>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.8rem;">
+                        {% if item.is_signature %}
+                        <span
+                            style="font-size: 0.7rem; background: var(--accent); color: white; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">Signature</span>
+                        {% endif %}
+                        {% if item.dietary %}
+                        {% for tag in item.dietary %}
+                        <span
+                            style="font-size: 0.7rem; background: #f5f1ec; color: var(--primary); padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">{{ tag }}</span>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                    {% if item.aeo and item.aeo.related_stories %}
+                    <div style="margin-top: 0.9rem;">
                         {% if item.aeo.related_stories %}
                         <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.9rem;">
                             {% for story in item.aeo.related_stories %}
@@ -46,5 +51,8 @@
             </div>
         </div>
         {% endfor %}
+        <p style="color: var(--secondary); font-size: 0.85rem; margin-top: 1rem;">
+            Dietary guide: Vegetarian, Vegan Option and GF Option Available are listed where they apply. Please ask our team about allergies or ingredient changes before ordering.
+        </p>
     </div>
 </section>
