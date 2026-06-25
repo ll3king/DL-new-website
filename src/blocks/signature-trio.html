@@ -1,36 +1,240 @@
-<section class="signature-trio" style="padding: 8rem 0; background: #fafafa;">
+<section class="signature-trio taste-signatures">
+    <style>
+        .taste-signatures {
+            padding: clamp(4rem, 8vw, 8rem) 0;
+            background:
+                linear-gradient(180deg, #fff7e8 0%, #f7edda 48%, #efe0c2 100%);
+            color: var(--charcoal-sign);
+        }
+
+        .taste-section-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--muted-coffee);
+            font-size: 0.76rem;
+            font-weight: 900;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+        }
+
+        .taste-section-kicker::before {
+            content: "";
+            width: 2.4rem;
+            height: 2px;
+            background: var(--hollandaise-gold);
+        }
+
+        .taste-signature-head {
+            display: grid;
+            grid-template-columns: minmax(0, 0.9fr) minmax(280px, 0.5fr);
+            gap: 2rem;
+            align-items: end;
+            margin-bottom: clamp(2.25rem, 5vw, 4.5rem);
+        }
+
+        .taste-signature-head h2 {
+            max-width: 11ch;
+            margin: 0.9rem 0 0;
+            font-family: var(--display-font);
+            font-size: clamp(2.6rem, 6vw, 6.2rem);
+            line-height: 0.92;
+            letter-spacing: -0.065em;
+        }
+
+        .taste-signature-head p {
+            margin: 0;
+            color: rgba(24, 22, 20, 0.72);
+            font-size: 1.05rem;
+            line-height: 1.55;
+        }
+
+        .taste-signature-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.16fr) minmax(280px, 0.84fr);
+            gap: clamp(1.25rem, 3vw, 2rem);
+            align-items: stretch;
+        }
+
+        .taste-dish-card {
+            position: relative;
+            display: grid;
+            overflow: hidden;
+            min-height: 30rem;
+            border-radius: 2rem;
+            background: var(--stone-base);
+            color: #fff7e8;
+            box-shadow: 0 24px 70px rgba(24, 22, 20, 0.16);
+        }
+
+        .taste-dish-card img {
+            width: 100%;
+            height: 100%;
+            min-height: inherit;
+            display: block;
+            object-fit: cover;
+            transition: transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .taste-dish-card:hover img {
+            transform: scale(1.035);
+        }
+
+        .taste-dish-card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(24, 22, 20, 0.78), rgba(24, 22, 20, 0.12) 62%, transparent);
+            pointer-events: none;
+        }
+
+        .taste-dish-copy {
+            position: absolute;
+            inset: auto 0 0;
+            z-index: 2;
+            padding: clamp(1.35rem, 3vw, 2.4rem);
+        }
+
+        .taste-dish-copy h3 {
+            margin: 0;
+            max-width: 12ch;
+            font-family: var(--display-font);
+            font-size: clamp(2.1rem, 4vw, 4.1rem);
+            line-height: 0.94;
+            letter-spacing: -0.055em;
+        }
+
+        .taste-dish-copy p {
+            max-width: 34rem;
+            margin: 1rem 0 0;
+            color: rgba(255, 247, 232, 0.86);
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .taste-dish-stack {
+            display: grid;
+            gap: clamp(1.25rem, 3vw, 2rem);
+        }
+
+        .taste-dish-stack .taste-dish-card {
+            min-height: 14rem;
+            border-radius: 1.5rem;
+        }
+
+        .taste-dish-stack .taste-dish-copy h3 {
+            font-size: clamp(1.7rem, 3vw, 2.8rem);
+        }
+
+        .taste-dish-badge {
+            display: inline-flex;
+            width: fit-content;
+            margin-bottom: 0.85rem;
+            border-radius: 999px;
+            background: rgba(230, 184, 78, 0.92);
+            color: var(--charcoal-sign);
+            padding: 0.38rem 0.7rem;
+            font-size: 0.68rem;
+            font-weight: 900;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            .taste-dish-card {
+                animation: taste-card-rise 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+            }
+
+            .taste-dish-stack .taste-dish-card:nth-child(1) {
+                animation-delay: 90ms;
+            }
+
+            .taste-dish-stack .taste-dish-card:nth-child(2) {
+                animation-delay: 170ms;
+            }
+
+            @keyframes taste-card-rise {
+                from {
+                    opacity: 0;
+                    transform: translateY(18px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        }
+
+        @media (max-width: 860px) {
+            .taste-signature-head,
+            .taste-signature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .taste-signature-head h2 {
+                max-width: 9ch;
+            }
+
+            .taste-dish-card,
+            .taste-dish-stack .taste-dish-card {
+                min-height: 24rem;
+            }
+        }
+    </style>
+
     <div class="container">
-        <div style="text-align: center; margin-bottom: 5rem;">
-            <span
-                style="color: var(--accent); font-weight: 800; text-transform: uppercase; letter-spacing: 0.2em; font-size: 0.8rem;">The
-                Highlights</span>
-            <h2 style="font-size: 3rem; margin-top: 1rem; font-weight: 800;">Our Signature Selection</h2>
+        <div class="taste-signature-head">
+            <div>
+                <span class="taste-section-kicker">What people remember</span>
+                <h2>Brunch anchors, not filler.</h2>
+            </div>
+            <p>
+                Keep the decision simple: hollandaise-led brunch, rosti crunch, a serious steak sandwich, and coffee that belongs to the morning rhythm.
+            </p>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 3rem;">
-            {% for dish in site.signature_dishes %}
-            <div class="dish-card"
-                style="background: white; border-radius: 0; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.03); transition: transform 0.4s ease;">
-                <div style="height: 300px; background: #eee; overflow: hidden; position: relative;">
+        <div class="taste-signature-grid">
+            {% set hero_dish = site.signature_dishes[0] %}
+            <article class="taste-dish-card">
+                <picture>
+                    <source srcset="assets/media/flywheel2-lane-benny.webp" type="image/webp">
+                    <img src="assets/media/flywheel2-lane-benny.png" alt="{{ hero_dish.name }} at Dandy Lane Cafe" loading="lazy">
+                </picture>
+                <div class="taste-dish-copy">
+                    <span class="taste-dish-badge">Primary anchor</span>
+                    <h3>{{ hero_dish.name }}</h3>
+                    <p>{{ hero_dish.description }}</p>
+                </div>
+            </article>
+
+            <div class="taste-dish-stack">
+                {% set rosti_dish = site.signature_dishes[1] %}
+                <article class="taste-dish-card">
                     <picture>
-                        <source
-                            srcset="{{ dish.media | replace('.jpg', '.webp') | replace('.jpeg', '.webp') | replace('.png', '.webp') }}"
-                            type="image/webp">
-                        <img src="{{ dish.media }}" alt="{{ dish.name }}" loading="lazy"
-                            style="width: 100%; height: 100%; object-fit: cover;">
+                        <source srcset="{{ rosti_dish.media | replace('.jpg', '.webp') | replace('.jpeg', '.webp') | replace('.png', '.webp') }}" type="image/webp">
+                        <img src="{{ rosti_dish.media }}" alt="{{ rosti_dish.name }} at Dandy Lane Cafe" loading="lazy">
                     </picture>
-                </div>
-                <div style="padding: 2.5rem;">
-                    <div
-                        style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1rem;">
-                        <h3 style="margin: 0; font-size: 1.4rem; font-weight: 800; text-transform: uppercase;">{{
-                            dish.name }}</h3>
+                    <div class="taste-dish-copy">
+                        <span class="taste-dish-badge">Crunch</span>
+                        <h3>{{ rosti_dish.name }}</h3>
+                        <p>{{ rosti_dish.description }}</p>
                     </div>
-                    <p style="color: var(--secondary); font-size: 1.05rem; margin-bottom: 1.5rem;">{{ dish.description
-                        }}</p>
-                </div>
+                </article>
+
+                {% set steak_dish = site.signature_dishes[2] %}
+                <article class="taste-dish-card">
+                    <picture>
+                        <source srcset="assets/media/flywheel2-steak-sandwich.webp" type="image/webp">
+                        <img src="assets/media/flywheel2-steak-sandwich.jpg" alt="{{ steak_dish.name }} at Dandy Lane Cafe" loading="lazy">
+                    </picture>
+                    <div class="taste-dish-copy">
+                        <span class="taste-dish-badge">Brunch to lunch</span>
+                        <h3>{{ steak_dish.name }}</h3>
+                        <p>{{ steak_dish.description }}</p>
+                    </div>
+                </article>
             </div>
-            {% endfor %}
         </div>
     </div>
 </section>

@@ -12,10 +12,7 @@
 
     .identity-hero-media {
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        inset: 0;
         z-index: 1;
     }
 
@@ -25,22 +22,12 @@
         object-fit: cover;
         opacity: 0.8;
         transition: object-position 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-
-        object-position: {
-                {
-                page_context.focal_point or 'center'
-            }
-        }
-
-        ;
+        object-position: {{ page_context.focal_point or 'center' }};
     }
 
     .identity-hero-overlay {
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        inset: 0;
         background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.5) 100%);
         z-index: 2;
     }
@@ -69,15 +56,261 @@
         max-width: 700px;
     }
 
-    @media (max-width: 1024px) {
-        .hero-media-tag {
-            object-position: {
-                    {
-                    page_context.focal_point_tablet or page_context.focal_point or 'center'
-                }
+    .taste-hero {
+        position: relative;
+        overflow: hidden;
+        color: var(--charcoal-sign);
+        background:
+            radial-gradient(circle at 14% 16%, rgba(230, 184, 78, 0.24), transparent 28rem),
+            linear-gradient(135deg, #fff7e8 0%, #f3e7d3 42%, #d7c7a8 100%);
+        padding: clamp(3.5rem, 7vw, 7rem) 0 clamp(4rem, 8vw, 8rem);
+    }
+
+    .taste-hero::before {
+        content: "";
+        position: absolute;
+        inset: auto 0 0;
+        height: 38%;
+        background: linear-gradient(to top, rgba(24, 22, 20, 0.1), transparent);
+        pointer-events: none;
+    }
+
+    .taste-hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 0.92fr) minmax(360px, 1.08fr);
+        gap: clamp(2rem, 5vw, 5.5rem);
+        align-items: center;
+    }
+
+    .taste-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+        margin-bottom: 1.25rem;
+        color: var(--muted-coffee);
+        font-size: 0.78rem;
+        font-weight: 900;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+    }
+
+    .taste-eyebrow::before {
+        content: "";
+        width: 2.6rem;
+        height: 2px;
+        background: var(--hollandaise-gold);
+    }
+
+    .taste-hero h1 {
+        margin: 0;
+        max-width: 11ch;
+        font-family: var(--display-font);
+        font-size: clamp(3.25rem, 8vw, 7.8rem);
+        line-height: 0.88;
+        letter-spacing: -0.075em;
+        font-weight: 900;
+    }
+
+    .taste-hero-copy {
+        max-width: 34rem;
+        margin: 1.6rem 0 0;
+        color: rgba(24, 22, 20, 0.78);
+        font-size: clamp(1.05rem, 1.6vw, 1.28rem);
+        line-height: 1.55;
+    }
+
+    .taste-hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.85rem;
+        margin-top: 2rem;
+    }
+
+    .taste-button {
+        display: inline-flex;
+        min-height: 46px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        padding: 0.85rem 1.25rem;
+        text-decoration: none;
+        font-size: 0.82rem;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+    }
+
+    .taste-button:active {
+        transform: translateY(1px) scale(0.99);
+    }
+
+    .taste-button-primary {
+        background: var(--hollandaise-gold);
+        color: var(--charcoal-sign);
+        border: 1px solid rgba(24, 22, 20, 0.12);
+    }
+
+    .taste-button-secondary {
+        color: var(--charcoal-sign);
+        border: 1px solid rgba(24, 22, 20, 0.22);
+        background: rgba(255, 255, 255, 0.35);
+    }
+
+    .taste-proof-line {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+        margin-top: 2.25rem;
+        max-width: 35rem;
+    }
+
+    .taste-proof-line span {
+        display: block;
+        border-top: 1px solid rgba(24, 22, 20, 0.18);
+        padding-top: 0.8rem;
+        color: rgba(24, 22, 20, 0.72);
+        font-size: 0.78rem;
+        font-weight: 800;
+        line-height: 1.35;
+    }
+
+    .taste-hero-stage {
+        position: relative;
+        min-height: 620px;
+    }
+
+    .taste-hero-main-image,
+    .taste-hero-small-image,
+    .taste-motion-chip {
+        position: absolute;
+        overflow: hidden;
+        background: var(--stone-base);
+        box-shadow: 0 30px 80px rgba(24, 22, 20, 0.18);
+    }
+
+    .taste-hero-main-image {
+        inset: 0 0 4rem 5rem;
+        border-radius: 2.2rem;
+    }
+
+    .taste-hero-small-image {
+        left: 0;
+        bottom: 0;
+        width: min(46%, 19rem);
+        aspect-ratio: 1 / 1.18;
+        border: 0.55rem solid #f7edda;
+        border-radius: 1.6rem;
+    }
+
+    .taste-motion-chip {
+        right: 1.25rem;
+        bottom: 1.2rem;
+        width: min(38%, 15.5rem);
+        aspect-ratio: 1.18 / 1;
+        border-radius: 999px;
+        border: 0.5rem solid rgba(255, 247, 232, 0.86);
+    }
+
+    .taste-hero-main-image img,
+    .taste-hero-small-image img,
+    .taste-motion-chip video {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+    }
+
+    .taste-hero-main-image img {
+        object-position: center;
+    }
+
+    .taste-hero-caption {
+        position: absolute;
+        left: 1.25rem;
+        top: 1.25rem;
+        max-width: 11rem;
+        border-radius: 999px;
+        background: rgba(24, 22, 20, 0.78);
+        color: #fff7e8;
+        padding: 0.7rem 1rem;
+        font-size: 0.72rem;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        backdrop-filter: blur(12px);
+    }
+
+    .taste-place-strip {
+        position: absolute;
+        right: 0.8rem;
+        top: 0.8rem;
+        writing-mode: vertical-rl;
+        color: rgba(255, 247, 232, 0.82);
+        font-size: 0.68rem;
+        font-weight: 900;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        .taste-hero-copy,
+        .taste-hero-actions,
+        .taste-proof-line,
+        .taste-hero-main-image,
+        .taste-hero-small-image,
+        .taste-motion-chip {
+            animation: taste-rise 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .taste-hero-actions {
+            animation-delay: 80ms;
+        }
+
+        .taste-proof-line {
+            animation-delay: 150ms;
+        }
+
+        .taste-hero-main-image {
+            animation-delay: 120ms;
+        }
+
+        .taste-hero-small-image {
+            animation-delay: 230ms;
+        }
+
+        .taste-motion-chip {
+            animation-delay: 310ms;
+        }
+
+        @keyframes taste-rise {
+            from {
+                opacity: 0;
+                transform: translateY(22px);
             }
 
-            !important;
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    }
+
+    @media (max-width: 1024px) {
+        .hero-media-tag {
+            object-position: {{ page_context.focal_point_tablet or page_context.focal_point or 'center' }} !important;
+        }
+
+        .taste-hero-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .taste-hero h1 {
+            max-width: 10ch;
+        }
+
+        .taste-hero-stage {
+            min-height: 560px;
         }
     }
 
@@ -96,23 +329,94 @@
         }
 
         .hero-media-tag {
-            object-position: {
-                    {
-                    page_context.focal_point_mobile or page_context.focal_point or 'center'
-                }
-            }
-
-            !important;
+            object-position: {{ page_context.focal_point_mobile or page_context.focal_point or 'center' }} !important;
         }
 
         .hero-content-wrapper {
             margin: 0 auto !important;
         }
+
+        .taste-hero {
+            padding-top: 2.25rem;
+        }
+
+        .taste-hero h1 {
+            max-width: 9ch;
+        }
+
+        .taste-hero-stage {
+            min-height: 430px;
+        }
+
+        .taste-hero-main-image {
+            inset: 0 0 5.5rem 0;
+            border-radius: 1.5rem;
+        }
+
+        .taste-hero-small-image {
+            width: 46%;
+            border-width: 0.35rem;
+            border-radius: 1.1rem;
+        }
+
+        .taste-motion-chip {
+            width: 43%;
+            right: 0;
+            bottom: 0.4rem;
+            border-width: 0.35rem;
+        }
+
+        .taste-proof-line {
+            grid-template-columns: 1fr;
+            gap: 0.7rem;
+        }
     }
 </style>
 
+{% if current_page_id == 'index' %}
+<section class="taste-hero" aria-labelledby="taste-hero-title">
+    <div class="container">
+        <div class="taste-hero-grid">
+            <div class="taste-hero-content">
+                <span class="taste-eyebrow">Collins Court, Hobart CBD</span>
+                <h1 id="taste-hero-title">Hidden-lane brunch with a real appetite.</h1>
+                <p class="taste-hero-copy">
+                    Wine-Infused Benedict, Potato Parmesan Rosti, Scotch Steak Sandwich and specialty coffee, served inside a warm Hobart laneway.
+                </p>
+
+                <div class="taste-hero-actions" aria-label="Primary actions">
+                    <a class="taste-button taste-button-primary" href="/booking">Book a table</a>
+                    <a class="taste-button taste-button-secondary" href="/menu">View menu</a>
+                    <a class="taste-button taste-button-secondary" href="/location">Get directions</a>
+                </div>
+
+                <div class="taste-proof-line" aria-label="Dandy Lane proof points">
+                    <span>Signature hollandaise-led brunch plates</span>
+                    <span>Specialty coffee ritual from morning service</span>
+                    <span>Hidden in Collins Court near Collins Street</span>
+                </div>
+            </div>
+
+            <div class="taste-hero-stage" aria-label="Dandy Lane food and place visuals">
+                <figure class="taste-hero-main-image">
+                    <img src="assets/media/flywheel2-lane-benny.png" alt="Dandy Lane brunch plate on the outdoor timber bench with laneway mural behind it">
+                    <figcaption class="taste-hero-caption">Bench, brunch, laneway</figcaption>
+                    <span class="taste-place-strip">Dandy Lane Cafe</span>
+                </figure>
+                <figure class="taste-hero-small-image">
+                    <img src="assets/media/flywheel2-steak-sandwich.jpg" alt="Dandy Lane Scotch Steak Sandwich stacked with toasted sourdough and greens">
+                </figure>
+                <div class="taste-motion-chip" aria-label="Brunch motion reference">
+                    <video autoplay muted loop playsinline preload="metadata">
+                        <source src="assets/media/mushroom_benny_rotate.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% else %}
 <section class="identity-hero">
-    <!-- Background Media -->
     {% if page_context.media %}
     <div class="identity-hero-media">
         {% if page_context.media | endswith('.mp4') %}
@@ -144,31 +448,6 @@
                 {{ page_context.emphasis }}
             </div>
 
-            {% if current_page_id == 'index' and page_context.primary_links %}
-            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;">
-                {% for link in page_context.primary_links %}
-                <a href="{{ link.href }}"
-                    style="display: inline-block; padding: 0.9rem 1.4rem; text-decoration: none; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; border-radius: 2px; {% if loop.first %}background: var(--accent); color: #fff;{% else %}background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.25);{% endif %}">
-                    {{ link.label }}
-                </a>
-                {% endfor %}
-            </div>
-            {% endif %}
-
-            {% if current_page_id == 'index' %}
-            <!-- Social Proof Bar (AEO: Trust Signals) -->
-            <div class="social-proof-bar" style="display: flex; gap: 2rem; align-items: center; margin-bottom: 2.5rem; flex-wrap: wrap;">
-                <div class="badge-item" style="display: flex; align-items: center; gap: 0.8rem;">
-                    <div style="background: #00af87; padding: 4px 8px; border-radius: 4px; font-weight: 800; font-size: 0.7rem; color: #fff;">TRIPADVISOR</div>
-                    <span style="font-size: 0.9rem; font-weight: 600; color: rgba(255,255,255,0.8);">{{ site.aeo.external_proof.tripadvisor.award_label }}</span>
-                </div>
-                <div style="height: 20px; border-left: 1px solid rgba(255,255,255,0.2);"></div>
-                <div class="rating-item" style="line-height: 1.2;">
-                    <span style="font-weight: 800; color: #fff; font-size: 1.1rem; letter-spacing: 0.05em;">{{ site.aeo.external_proof.google_maps.badge_label }}</span>
-                    <span style="font-size: 0.75rem; display: block; opacity: 0.7; text-transform: uppercase;">{{ site.aeo.external_proof.google_maps.hero_text }}</span>
-                </div>
-            </div>
-            {% endif %}
             <div class="nap-badge"
                 style="display: inline-flex; align-items: center; background: rgba(255,255,255,0.1); backdrop-filter: blur(15px); padding: 0.8rem 1.5rem; border: 1px solid rgba(255,255,255,0.1); border-radius: 2px; font-size: 0.85rem;">
                 <span
@@ -179,3 +458,4 @@
         </div>
     </div>
 </section>
+{% endif %}

@@ -15,16 +15,25 @@
 
     <style>
         :root {
-            --primary: #1a1a1a;
-            --secondary: #636e72;
-            --accent: #d63031;
-            --bg: #ffffff;
-            --text: #2d3436;
+            --display-font: "Fraunces", "Cooper Black", "Arial Black", sans-serif;
+            --body-font: "Satoshi", "Aptos", "Segoe UI", sans-serif;
+            --primary: #181614;
+            --secondary: #6f4a32;
+            --accent: #e6b84e;
+            --bg: #fff7e8;
+            --text: #181614;
+            --charcoal-sign: #181614;
+            --cream-wall: #f4ebdd;
+            --stone-base: #c8b899;
+            --timber-bench: #8a5733;
+            --muted-coffee: #6f4a32;
+            --hollandaise-gold: #e6b84e;
+            --paving-grey: #d6d2ca;
             --overlay: rgba(0, 0, 0, 0.4);
         }
 
         body {
-            font-family: 'Inter', -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, sans-serif;
+            font-family: var(--body-font);
             line-height: 1.6;
             color: var(--text);
             margin: 0;
@@ -44,12 +53,14 @@
         }
 
         header {
-            background: white;
-            padding: 1rem 0;
+            background: rgba(255, 247, 232, 0.88);
+            padding: 0.8rem 0;
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid rgba(24, 22, 20, 0.08);
+            box-shadow: 0 10px 40px rgba(24, 22, 20, 0.04);
+            backdrop-filter: blur(18px);
         }
 
         nav {
@@ -60,10 +71,11 @@
         }
 
         .logo {
-            font-size: 1.4rem;
-            letter-spacing: -0.02em;
+            font-family: var(--display-font);
+            font-size: 1.55rem;
+            letter-spacing: -0.055em;
             text-transform: uppercase;
-            font-weight: 800;
+            font-weight: 900;
             z-index: 1001;
         }
 
@@ -75,11 +87,11 @@
         nav a {
             text-decoration: none;
             color: var(--primary);
-            font-weight: 700;
+            font-weight: 900;
             margin-left: 2rem;
-            font-size: 0.85rem;
+            font-size: 0.78rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.09em;
             transition: color 0.3s ease;
         }
 
@@ -89,9 +101,10 @@
 
         nav a.highlight {
             background: var(--accent);
-            color: white;
-            padding: 0.5rem 1.2rem;
-            border-radius: 2px;
+            color: var(--charcoal-sign);
+            padding: 0.64rem 1.15rem;
+            border-radius: 999px;
+            box-shadow: 0 10px 24px rgba(138, 87, 51, 0.16);
         }
 
         /* Hamburger Menu */
@@ -161,28 +174,40 @@
             margin-top: 0;
         }
 
+        h1,
+        h2 {
+            font-family: var(--display-font);
+        }
+
         .btn {
             display: inline-block;
             padding: 1rem 2.5rem;
             background: var(--accent);
-            color: white;
+            color: var(--charcoal-sign);
             text-decoration: none;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.1em;
             transition: transform 0.3s ease, background 0.3s ease;
+            border-radius: 999px;
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            background: #b71c1c;
+            background: #d9aa38;
         }
 
         footer {
             background: var(--primary);
-            color: white;
+            color: #fff7e8;
             padding: 5rem 0 2rem;
             margin-top: 0;
+        }
+
+        @media (max-width: 992px) {
+            header {
+                background: rgba(255, 247, 232, 0.96);
+            }
         }
     </style>
 </head>
