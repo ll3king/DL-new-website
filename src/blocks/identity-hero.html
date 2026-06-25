@@ -521,7 +521,8 @@
                     <img src="assets/media/flywheel2-steak-sandwich.jpg" alt="Dandy Lane Scotch Steak Sandwich stacked with toasted sourdough and greens">
                 </figure>
                 <div class="taste-motion-chip" aria-label="Brunch motion reference">
-                    <video autoplay muted loop playsinline preload="metadata">
+                    <video autoplay muted loop playsinline preload="auto" poster="assets/media/mushroom_benny_rotate-poster.jpg" data-autoplay-video>
+                        <source media="(max-width: 768px)" src="assets/media/mushroom_benny_rotate-mobile.mp4" type="video/mp4">
                         <source src="assets/media/mushroom_benny_rotate.mp4" type="video/mp4">
                     </video>
                 </div>
@@ -534,7 +535,8 @@
     {% if page_context.media %}
     <div class="identity-hero-media">
         {% if page_context.media | endswith('.mp4') %}
-        <video autoplay muted loop playsinline class="hero-media-tag">
+        <video autoplay muted loop playsinline preload="auto" class="hero-media-tag" poster="{{ page_context.media | replace('.mp4', '-poster.jpg') }}" data-autoplay-video>
+            <source media="(max-width: 768px)" src="{{ page_context.media | replace('.mp4', '-mobile.mp4') }}" type="video/mp4">
             <source src="{{ page_context.media }}" type="video/mp4">
         </video>
         {% else %}
@@ -573,3 +575,39 @@
     </div>
 </section>
 {% endif %}
+
+<script>
+    (function () {
+        const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+        function startDandyVideos() {
+            if (motionQuery.matches) return;
+
+            document.querySelectorAll('video[data-autoplay-video]').forEach((video) => {
+                video.muted = true;
+                video.defaultMuted = true;
+                video.playsInline = true;
+                video.setAttribute('muted', '');
+                video.setAttribute('playsinline', '');
+
+                const attempt = video.play();
+                if (attempt && typeof attempt.catch === 'function') {
+                    attempt.catch(() => {
+                        video.dataset.playbackFailed = 'true';
+                    });
+                }
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', startDandyVideos, { once: true });
+        } else {
+            startDandyVideos();
+        }
+
+        window.addEventListener('pageshow', startDandyVideos);
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) startDandyVideos();
+        });
+    })();
+</script>
