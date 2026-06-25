@@ -1,6 +1,6 @@
 # Feature Registry
 
-Last updated: 2026-06-24
+Last updated: 2026-06-25
 
 ## Purpose
 
@@ -96,6 +96,7 @@ Status:
 - active
 - official core feature area
 - current urgent priority
+- first visual refresh pass accepted on desktop and mobile, then merged to `main`
 
 Business role:
 
@@ -123,9 +124,21 @@ Primary entry:
 
 - [flywheel-2-visual-taste-frontend-performance.md](./flywheel-2-visual-taste-frontend-performance.md)
 
+Latest implementation retrospective:
+
+- [flywheel-2-visual-refresh-retrospective-2026-06-25.md](./flywheel-2-visual-refresh-retrospective-2026-06-25.md)
+
 Derived visual-asset and signal entry:
 
 - [../visual-knowledge-base/README.md](../visual-knowledge-base/README.md)
+
+Current accepted production pattern:
+
+- product-first hero
+- real Dandy Lane food and place signals
+- mobile-first visual ordering
+- viewport-safe navigation and chat controls
+- lightweight motion with mobile video source and poster fallback
 
 ## Project Rule
 

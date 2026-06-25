@@ -1,6 +1,6 @@
 # Flywheel 2: Visual Taste / Frontend / Performance
 
-Last updated: 2026-06-16
+Last updated: 2026-06-25
 
 ## Purpose
 
@@ -8,6 +8,10 @@ This document defines Flywheel 2 as an official feature area of the Dandy Lane C
 
 Flywheel 2 is not a cosmetic side task.
 It is the current urgent project priority.
+
+Latest accepted implementation learning:
+
+- [Flywheel 2 Visual Refresh Retrospective 2026-06-25](./flywheel-2-visual-refresh-retrospective-2026-06-25.md)
 
 ## Business Role
 
@@ -89,6 +93,13 @@ Avoid:
 - support reduced-motion preferences
 - do not add decorative media that harms speed without improving memory or decision-making
 
+Production media rule:
+
+- desktop visuals may keep the richer approved source when performance is acceptable
+- mobile visuals need their own delivery check
+- autoplay video must have `muted`, `playsinline`, a mobile-sized source, a `poster`, and a playback fallback
+- do not ship a video-only visual state that becomes an empty shape if autoplay fails
+
 ## Workflow
 
 Official workflow:
@@ -132,9 +143,16 @@ Current Stitch exploration inputs:
 - [flywheel-2-stitch-design-brief-v1.md](./flywheel-2-stitch-design-brief-v1.md)
 - [flywheel-2-stitch-DESIGN-v1.md](./flywheel-2-stitch-DESIGN-v1.md)
 - [flywheel-2-stitch-media-motion-pack-v1.md](./flywheel-2-stitch-media-motion-pack-v1.md)
+- [flywheel-2-visual-refresh-retrospective-2026-06-25.md](./flywheel-2-visual-refresh-retrospective-2026-06-25.md)
 
 The media motion pack is required for design exploration that should feel specifically like Dandy Lane.
 Do not run Stitch from text-only instructions when the task is about visual taste.
+
+Implementation learning:
+
+- Stitch is useful for exploration, but production direction must be grounded in project-owned visual assets.
+- For Dandy Lane, the strongest validated pattern is close appetising product focus plus one or two real place signals.
+- Do not ask design tools to invent Dandy Lane from text alone.
 
 ## Visual QA Checklist
 
@@ -148,6 +166,9 @@ Before approving frontend work, check:
 6. Does the page avoid SaaS-template structure?
 7. Does motion feel intentional and light?
 8. Does the design protect performance?
+9. Does mobile show visual appetite before the guest loses attention?
+10. Do nav, chat, CTA, and media all stay inside the real phone viewport?
+11. If video is used, does it still produce a good visual state when autoplay fails?
 
 ## Execution Boundary
 
@@ -250,6 +271,12 @@ Main files:
 - `src/assets/media`
 - image and media references used by homepage, menu, stories, and other presentation blocks
 - `visual-knowledge-base`
+
+Current production rule:
+
+- every production video used in a visible presentation surface should have a desktop source, mobile source, and poster fallback
+- filenames should change when important media changes are made, because long-lived asset caching can hide updates
+- mobile media success is part of Flywheel 2 acceptance, not a separate optional performance pass
 
 ## Limited Supporting Zones
 

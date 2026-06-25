@@ -1,6 +1,6 @@
 # Project Module Code Boundary Map
 
-Last updated: 2026-06-24
+Last updated: 2026-06-25
 
 ## Purpose
 
@@ -39,6 +39,7 @@ Use this table before touching code.
 For any frontend-facing task, read this first:
 
 - [flywheel-2-visual-taste-frontend-performance.md](./flywheel-2-visual-taste-frontend-performance.md)
+- [flywheel-2-visual-refresh-retrospective-2026-06-25.md](./flywheel-2-visual-refresh-retrospective-2026-06-25.md)
 
 ### 1. Homepage positioning / visual refresh / UX polish / performance feel
 
@@ -56,6 +57,9 @@ Typical files:
 - `src/assets/css/style.css`
 - `src/assets/js/main.js`
 - `src/blocks/identity-hero.html`
+- `src/blocks/signature-trio.html`
+- `src/blocks/chatbot-widget.html`, only for visible widget positioning and presentation
+- `src/assets/media`
 - other homepage and shared frontend blocks
 
 Do not expand into by default:
@@ -63,6 +67,14 @@ Do not expand into by default:
 - booking backend
 - chat routing
 - SMS routing
+
+Current accepted Flywheel 2 production pattern:
+
+- product-first hero
+- mobile visual appears before text-only decision fatigue
+- navigation and chat controls stay inside the mobile viewport
+- autoplay media has mobile-sized source and poster fallback
+- desktop visual presentation should not be regressed while fixing mobile
 
 ### 2. Schema / canonical / entity proof / robots / sitemap / answerability
 
@@ -207,6 +219,8 @@ Main editable files:
 - [src/blocks/signature-trio.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/signature-trio.html)
 - [src/blocks/social-proof-reviews.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/social-proof-reviews.html)
 - [src/blocks/menu-grid.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/menu-grid.html)
+- [src/blocks/chatbot-widget.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/chatbot-widget.html), presentation only
+- [src/assets/media](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/assets/media)
 - [public/index.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/public/index.html)
 - [public/menu.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/public/menu.html)
 - [public/location.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/public/location.html)

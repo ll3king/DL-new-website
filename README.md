@@ -1,6 +1,6 @@
 # Dandy Lane Cafe Website
 
-Last updated: 2026-06-24
+Last updated: 2026-06-25
 
 ## Main Entry
 
@@ -43,6 +43,10 @@ Official Flywheel 2 document:
 
 - [docs/flywheel-2-visual-taste-frontend-performance.md](docs/flywheel-2-visual-taste-frontend-performance.md)
 
+Latest Flywheel 2 implementation retrospective:
+
+- [docs/flywheel-2-visual-refresh-retrospective-2026-06-25.md](docs/flywheel-2-visual-refresh-retrospective-2026-06-25.md)
+
 Official visual knowledge base entry:
 
 - [visual-knowledge-base/README.md](visual-knowledge-base/README.md)
@@ -79,10 +83,11 @@ These may still exist as historical traces or narrow implementation details, but
 2. [docs/feature-registry.md](docs/feature-registry.md)
 3. [docs/website-information-structure.zh-CN.md](docs/website-information-structure.zh-CN.md)
 4. [docs/flywheel-2-visual-taste-frontend-performance.md](docs/flywheel-2-visual-taste-frontend-performance.md)
-5. [visual-knowledge-base/README.md](visual-knowledge-base/README.md)
-6. [docs/project-module-code-boundary-map.zh-CN.md](docs/project-module-code-boundary-map.zh-CN.md)
-7. [docs/project-governance-branch-and-doc-map.zh-CN.md](docs/project-governance-branch-and-doc-map.zh-CN.md)
-8. [docs/project-governance-tree-map.zh-CN.md](docs/project-governance-tree-map.zh-CN.md)
+5. [docs/flywheel-2-visual-refresh-retrospective-2026-06-25.md](docs/flywheel-2-visual-refresh-retrospective-2026-06-25.md)
+6. [visual-knowledge-base/README.md](visual-knowledge-base/README.md)
+7. [docs/project-module-code-boundary-map.zh-CN.md](docs/project-module-code-boundary-map.zh-CN.md)
+8. [docs/project-governance-branch-and-doc-map.zh-CN.md](docs/project-governance-branch-and-doc-map.zh-CN.md)
+9. [docs/project-governance-tree-map.zh-CN.md](docs/project-governance-tree-map.zh-CN.md)
 
 Direct module entrypoints:
 

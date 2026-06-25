@@ -1,6 +1,6 @@
 # Project Current Overview And Doc Governance
 
-Last updated: 2026-06-24
+Last updated: 2026-06-25
 
 ## Purpose
 
@@ -37,6 +37,7 @@ Initial optimization completed and validated; this flywheel is now in maintenanc
 2. `Visual Taste / Frontend / Performance`
 This is the urgent active priority.
 The website needs a major visual taste and frontend refresh.
+The first visual refresh pass has been accepted on desktop and mobile and merged to `main`.
 
 ## Active Workflow
 
@@ -54,6 +55,7 @@ Core governance:
 - [website-information-structure.zh-CN.md](./website-information-structure.zh-CN.md)
 - [menu/current-menu-source-2026-06-24.md](./menu/current-menu-source-2026-06-24.md)
 - [flywheel-2-visual-taste-frontend-performance.md](./flywheel-2-visual-taste-frontend-performance.md)
+- [flywheel-2-visual-refresh-retrospective-2026-06-25.md](./flywheel-2-visual-refresh-retrospective-2026-06-25.md)
 - [../visual-knowledge-base/README.md](../visual-knowledge-base/README.md)
 - [project-module-code-boundary-map.zh-CN.md](./project-module-code-boundary-map.zh-CN.md)
 - [project-governance-branch-and-doc-map.zh-CN.md](./project-governance-branch-and-doc-map.zh-CN.md)
@@ -121,8 +123,9 @@ Before visual implementation, read:
 
 1. [feature-registry.md](./feature-registry.md)
 2. [flywheel-2-visual-taste-frontend-performance.md](./flywheel-2-visual-taste-frontend-performance.md)
-3. [../visual-knowledge-base/README.md](../visual-knowledge-base/README.md)
-4. [project-module-code-boundary-map.zh-CN.md](./project-module-code-boundary-map.zh-CN.md)
+3. [flywheel-2-visual-refresh-retrospective-2026-06-25.md](./flywheel-2-visual-refresh-retrospective-2026-06-25.md)
+4. [../visual-knowledge-base/README.md](../visual-knowledge-base/README.md)
+5. [project-module-code-boundary-map.zh-CN.md](./project-module-code-boundary-map.zh-CN.md)
 
 ## One-Line Rule
 

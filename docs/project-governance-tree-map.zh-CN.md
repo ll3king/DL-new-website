@@ -1,6 +1,6 @@
 # Project Governance Tree Map
 
-Last updated: 2026-06-24
+Last updated: 2026-06-25
 
 ## Purpose
 
@@ -34,6 +34,8 @@ DL new website
 |  |     \- current menu facts and prices
 |  |- flywheel-2-visual-taste-frontend-performance.md
 |  |  \- Flywheel 2 official document
+|  |- flywheel-2-visual-refresh-retrospective-2026-06-25.md
+|  |  \- first accepted Flywheel 2 production refresh retrospective
 |  |- deprecated-assumptions.md
 |  |  \- deprecated project defaults
 |  |- project-module-code-boundary-map.zh-CN.md
@@ -54,6 +56,7 @@ DL new website
 |  \- entity / answerability / schema / canonical / robots / sitemap / search-facing structure
 |- Flywheel 2: Visual Taste / Frontend / Performance
 |  \- Stitch -> Codex via MCP -> repo implementation -> Taste / Impeccable visual QA -> performance QA
+|  \- accepted pattern: product-first hero / mobile-safe controls / lightweight motion / video fallback
 |- Execution Modules
 |  |- Website
 |  |  \- shell / frontend / visual taste / performance
@@ -165,6 +168,7 @@ If a new task arrives, read the tree in this order:
 2. `Is this about one of the two flywheels?`
 - decide whether the task belongs to search answerability or visual taste / frontend / performance
 - if it belongs to Flywheel 2, read the Flywheel 2 document before implementation
+- for Flywheel 2 implementation, also read [flywheel-2-visual-refresh-retrospective-2026-06-25.md](./flywheel-2-visual-refresh-retrospective-2026-06-25.md) before changing the visual system
 
 3. `Which execution module owns the actual code?`
 - `Website`
