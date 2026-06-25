@@ -120,7 +120,7 @@ Tooling rule:
 
 Flywheel 2 now has a dedicated visual knowledge layer:
 
-- [../visual-knowledge-base/README.md](../visual-knowledge-base/README.md)
+- [flywheel-2-visual-knowledge-base-local-only.md](./flywheel-2-visual-knowledge-base-local-only.md)
 
 This is where:
 
@@ -136,6 +136,8 @@ Important:
 
 - this is a Flywheel 2 subsystem
 - it is not a new project root
+- it is local-only and must not be submitted to GitHub
+- selected production-ready derivatives must be promoted separately into `src/assets/media`
 - project entry still stays at the website governance layer first
 
 Current Stitch exploration inputs:

@@ -49,7 +49,13 @@ Latest Flywheel 2 implementation retrospective:
 
 Official visual knowledge base entry:
 
-- [visual-knowledge-base/README.md](visual-knowledge-base/README.md)
+- [docs/flywheel-2-visual-knowledge-base-local-only.md](docs/flywheel-2-visual-knowledge-base-local-only.md)
+
+Local visual knowledge base entry:
+
+- `visual-knowledge-base/README.md`
+
+Important: `visual-knowledge-base/` is a local-only Flywheel 2 working library and must not be submitted to GitHub.
 
 ## Current Priority
 
@@ -84,7 +90,7 @@ These may still exist as historical traces or narrow implementation details, but
 3. [docs/website-information-structure.zh-CN.md](docs/website-information-structure.zh-CN.md)
 4. [docs/flywheel-2-visual-taste-frontend-performance.md](docs/flywheel-2-visual-taste-frontend-performance.md)
 5. [docs/flywheel-2-visual-refresh-retrospective-2026-06-25.md](docs/flywheel-2-visual-refresh-retrospective-2026-06-25.md)
-6. [visual-knowledge-base/README.md](visual-knowledge-base/README.md)
+6. [docs/flywheel-2-visual-knowledge-base-local-only.md](docs/flywheel-2-visual-knowledge-base-local-only.md)
 7. [docs/project-module-code-boundary-map.zh-CN.md](docs/project-module-code-boundary-map.zh-CN.md)
 8. [docs/project-governance-branch-and-doc-map.zh-CN.md](docs/project-governance-branch-and-doc-map.zh-CN.md)
 9. [docs/project-governance-tree-map.zh-CN.md](docs/project-governance-tree-map.zh-CN.md)
@@ -100,7 +106,7 @@ Direct module entrypoints:
 - Visual / frontend / performance work:
   [docs/flywheel-2-visual-taste-frontend-performance.md](docs/flywheel-2-visual-taste-frontend-performance.md)
 - Visual asset and signal governance:
-  [visual-knowledge-base/README.md](visual-knowledge-base/README.md)
+  [docs/flywheel-2-visual-knowledge-base-local-only.md](docs/flywheel-2-visual-knowledge-base-local-only.md)
 - Content-only updates:
   [docs/content-update-quick-entry.zh-CN.md](docs/content-update-quick-entry.zh-CN.md)
 

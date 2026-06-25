@@ -62,6 +62,13 @@ Typical files:
 - `src/assets/media`
 - other homepage and shared frontend blocks
 
+Local-only support:
+
+- `visual-knowledge-base/` is a Flywheel 2 reference library only
+- it must not be submitted to GitHub
+- promote only selected production-ready derivatives into `src/assets/media`
+- governance: [flywheel-2-visual-knowledge-base-local-only.md](./flywheel-2-visual-knowledge-base-local-only.md)
+
 Do not expand into by default:
 
 - booking backend
@@ -225,6 +232,11 @@ Main editable files:
 - [public/menu.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/public/menu.html)
 - [public/location.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/public/location.html)
 - [public/faq.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/public/faq.html)
+
+Local-only reference library:
+
+- `visual-knowledge-base/`, governed by [flywheel-2-visual-knowledge-base-local-only.md](./flywheel-2-visual-knowledge-base-local-only.md)
+- do not stage, commit, or push this directory
 
 Do not touch by default:
 

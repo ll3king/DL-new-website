@@ -4,6 +4,12 @@
 .agents/
 tmp/
 
+# Local-only Flywheel 2 visual knowledge base.
+# Large source assets, reconstruction tests, and visual notes must not be
+# submitted to GitHub. Promote only selected production-ready derivatives into
+# src/assets/media when explicitly approved.
+visual-knowledge-base/
+
 # Environment variables and secrets
 .env
 *.json

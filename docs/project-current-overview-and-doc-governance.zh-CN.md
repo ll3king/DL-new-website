@@ -56,7 +56,7 @@ Core governance:
 - [menu/current-menu-source-2026-06-24.md](./menu/current-menu-source-2026-06-24.md)
 - [flywheel-2-visual-taste-frontend-performance.md](./flywheel-2-visual-taste-frontend-performance.md)
 - [flywheel-2-visual-refresh-retrospective-2026-06-25.md](./flywheel-2-visual-refresh-retrospective-2026-06-25.md)
-- [../visual-knowledge-base/README.md](../visual-knowledge-base/README.md)
+- [flywheel-2-visual-knowledge-base-local-only.md](./flywheel-2-visual-knowledge-base-local-only.md)
 - [project-module-code-boundary-map.zh-CN.md](./project-module-code-boundary-map.zh-CN.md)
 - [project-governance-branch-and-doc-map.zh-CN.md](./project-governance-branch-and-doc-map.zh-CN.md)
 - [project-governance-tree-map.zh-CN.md](./project-governance-tree-map.zh-CN.md)
@@ -124,7 +124,7 @@ Before visual implementation, read:
 1. [feature-registry.md](./feature-registry.md)
 2. [flywheel-2-visual-taste-frontend-performance.md](./flywheel-2-visual-taste-frontend-performance.md)
 3. [flywheel-2-visual-refresh-retrospective-2026-06-25.md](./flywheel-2-visual-refresh-retrospective-2026-06-25.md)
-4. [../visual-knowledge-base/README.md](../visual-knowledge-base/README.md)
+4. [flywheel-2-visual-knowledge-base-local-only.md](./flywheel-2-visual-knowledge-base-local-only.md)
 5. [project-module-code-boundary-map.zh-CN.md](./project-module-code-boundary-map.zh-CN.md)
 
 ## One-Line Rule
