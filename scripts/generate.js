@@ -620,23 +620,31 @@ https://dl-new-website.pages.dev/*  https://dandylanecafe.com/:splat  301!
         fs.writeFileSync(path.join(PUBLIC_DIR, '_redirects'), finalRedirects);
 
         // 6. Generate Cloudflare Headers
-        const headers = `/admin
+        const headers = `/robots.txt
+  Cache-Control: public, max-age=300, must-revalidate
+
+/sitemap.xml
+  Cache-Control: public, max-age=300, must-revalidate
+
+/admin
   X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store
 
 /admin.html
   X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store
 
 /admin/*
   X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store
 
 /facilities/laptop-friendly-seating
   X-Robots-Tag: noindex, follow
+  Cache-Control: public, max-age=300, must-revalidate
 
 /facilities/laptop-friendly-seating.html
   X-Robots-Tag: noindex, follow
-
-/*
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=300, must-revalidate
 
 /assets/*
   Cache-Control: public, max-age=31536000, immutable

@@ -84,6 +84,7 @@ Implemented fallback controls:
 - `robots.txt` explicitly disallows training/control crawlers currently treated as non-answerability crawlers: `Google-Extended`, `GPTBot`, and `ClaudeBot`
 - `_headers` applies `X-Robots-Tag: noindex, nofollow` to `/admin`, `/admin.html`, and `/admin/*`
 - `_headers` applies `X-Robots-Tag: noindex, follow` to `/facilities/laptop-friendly-seating` and `/facilities/laptop-friendly-seating.html`
+- `_headers` keeps `robots.txt`, `sitemap.xml`, admin surfaces, and demoted facility pages out of long immutable caching
 - page HTML also carries the matching robots meta tags
 - sitemap excludes noindex pages
 
