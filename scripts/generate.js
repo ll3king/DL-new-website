@@ -176,6 +176,11 @@ function prepareMenuHighlightsData(rawMenuData) {
     };
 }
 
+function shouldIncludeInSitemap(entry) {
+    const robots = typeof entry?.robots === 'string' ? entry.robots.toLowerCase() : '';
+    return entry && entry.include_in_sitemap !== false && !robots.includes('noindex');
+}
+
 async function render() {
     console.log("[L3] Starting Site Generation (Nunjucks Engine)...");
 
@@ -463,6 +468,7 @@ async function render() {
                 page_description: pageConfig.emphasis,
                 current_page_id: page.id,
                 page_path: pagePath,
+                page_robots: pageConfig.robots,
                 global_schema: pageSchema,
                 current_year: new Date().getFullYear()
             });
@@ -533,6 +539,7 @@ async function render() {
                 current_page_id: 'stories',
                 slug: route.htmlPath,
                 page_path: storyPath,
+                page_robots: story.robots,
                 global_schema: pageSchema,
                 current_year: new Date().getFullYear()
             });
@@ -546,13 +553,14 @@ async function render() {
         console.log("[L3] Generating AEO Artifacts: sitemap.xml, robots.txt, _redirects");
         
         // Sitemap - Standardize URLs (Pretty URLs)
-        const sitemapEntries = pages.map(p => {
+        const sitemapEntries = pages.filter(p => shouldIncludeInSitemap(siteData.pages[p.id] || {})).map(p => {
             const path = p.id === 'index' ? '/' : `/${p.id}`;
             return `  <url><loc>${siteData.seo.site_url}${path}</loc></url>`;
         });
 
         // Add stories to sitemap
         storiesData.stories.forEach(story => {
+            if (!shouldIncludeInSitemap(story)) return;
             const route = storyRoute(story);
             sitemapEntries.push(`  <url><loc>${siteData.seo.site_url}${route.prettyPath}</loc></url>`);
         });
@@ -563,9 +571,26 @@ ${sitemapEntries.join('\n')}
 </urlset>`;
         fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap.xml'), sitemap);
 
-        // Robots.txt
+        // Robots.txt: keep search/answerability open while preserving AI training control.
         const robots = `User-agent: *
+Content-Signal: search=yes,ai-train=no
 Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
 Sitemap: ${siteData.seo.site_url}/sitemap.xml`;
         fs.writeFileSync(path.join(PUBLIC_DIR, 'robots.txt'), robots);
 
@@ -594,8 +619,23 @@ https://dl-new-website.pages.dev/*  https://dandylanecafe.com/:splat  301!
         const finalRedirects = `${redirects.trim()}\n${storyRedirects.join('\n')}\n`;
         fs.writeFileSync(path.join(PUBLIC_DIR, '_redirects'), finalRedirects);
 
-        // 6. Generate Cloudflare Headers (Caching)
-        const headers = `/*
+        // 6. Generate Cloudflare Headers
+        const headers = `/admin
+  X-Robots-Tag: noindex, nofollow
+
+/admin.html
+  X-Robots-Tag: noindex, nofollow
+
+/admin/*
+  X-Robots-Tag: noindex, nofollow
+
+/facilities/laptop-friendly-seating
+  X-Robots-Tag: noindex, follow
+
+/facilities/laptop-friendly-seating.html
+  X-Robots-Tag: noindex, follow
+
+/*
   Cache-Control: public, max-age=31536000, immutable
 
 /assets/*

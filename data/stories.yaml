@@ -180,6 +180,8 @@ stories:
     date: "2026-02-10"
     author: "Dandy Lane Team"
     index_group: "facilities"
+    include_in_sitemap: false
+    robots: "noindex, follow"
     summary: "Facility details for guests who need laptop-friendly seating."
     answer_summary: "Laptop-friendly seating is available at selected tables when the cafe is quieter. Availability can vary during busy brunch periods."
     evidence_points:

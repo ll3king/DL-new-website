@@ -74,6 +74,13 @@ Acceptance standard:
 
 - [aeo/aeo-geo-acceptance-standard.md](./aeo/aeo-geo-acceptance-standard.md)
 
+Strict reviewer:
+
+- [aeo/flywheel-1-strict-reviewer-agent.md](./aeo/flywheel-1-strict-reviewer-agent.md)
+- [aeo/flywheel-1-review-2026-06-25.md](./aeo/flywheel-1-review-2026-06-25.md)
+- [aeo/cloudflare-ai-crawler-policy.md](./aeo/cloudflare-ai-crawler-policy.md)
+- [aeo/external-proof-evidence-log.md](./aeo/external-proof-evidence-log.md)
+
 Agent swarm control plan:
 
 - [aeo/geo-agent-swarm-control-plan.md](./aeo/geo-agent-swarm-control-plan.md)

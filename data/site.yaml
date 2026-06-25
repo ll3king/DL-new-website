@@ -287,6 +287,8 @@ pages:
     subtitle: "Manage Your Sanctuary."
     emphasis: "L0-driven reservation management and performance oversight."
     media: "assets/media/home_hero.mp4"
+    robots: "noindex, nofollow"
+    include_in_sitemap: false
 
 contact:
   nap:
