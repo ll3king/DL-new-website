@@ -22,8 +22,9 @@ Status:
 
 - active
 - Initial optimization completed and validated; maintain factual consistency and answerability.
-- maintenance mode
-- not the main expansion target in this phase
+- website-controlled layer is in maintenance mode
+- external proof evidence building is the active validation gap
+- not a website-page expansion target in this phase
 
 Business role:
 
@@ -80,10 +81,13 @@ Strict reviewer:
 - [aeo/flywheel-1-review-2026-06-25.md](./aeo/flywheel-1-review-2026-06-25.md)
 - [aeo/cloudflare-ai-crawler-policy.md](./aeo/cloudflare-ai-crawler-policy.md)
 - [aeo/external-proof-evidence-log.md](./aeo/external-proof-evidence-log.md)
+- [aeo/external-proof-artifacts-2026-06-26.md](./aeo/external-proof-artifacts-2026-06-26.md)
+- [aeo/ai-answer-baseline-2026-06-26.md](./aeo/ai-answer-baseline-2026-06-26.md)
 
 Agent swarm control plan:
 
 - [aeo/geo-agent-swarm-control-plan.md](./aeo/geo-agent-swarm-control-plan.md)
+- [aeo/external-proof-sprint-1-control-plan-2026-06-25.md](./aeo/external-proof-sprint-1-control-plan-2026-06-25.md)
 
 External signal build playbook:
 

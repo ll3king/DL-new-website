@@ -1,6 +1,6 @@
 # Search Optimization Entry
 
-Last updated: 2026-06-24
+Last updated: 2026-06-26
 
 ## Purpose
 
@@ -71,7 +71,8 @@ It does not own:
 This search flywheel is future-facing.
 It is not the same thing as the current urgent frontend priority, but it remains a core governance lane.
 Initial optimization completed and validated; maintain factual consistency and answerability.
-Current status is maintenance mode, not expansion mode.
+Current website-controlled status is maintenance mode, not website-page expansion mode.
+The active gap is external proof validation: independent public sources, community signals, and AI-answer evidence.
 
 Project-level deprecated defaults and top-layer identity are governed in:
 
@@ -137,17 +138,26 @@ Detailed tracking:
 - [aeo/flywheel-1-review-2026-06-25.md](./aeo/flywheel-1-review-2026-06-25.md)
 - [aeo/cloudflare-ai-crawler-policy.md](./aeo/cloudflare-ai-crawler-policy.md)
 - [aeo/external-proof-evidence-log.md](./aeo/external-proof-evidence-log.md)
+- [aeo/external-proof-artifacts-2026-06-26.md](./aeo/external-proof-artifacts-2026-06-26.md)
+- [aeo/ai-answer-baseline-2026-06-26.md](./aeo/ai-answer-baseline-2026-06-26.md)
+- [aeo/ai-recommendation-expanded-review-2026-06-26.md](./aeo/ai-recommendation-expanded-review-2026-06-26.md)
+- [aeo/community-proof-watchlist-2026-06-26.md](./aeo/community-proof-watchlist-2026-06-26.md)
+- [aeo/listing-correction-pack-2026-06-26.md](./aeo/listing-correction-pack-2026-06-26.md)
 - [aeo/geo-agent-swarm-control-plan.md](./aeo/geo-agent-swarm-control-plan.md)
 - [aeo/external-signal-build-playbook.md](./aeo/external-signal-build-playbook.md)
+- [aeo/external-proof-sprint-1-control-plan-2026-06-25.md](./aeo/external-proof-sprint-1-control-plan-2026-06-25.md)
 - [aeo/geo-sprint-1-swarm-brief.md](./aeo/geo-sprint-1-swarm-brief.md)
 - [aeo/operator-chatgpt-answer-comparison-2026-06-24.md](./aeo/operator-chatgpt-answer-comparison-2026-06-24.md)
 
 | Source | Current public claim | Matches official site? | Risk | Recommended action |
 |---|---|---|---|---|
-| Tripadvisor | Correct Dandy Lane Cafe listing exists and supports breakfast / lunch / brunch, Cafe / Australian, 4.6/5, and 231 reviews. | Yes for current proof target. | Low | Keep the corrected Dandy Lane listing URL everywhere visible proof is rendered. Do not reintroduce the wrong Tripadvisor entity. |
+| Google Business Profile / Google Maps | Visible public Google Maps screenshots confirm Dandy Lane Cafe, Brunch restaurant category, 4.6 rating, 978 reviews, map placement near Collins Street, and business-owner control context. Address, website, menu link, phone, owner update, and review snippets are DOM-supported only until scrolled screenshots are captured. | Yes for scoped current proof target. | Low for scoped proof, medium for secondary fields | Count as external entity/category/rating proof. Refresh if rating, review count, category, address, website, menu link, phone, or hours change; capture scrolled screenshots before scoring secondary fields as visual proof. |
+| Tripadvisor | User-provided logged-in browser screenshot confirms Dandy Lane Cafe TripAdvisor public listing and business-page context for `locationId=11801652`, including rating, review count, address, hours, About text, features, and traveller contribution cards. | Yes for current proof target. | Low for proof, medium for handling | Count as external proof, but keep the screenshot as internal evidence because it includes business-dashboard context. |
 | Discover Tasmania | Product wording can keep Wine-Infused Benedict and Potato Parmesan Rosti as public / AEO names, while prices and source mapping come from Egg Benedict and Dandy Rosti in the governed current menu source. Listing language still leans on laptop-friendly atmosphere / remote work. | Partially. | Medium | Request update to current product-led brunch wording. |
 | Hobart & Beyond | Product anchors are good, but listing language still leans on laptop-friendly atmosphere / remote work. | Partially. | Medium | Request update to product-led brunch wording. |
-| Hello Hobart | Sunday is listed as closed, while the official site and Tripadvisor show Sunday 9:00 AM - 2:00 PM. | No. | Medium | Request opening-hours update. |
+| Hello Hobart | Sunday is listed as closed, while the official site and Tripadvisor show Sunday 9:00 AM - 2:00 PM. | No. | Medium | Request opening-hours and product-description update through [listing-correction-pack-2026-06-26.md](./aeo/listing-correction-pack-2026-06-26.md). |
+| Reddit / community proof | Google-indexed r/hobart results show relevant brunch, breakfast, coffee, hidden-cafe, eggs Benedict, and Dandy Lane mention candidates, but direct Reddit access was blocked and thread context is not verified. | Not counted yet. | Medium | Use [community-proof-watchlist-2026-06-26.md](./aeo/community-proof-watchlist-2026-06-26.md). Do not post before manual thread verification, Controller approval, and Strict Reviewer pre-post approval. |
+| AI answer baseline / expanded review | Baseline proves initial AI retrieval. Expanded 6-prompt review shows ChatGPT is strong, hidden-lane intent is strong, Perplexity is weak outside hidden-lane / direct brand intent, Gemini has factual drift, and Copilot is blocked by human verification. | Conditional / mixed. | Medium | Use [ai-recommendation-expanded-review-2026-06-26.md](./aeo/ai-recommendation-expanded-review-2026-06-26.md). Correct external listing drift and rerun the exact matrix after propagation. |
 
 ## One-Line Rule
 

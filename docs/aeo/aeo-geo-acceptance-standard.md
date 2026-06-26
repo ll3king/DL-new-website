@@ -1,6 +1,6 @@
 # AEO / GEO Acceptance Standard
 
-Last updated: 2026-06-24
+Last updated: 2026-06-26
 
 ## Purpose
 
@@ -25,6 +25,12 @@ Control model:
 External signal build model:
 
 - [external-signal-build-playbook.md](./external-signal-build-playbook.md)
+- [external-proof-sprint-1-control-plan-2026-06-25.md](./external-proof-sprint-1-control-plan-2026-06-25.md)
+- [external-proof-artifacts-2026-06-26.md](./external-proof-artifacts-2026-06-26.md)
+- [ai-answer-baseline-2026-06-26.md](./ai-answer-baseline-2026-06-26.md)
+- [ai-recommendation-expanded-review-2026-06-26.md](./ai-recommendation-expanded-review-2026-06-26.md)
+- [community-proof-watchlist-2026-06-26.md](./community-proof-watchlist-2026-06-26.md)
+- [listing-correction-pack-2026-06-26.md](./listing-correction-pack-2026-06-26.md)
 
 ## Strategic Language
 
@@ -111,17 +117,27 @@ External proof is the remaining non-green area because it depends on third-party
 
 | Area | Weight | Strict pass condition | Current status |
 |---|---:|---|---|
-| Google Business Profile consistency | 20 | Name, address, hours, category, website, and menu / booking references match the official site. | Needs live verification |
-| Major travel / local listings | 20 | Tripadvisor, Discover Tasmania, Hobart & Beyond, Hello Hobart, and other high-authority listings reinforce brunch/product identity and correct hours. | Partial |
-| Review-platform factual consistency | 15 | Public review snippets support breakfast/brunch, coffee, location, and signature product perception without relying on unverifiable claims. | Partial |
-| Reddit signal matrix | 25 | Relevant Reddit discussions provide natural, non-spam references to Dandy Lane as a Hobart brunch / coffee / hidden-lane option. | Open workstream |
-| AI-answer spot checks | 20 | ChatGPT, Gemini, Perplexity, Google AI features, and Bing/Copilot answer core questions with correct entity, location, and product anchors. | Needs recurring checks |
+| Google Business Profile consistency | 20 | Name, address, hours, category, website, and menu / booking references match the official site. | Partial / scoped initial proof: visible Google Maps screenshots capture entity, category, rating/review count, map placement, and owner-control context. Address, website, menu link, phone, owner update, and review snippets remain DOM-supported only until scrolled visual screenshots are captured |
+| Major travel / local listings | 20 | Tripadvisor, Discover Tasmania, Hobart & Beyond, Hello Hobart, and other high-authority listings reinforce brunch/product identity and correct hours. | Partially passed: Tripadvisor, Discover Tasmania, and Hobart & Beyond count; Hello Hobart remains revise |
+| Review-platform factual consistency | 15 | Public review snippets support breakfast/brunch, coffee, location, and signature product perception without relying on unverifiable claims. | Passed for initial proof: TripAdvisor screenshot captures public listing facts and traveller contribution cards |
+| Reddit signal matrix | 25 | Relevant Reddit discussions provide natural, non-spam references to Dandy Lane as a Hobart brunch / coffee / hidden-lane option. | Open workstream: one relevant thread found, no counted signal yet |
+| AI-answer spot checks | 20 | ChatGPT, Gemini, Perplexity, Google AI features, and Bing/Copilot answer core questions with correct entity, location, and product anchors. | Conditional: initial baseline passed with caveats, but expanded 6-prompt review shows broad cross-platform recommendation is not yet strong. ChatGPT is strong; Perplexity is weak outside hidden-lane intent; Gemini has factual drift; Copilot is blocked by human verification |
 
 External proof conclusion:
 
 `Amber / open`.
 
 The next improvement should focus on correcting third-party factual drift and earning real public discussion signals, especially Reddit.
+
+2026-06-26 strict snapshot:
+
+- Formal counted external sources: Google Business Profile / Google Maps, Tripadvisor, Discover Tasmania, Hobart & Beyond
+- Revise / support-only source: Hello Hobart
+- Not counted yet: Apple Maps, Bing Places, Reddit / forums
+- Main blocker: community proof
+- Current community work: watchlist created, but not counted
+- Current listing work: correction pack prepared, but not sent
+- Current expanded AI recommendation score: strict accessible-platform score `56 / 100`; practical likelihood reviewer estimate `68 / 100`
 
 ## Reddit Signal Matrix
 
@@ -144,6 +160,9 @@ Minimum Reddit acceptance standard:
 - at least 1 thread that connects Dandy Lane to a core product anchor, not only the brand name
 - no vote manipulation, astroturfing, duplicate spam, or fake customer voice
 - any owner / staff participation must be transparent and useful
+
+Owner / staff / agent replies can only count as compliant participation evidence.
+They do not count as independent community proof.
 
 Before any Reddit / forum posting, the signal must pass the validation matrix in:
 
@@ -176,6 +195,18 @@ Strict pass condition:
 - AI answer mentions brunch / breakfast / coffee
 - AI answer includes at least one product anchor when the query implies food
 - AI answer does not describe Dandy Lane as wedding, event styling, or workspace-first
+
+Expanded matrix:
+
+- [ai-recommendation-expanded-review-2026-06-26.md](./ai-recommendation-expanded-review-2026-06-26.md)
+
+Next strict pass target:
+
+- Perplexity recommends or cites Dandy Lane in at least 4 of 6 prompts.
+- Gemini scores at least 8 of 12 without major factual drift.
+- Copilot is rerun after human verification.
+- Hello Hobart is corrected or logged as unresolved.
+- At least one AI-cited drift source is audited and either corrected or recorded as not controllable.
 
 ## Maintenance Rules
 

@@ -1,6 +1,6 @@
 # GEO / AEO Sprint 1 Swarm Brief
 
-Last updated: 2026-06-22
+Last updated: 2026-06-26
 
 ## Sprint Name
 
@@ -93,9 +93,16 @@ Required output:
 - missing external signal validation
 - required changes before Sprint 1 execution
 
-Status:
+Historical status:
 
 - returned `revise`; Controller must resolve blockers before Sprint 1 execution
+
+Current status:
+
+- 2026-06-26 Strict Reviewer returned `revise` because Google Business Profile evidence was overclaimed
+- Controller narrowed the Google Business Profile claim to scoped screenshot proof
+- ready for re-review before community-proof execution
+- not ready for template extraction or full external-proof pass
 
 ## Controller Deliverables
 
@@ -111,6 +118,53 @@ The Controller has now fixed the required Sprint 0 launch controls:
 Related comparison input:
 
 - [operator-chatgpt-answer-comparison-2026-06-24.md](./operator-chatgpt-answer-comparison-2026-06-24.md)
+
+Related current execution plan:
+
+- [external-proof-sprint-1-control-plan-2026-06-25.md](./external-proof-sprint-1-control-plan-2026-06-25.md)
+
+## 2026-06-26 External Proof Scout Status
+
+Initial read-only scout work found a usable but incomplete external proof set.
+
+Formal counted sources:
+
+- Google Business Profile / Google Maps
+- Tripadvisor
+- Discover Tasmania
+- Hobart & Beyond
+- AI answer baseline: initial baseline passed with caveats; expanded review is conditional / mixed
+
+Formal count note:
+
+- TripAdvisor is counted from the user-provided logged-in browser screenshot. Treat that screenshot as internal evidence because it includes business-dashboard context.
+- Google Business Profile / Google Maps is counted from the public Google Maps screenshots for scoped proof only: entity, category, rating/review count, map placement, and owner-control context. Address, website, menu link, phone, owner update, and review snippets remain DOM-supported until scrolled visual screenshots are captured.
+- Current artifact file: [external-proof-artifacts-2026-06-26.md](./external-proof-artifacts-2026-06-26.md)
+- Current AI baseline file: [ai-answer-baseline-2026-06-26.md](./ai-answer-baseline-2026-06-26.md)
+- Current expanded AI review: [ai-recommendation-expanded-review-2026-06-26.md](./ai-recommendation-expanded-review-2026-06-26.md)
+- Current community watchlist: [community-proof-watchlist-2026-06-26.md](./community-proof-watchlist-2026-06-26.md)
+- Current listing correction pack: [listing-correction-pack-2026-06-26.md](./listing-correction-pack-2026-06-26.md)
+
+Support / revise sources:
+
+- Hello Hobart: useful local directory evidence, but hours conflict and product-anchor gaps prevent strict count
+
+Opportunity only:
+
+- Reddit / r/hobart quiet brunch thread: relevant participation candidate, but not evidence until a compliant action is live and reviewed
+- Google-indexed Reddit results show more candidates, including possible existing Dandy Lane mentions, but direct Reddit access was blocked and thread context needs manual verification
+
+Do not count yet:
+
+- Apple Maps / Bing Places: no stable detail evidence captured
+
+Controller decision:
+
+- proceed with External Proof Sprint 1 execution
+- do not start website-page expansion from this source set
+- prioritize listing corrections, AI-cited drift-source audit, Reddit/forum compliance review, and recurring AI matrix reruns
+- do not publish Reddit/forum replies until Controller approval and Strict Reviewer pre-post approval are both recorded
+- treat owner / staff / agent Reddit replies as compliant participation evidence, not independent community proof
 
 ## Finalized Sprint 1 Capture Protocol
 
@@ -145,7 +199,7 @@ Sprint 1 cannot move to Template Extraction unless all minimums are met:
 | Independent Reddit / forum user-originated mentions | at least 2 |
 | Product-anchor community context | at least 1 thread or source |
 | Google Business Profile / Google Maps evidence | at least 1 current capture |
-| Tripadvisor evidence | listing capture plus at least 2 review snippets |
+| Tripadvisor evidence | completed for initial proof by user-provided logged-in browser screenshot |
 | Local tourism / directory listings | at least 2 current captures |
 
 ### Recency And Currentness Rules
@@ -174,11 +228,13 @@ Stop before Template Extraction if:
 
 - any mandatory query is missing
 - fewer than two AI systems are checked
-- Reddit / forum evidence cannot produce five relevant threads
-- Google Business Profile or Tripadvisor cannot be verified live
+- Google Business Profile capture becomes stale or contradictory
 - source set is mostly owned media
 - source contradictions cannot be explained or isolated
 - reviewer returns `reject`
+
+Missing Reddit / forum evidence blocks community-proof scoring.
+It does not block Google Business Profile capture, listing corrections, review-platform evidence capture, or AI-answer baseline checks.
 
 ## Evidence Pack Format
 
