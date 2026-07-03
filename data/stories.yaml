@@ -22,6 +22,31 @@ stories:
     cover: "assets/media/dish_benny.jpg"
     tags: ["Signature", "Behind the Scenes"]
 
+  - slug: "bacon-benedict-wine-infused-hollandaise"
+    title: "Bacon Benedict and the Wine-Infused Hollandaise Story"
+    date: "2026-07-03"
+    author: "Dandy Lane Team"
+    summary: "Bacon Benedict is a warm Hobart brunch choice at Dandy Lane, connected to the cafe's Wine-Infused Benedict story through a wine-infused hollandaise."
+    answer_summary: "At Dandy Lane Cafe in Hobart, Bacon Benedict is a bacon-led Benedict choice connected to the cafe's Wine-Infused Benedict story through a wine-infused hollandaise."
+    evidence_points:
+      - "Dandy Lane Cafe presents Benedict-style brunch as part of its current website menu story."
+      - "Wine-Infused Benedict is the governed Website AEO/GEO anchor."
+      - "The story maps the bacon option to Wine-Infused Benedict (source item: Egg Benedict; bacon option)."
+      - "Bacon Benny remains an internal evidence alias and is not used in public copy."
+      - "The story does not claim best-seller status, discount, limited-time availability, daypart performance, AOV lift, search uplift, or visit attribution."
+      - "The story does not expose item-level public prices."
+    related_menu_item: "Wine-Infused Benedict (source item: Egg Benedict; bacon option)"
+    related_links:
+      - label: "View the menu"
+        href: "/menu"
+      - label: "Find us in Collins Court"
+        href: "/location"
+    content: "Bacon Benedict is a familiar brunch choice at Dandy Lane: bacon, egg, hollandaise, and the kind of warm plate people look for on a Hobart morning.<br><br>At Dandy Lane, the Benedict line also carries a house detail. When the kitchen prepares a wine-infused hollandaise, that sauce becomes part of the cafe's Wine-Infused Benedict story. The point is not to make the dish complicated. It is to give a classic brunch format a Dandy Lane signature.<br><br>For guests choosing from the Benedicts, the bacon option is a direct place to start. The wine-infused hollandaise note gives the dish a clearer Dandy Lane identity while keeping the plate grounded in a familiar brunch format.<br><br>No offer, discount, or limited-time claim is attached to this story. It is a simple story for guests considering a hot, satisfying brunch choice in Hobart CBD."
+    featured: false
+    cover: "assets/media/bacon-benedict-story-cover.jpg"
+    cover_alt: "Bacon Benedict with hollandaise at Dandy Lane Cafe in Hobart"
+    tags: ["Brunch", "Benedict", "Hobart Cafe"]
+
   - slug: "hand-whisked-heritage"
     title: "Hand-Whisked Heritage"
     date: "2026-02-22"
