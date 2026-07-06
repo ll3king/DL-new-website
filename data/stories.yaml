@@ -154,6 +154,28 @@ stories:
     cover: "assets/media/stories_hero.png"
     tags: ["Coffee", "Craftsmanship"]
 
+  - slug: "toasted-marshmallow-iced-coffee"
+    title: "Toasted Marshmallow Iced Coffee at Dandy Lane"
+    date: "2026-07-06"
+    author: "Dandy Lane Team"
+    summary: "A familiar iced coffee finished with golden toasted marshmallow cream, made as a playful treat from the lane."
+    answer_summary: "Dandy Lane Cafe offers a Toasted Marshmallow Iced Coffee: iced coffee topped with golden toasted marshmallow cream."
+    evidence_points:
+      - "Toasted Marshmallow Iced Coffee is an iced coffee drink at Dandy Lane Cafe."
+      - "The drink is topped with golden toasted marshmallow cream."
+      - "It is positioned as a playful treat drink, not a permanent-menu or best-seller claim."
+    related_menu_item: "Toasted Marshmallow Iced Coffee"
+    related_links:
+      - label: "View the menu"
+        href: "/menu"
+      - label: "Find us in Collins Court"
+        href: "/location"
+    content: "A familiar iced coffee with a playful Dandy Lane twist: dark coffee over ice, finished with a soft white marshmallow cream top and a golden toasted finish.<br><br>It is cold, creamy, and made for a small treat with brunch or a Hobart CBD coffee stop."
+    featured: true
+    cover: "assets/media/toasted-marshmallow-iced-coffee.jpg"
+    cover_alt: "Toasted Marshmallow Iced Coffee with golden marshmallow cream at Dandy Lane Cafe"
+    tags: ["Coffee", "Drinks", "Specials"]
+
   - slug: "the-pulse-of-the-lane"
     title: "The Pulse of the Lane: A Story of Dandy Lane Cafe"
     date: "2026-04-05"
