@@ -1,6 +1,6 @@
 # Project Module Code Boundary Map
 
-Last updated: 2026-06-25
+Last updated: 2026-07-12
 
 ## Purpose
 
@@ -40,6 +40,7 @@ For any frontend-facing task, read this first:
 
 - [flywheel-2-visual-taste-frontend-performance.md](./flywheel-2-visual-taste-frontend-performance.md)
 - [flywheel-2-visual-refresh-retrospective-2026-06-25.md](./flywheel-2-visual-refresh-retrospective-2026-06-25.md)
+- [flywheel-2-dandelion-motion-retrospective-2026-07-11.md](./flywheel-2-dandelion-motion-retrospective-2026-07-11.md)
 
 ### 1. Homepage positioning / visual refresh / UX polish / performance feel
 
@@ -56,6 +57,10 @@ Typical files:
 - `src/layouts/base.html`
 - `src/assets/css/style.css`
 - `src/assets/js/main.js`
+- `src/assets/css/dandelion-motion.css`
+- `src/assets/js/dandelion-motion.js`
+- `src/assets/media/dandelion-seed-sharp.webp`
+- `src/assets/media/dandelion-seed-soft.webp`
 - `src/blocks/identity-hero.html`
 - `src/blocks/signature-trio.html`
 - `src/blocks/chatbot-widget.html`, only for visible widget positioning and presentation
@@ -82,6 +87,7 @@ Current accepted Flywheel 2 production pattern:
 - navigation and chat controls stay inside the mobile viewport
 - autoplay media has mobile-sized source and poster fallback
 - desktop visual presentation should not be regressed while fixing mobile
+- decorative particle motion stays pointer-transparent, bounded, reduced-motion aware, and suspended on hidden pages
 
 ### 2. Schema / canonical / entity proof / robots / sitemap / answerability
 
@@ -222,6 +228,10 @@ Main editable files:
 - [src/layouts/base.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/layouts/base.html)
 - [src/assets/css/style.css](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/assets/css/style.css)
 - [src/assets/js/main.js](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/assets/js/main.js)
+- `src/assets/css/dandelion-motion.css`
+- `src/assets/js/dandelion-motion.js`
+- `src/assets/media/dandelion-seed-sharp.webp`
+- `src/assets/media/dandelion-seed-soft.webp`
 - [src/blocks/identity-hero.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/identity-hero.html)
 - [src/blocks/signature-trio.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/signature-trio.html)
 - [src/blocks/social-proof-reviews.html](C:/Users/61413/Desktop/ai%20jobs/DL%20new%20website/src/blocks/social-proof-reviews.html)

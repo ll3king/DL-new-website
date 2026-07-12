@@ -1,6 +1,6 @@
 # Dandy Lane Cafe Website
 
-Last updated: 2026-06-25
+Last updated: 2026-07-12
 
 ## Main Entry
 
@@ -47,6 +47,10 @@ Latest Flywheel 2 implementation retrospective:
 
 - [docs/flywheel-2-visual-refresh-retrospective-2026-06-25.md](docs/flywheel-2-visual-refresh-retrospective-2026-06-25.md)
 
+Latest Flywheel 2 motion deployment retrospective:
+
+- [docs/flywheel-2-dandelion-motion-retrospective-2026-07-11.md](docs/flywheel-2-dandelion-motion-retrospective-2026-07-11.md)
+
 Official visual knowledge base entry:
 
 - [docs/flywheel-2-visual-knowledge-base-local-only.md](docs/flywheel-2-visual-knowledge-base-local-only.md)
@@ -90,10 +94,11 @@ These may still exist as historical traces or narrow implementation details, but
 3. [docs/website-information-structure.zh-CN.md](docs/website-information-structure.zh-CN.md)
 4. [docs/flywheel-2-visual-taste-frontend-performance.md](docs/flywheel-2-visual-taste-frontend-performance.md)
 5. [docs/flywheel-2-visual-refresh-retrospective-2026-06-25.md](docs/flywheel-2-visual-refresh-retrospective-2026-06-25.md)
-6. [docs/flywheel-2-visual-knowledge-base-local-only.md](docs/flywheel-2-visual-knowledge-base-local-only.md)
-7. [docs/project-module-code-boundary-map.zh-CN.md](docs/project-module-code-boundary-map.zh-CN.md)
-8. [docs/project-governance-branch-and-doc-map.zh-CN.md](docs/project-governance-branch-and-doc-map.zh-CN.md)
-9. [docs/project-governance-tree-map.zh-CN.md](docs/project-governance-tree-map.zh-CN.md)
+6. [docs/flywheel-2-dandelion-motion-retrospective-2026-07-11.md](docs/flywheel-2-dandelion-motion-retrospective-2026-07-11.md)
+7. [docs/flywheel-2-visual-knowledge-base-local-only.md](docs/flywheel-2-visual-knowledge-base-local-only.md)
+8. [docs/project-module-code-boundary-map.zh-CN.md](docs/project-module-code-boundary-map.zh-CN.md)
+9. [docs/project-governance-branch-and-doc-map.zh-CN.md](docs/project-governance-branch-and-doc-map.zh-CN.md)
+10. [docs/project-governance-tree-map.zh-CN.md](docs/project-governance-tree-map.zh-CN.md)
 
 Direct module entrypoints:
 

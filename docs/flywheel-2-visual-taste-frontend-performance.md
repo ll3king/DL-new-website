@@ -1,6 +1,6 @@
 # Flywheel 2: Visual Taste / Frontend / Performance
 
-Last updated: 2026-06-25
+Last updated: 2026-07-12
 
 ## Purpose
 
@@ -12,6 +12,7 @@ It is the current urgent project priority.
 Latest accepted implementation learning:
 
 - [Flywheel 2 Visual Refresh Retrospective 2026-06-25](./flywheel-2-visual-refresh-retrospective-2026-06-25.md)
+- [Flywheel 2 Dandelion Motion Retrospective 2026-07-11](./flywheel-2-dandelion-motion-retrospective-2026-07-11.md)
 
 ## Business Role
 
@@ -92,6 +93,9 @@ Avoid:
 - prefer CSS `transform` and `opacity` for motion
 - support reduced-motion preferences
 - do not add decorative media that harms speed without improving memory or decision-making
+- pause decorative animation when the page is hidden
+- cap particle density, device pixel ratio, and frame rate separately for desktop and mobile
+- keep decorative motion pointer-transparent and outside layout flow
 
 Production media rule:
 
@@ -99,6 +103,15 @@ Production media rule:
 - mobile visuals need their own delivery check
 - autoplay video must have `muted`, `playsinline`, a mobile-sized source, a `poster`, and a playback fallback
 - do not ship a video-only visual state that becomes an empty shape if autoplay fails
+
+Production canvas-motion rule:
+
+- the accepted dandelion implementation is the current baseline
+- use the shared base layout, dedicated CSS / JavaScript, and optimized WebP sprites
+- do not add an animation library for this effect
+- current limits are 42 desktop seeds, 18 mobile seeds, DPR caps of 1.75 / 1.1, and paint targets of 50 / 30 FPS
+- preserve reduced-motion support, hidden-tab suspension, page lifecycle handling, and `pointer-events: none`
+- any density or rendering change requires separate desktop and mobile visual/performance verification
 
 ## Workflow
 
@@ -146,6 +159,7 @@ Current Stitch exploration inputs:
 - [flywheel-2-stitch-DESIGN-v1.md](./flywheel-2-stitch-DESIGN-v1.md)
 - [flywheel-2-stitch-media-motion-pack-v1.md](./flywheel-2-stitch-media-motion-pack-v1.md)
 - [flywheel-2-visual-refresh-retrospective-2026-06-25.md](./flywheel-2-visual-refresh-retrospective-2026-06-25.md)
+- [flywheel-2-dandelion-motion-retrospective-2026-07-11.md](./flywheel-2-dandelion-motion-retrospective-2026-07-11.md)
 
 The media motion pack is required for design exploration that should feel specifically like Dandy Lane.
 Do not run Stitch from text-only instructions when the task is about visual taste.
@@ -197,6 +211,10 @@ Typical editable files:
 - `src/layouts/base.html`
 - `src/assets/css/style.css`
 - `src/assets/js/main.js`
+- `src/assets/css/dandelion-motion.css`
+- `src/assets/js/dandelion-motion.js`
+- `src/assets/media/dandelion-seed-sharp.webp`
+- `src/assets/media/dandelion-seed-soft.webp`
 - `src/blocks/identity-hero.html`
 - `src/blocks/menu-grid.html`
 - `src/blocks/faq-list.html`

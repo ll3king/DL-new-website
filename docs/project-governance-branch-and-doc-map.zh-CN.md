@@ -1,6 +1,6 @@
 # Project Governance Branch And Doc Map
 
-Last updated: 2026-06-16
+Last updated: 2026-07-12
 
 ## Purpose
 
@@ -26,6 +26,33 @@ Current project identity is governed by:
 Official Flywheel 2 governance doc:
 
 - [flywheel-2-visual-taste-frontend-performance.md](./flywheel-2-visual-taste-frontend-performance.md)
+
+Latest accepted motion release record:
+
+- [flywheel-2-dandelion-motion-retrospective-2026-07-11.md](./flywheel-2-dandelion-motion-retrospective-2026-07-11.md)
+
+## Production Source Of Truth And Release Path
+
+Current formal production source:
+
+- GitHub `main`
+
+Current production delivery:
+
+- Cloudflare Pages builds and deploys from `main`
+
+Tool boundary:
+
+- ChatGPT Sites / Work may be used for visual exploration, prototype iteration, and owner review
+- Codex may inspect, port, implement, validate, and publish the approved result
+- Sites state and repo state are not automatically synchronized
+- approved work becomes formal only after it exists in repo source, is committed to `main`, and is verified on the production domain
+
+Current accepted release example:
+
+- `e194533` - optimized dandelion particle effect
+
+This release path is current governance, not a historical branch convention.
 
 ## Historical Branch Map
 

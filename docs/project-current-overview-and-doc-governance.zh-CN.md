@@ -1,6 +1,6 @@
 # Project Current Overview And Doc Governance
 
-Last updated: 2026-06-25
+Last updated: 2026-07-12
 
 ## Purpose
 
@@ -38,6 +38,7 @@ Initial optimization completed and validated; this flywheel is now in maintenanc
 This is the urgent active priority.
 The website needs a major visual taste and frontend refresh.
 The first visual refresh pass has been accepted on desktop and mobile and merged to `main`.
+The accepted Sites v6 dandelion motion effect has also been migrated to the repo, merged to `main`, deployed through Cloudflare Pages, and verified on the production domain.
 
 ## Active Workflow
 
@@ -56,6 +57,7 @@ Core governance:
 - [menu/current-menu-source-2026-06-24.md](./menu/current-menu-source-2026-06-24.md)
 - [flywheel-2-visual-taste-frontend-performance.md](./flywheel-2-visual-taste-frontend-performance.md)
 - [flywheel-2-visual-refresh-retrospective-2026-06-25.md](./flywheel-2-visual-refresh-retrospective-2026-06-25.md)
+- [flywheel-2-dandelion-motion-retrospective-2026-07-11.md](./flywheel-2-dandelion-motion-retrospective-2026-07-11.md)
 - [flywheel-2-visual-knowledge-base-local-only.md](./flywheel-2-visual-knowledge-base-local-only.md)
 - [project-module-code-boundary-map.zh-CN.md](./project-module-code-boundary-map.zh-CN.md)
 - [project-governance-branch-and-doc-map.zh-CN.md](./project-governance-branch-and-doc-map.zh-CN.md)
@@ -74,6 +76,26 @@ Historical references that are no longer entrypoints:
 - [system_blueprint.md](./system_blueprint.md)
 - booking retrospective docs
 - branch postmortems that describe older execution phases
+
+## Current Production Baseline
+
+The current formal production chain is:
+
+`ChatGPT Sites / Work exploration -> repo source implementation -> GitHub main -> Cloudflare Pages -> live-domain verification`
+
+Current accepted motion baseline:
+
+- dandelion particle effect from the owner-approved Sites v6 direction
+- production commit `e194533`
+- source owned by the Website shell and media/performance layer
+- mobile and desktop limits documented in the motion retrospective
+
+Governance rule:
+
+- Sites and Work may provide design and iteration context
+- they do not replace repo source control
+- GitHub `main` is the formal code source for production
+- a release is not complete until the Cloudflare production domain is verified
 
 Deprecated-default assumptions:
 
@@ -124,8 +146,9 @@ Before visual implementation, read:
 1. [feature-registry.md](./feature-registry.md)
 2. [flywheel-2-visual-taste-frontend-performance.md](./flywheel-2-visual-taste-frontend-performance.md)
 3. [flywheel-2-visual-refresh-retrospective-2026-06-25.md](./flywheel-2-visual-refresh-retrospective-2026-06-25.md)
-4. [flywheel-2-visual-knowledge-base-local-only.md](./flywheel-2-visual-knowledge-base-local-only.md)
-5. [project-module-code-boundary-map.zh-CN.md](./project-module-code-boundary-map.zh-CN.md)
+4. [flywheel-2-dandelion-motion-retrospective-2026-07-11.md](./flywheel-2-dandelion-motion-retrospective-2026-07-11.md)
+5. [flywheel-2-visual-knowledge-base-local-only.md](./flywheel-2-visual-knowledge-base-local-only.md)
+6. [project-module-code-boundary-map.zh-CN.md](./project-module-code-boundary-map.zh-CN.md)
 
 ## One-Line Rule
 

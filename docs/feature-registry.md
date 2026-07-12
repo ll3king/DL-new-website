@@ -1,6 +1,6 @@
 # Feature Registry
 
-Last updated: 2026-06-25
+Last updated: 2026-07-12
 
 ## Purpose
 
@@ -97,6 +97,7 @@ Status:
 - official core feature area
 - current urgent priority
 - first visual refresh pass accepted on desktop and mobile, then merged to `main`
+- owner-approved Sites v6 dandelion motion migrated to `main` and verified on Cloudflare production
 
 Business role:
 
@@ -127,6 +128,7 @@ Primary entry:
 Latest implementation retrospective:
 
 - [flywheel-2-visual-refresh-retrospective-2026-06-25.md](./flywheel-2-visual-refresh-retrospective-2026-06-25.md)
+- [flywheel-2-dandelion-motion-retrospective-2026-07-11.md](./flywheel-2-dandelion-motion-retrospective-2026-07-11.md)
 
 Derived visual-asset and signal entry:
 
@@ -139,6 +141,7 @@ Current accepted production pattern:
 - mobile-first visual ordering
 - viewport-safe navigation and chat controls
 - lightweight motion with mobile video source and poster fallback
+- bounded shared-canvas dandelion motion with mobile-specific density, DPR, and frame-rate limits
 
 ## Project Rule
 
