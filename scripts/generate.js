@@ -163,16 +163,24 @@ function prepareStoriesData(rawStoriesData) {
 
 function prepareMenuHighlightsData(rawMenuData) {
     const categories = Array.isArray(rawMenuData.categories) ? rawMenuData.categories : [];
+    const highlightOrder = [
+        'Smashed Avo',
+        'Egg Benedict',
+        'Dandy Rosti',
+        'Wild Mushroom Benedict',
+        'Scotch Steak Sandwich',
+        'Stack Me Up'
+    ];
+    const menuItems = new Map(
+        categories.flatMap(category => Array.isArray(category.items) ? category.items : [])
+            .map(item => [item.name, item])
+    );
+    const items = highlightOrder.map(name => menuItems.get(name)).filter(Boolean);
 
     return {
         ...rawMenuData,
-        categories: categories
-            .map(category => ({
-                ...category,
-                items: (Array.isArray(category.items) ? category.items : [])
-                    .filter(item => item.is_signature || item.is_highlight)
-            }))
-            .filter(category => category.items.length > 0)
+        items,
+        categories: [{ name: 'Menu Highlights', items }]
     };
 }
 
@@ -215,7 +223,7 @@ async function render() {
             {
                 id: 'menu',
                 slug: 'menu.html',
-                blocks: ['identity-hero.html', 'menu-grid.html', 'location-nap.html']
+                blocks: ['identity-hero.html', 'menu-grid.html', 'menu-archive.html', 'location-nap.html']
             },
             {
                 id: 'faq',
