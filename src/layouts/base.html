@@ -10,6 +10,23 @@
     <meta name="robots" content="{{ page_robots }}">
     {% endif %}
     <link rel="canonical" href="{{ site.seo.site_url }}{% if page_path %}{{ page_path }}{% elif current_page_id == 'index' %}/{% else %}/{{ current_page_id }}{% endif %}">
+    {% if page_metadata %}
+    <meta property="og:type" content="{{ page_metadata.og_type }}">
+    <meta property="og:title" content="{{ page_metadata.title }}">
+    <meta property="og:description" content="{{ page_metadata.description }}">
+    <meta property="og:url" content="{{ page_metadata.url }}">
+    {% if page_metadata.image %}
+    <meta property="og:image" content="{{ page_metadata.image }}">
+    <meta property="og:image:alt" content="{{ page_metadata.image_alt }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="{{ page_metadata.image }}">
+    <meta name="twitter:image:alt" content="{{ page_metadata.image_alt }}">
+    {% else %}
+    <meta name="twitter:card" content="summary">
+    {% endif %}
+    <meta name="twitter:title" content="{{ page_metadata.title }}">
+    <meta name="twitter:description" content="{{ page_metadata.description }}">
+    {% endif %}
 
     <!-- AEO: Consolidated JSON-LD Entity Graph -->
     {% if global_schema %}

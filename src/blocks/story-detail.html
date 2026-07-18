@@ -22,7 +22,7 @@
             </p>
             {% endif %}
             <div style="height: 480px; border-radius: 12px; overflow: hidden; margin-bottom: 2rem;">
-                <img src="{{ active_story.cover }}" alt="{{ active_story.title }}"
+                <img src="{{ active_story.cover }}" alt="{{ active_story.cover_alt or active_story.title }}"
                     style="width: 100%; height: 100%; object-fit: cover;">
             </div>
         </header>

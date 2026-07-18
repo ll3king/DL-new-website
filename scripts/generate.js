@@ -134,6 +134,50 @@ function storyRoute(story) {
     };
 }
 
+function absoluteSiteUrl(siteData, urlPath) {
+    const siteUrl = siteData.seo.site_url.replace(/\/+$/, '');
+    if (!urlPath || urlPath === '/') return `${siteUrl}/`;
+    if (/^https?:\/\//i.test(urlPath)) return new URL(urlPath).href;
+    return new URL(String(urlPath).replace(/^\/+/, ''), `${siteUrl}/`).href;
+}
+
+function mediaPathForMetadata(mediaPath) {
+    if (!mediaPath) return 'assets/media/home_hero-poster.jpg';
+    if (/\.(mp4|mov|webm)$/i.test(mediaPath)) {
+        return mediaPath.replace(/\.[^.]+$/, '-poster.jpg');
+    }
+    return mediaPath;
+}
+
+function resolvedMetadataMediaPath(mediaPath) {
+    const candidatePath = mediaPathForMetadata(mediaPath);
+    const outputPath = path.join(PUBLIC_DIR, candidatePath.replace(/^\/+/, ''));
+
+    return fs.existsSync(outputPath)
+        ? candidatePath
+        : 'assets/media/home_hero-poster.jpg';
+}
+
+function buildPageMetadata(siteData, {
+    title,
+    description,
+    pagePath,
+    ogType = 'website',
+    image,
+    imageAlt
+}) {
+    const metadataImage = image ? absoluteSiteUrl(siteData, image) : null;
+
+    return {
+        og_type: ogType,
+        title: title || siteData.identity.name,
+        description: description || siteData.identity.description,
+        url: absoluteSiteUrl(siteData, pagePath),
+        image: metadataImage,
+        image_alt: metadataImage ? (imageAlt || title || siteData.identity.name) : null
+    };
+}
+
 function formatDisplayDate(dateValue) {
     if (typeof dateValue !== 'string') return dateValue;
     const date = new Date(`${dateValue}T00:00:00`);
@@ -443,6 +487,13 @@ async function render() {
             
             // 1. Breadcrumbs (Global)
             const pagePath = page.id === 'index' ? '/' : `/${page.id}`;
+            const pageMetadata = buildPageMetadata(siteData, {
+                title: pageConfig.title,
+                description: pageConfig.emphasis,
+                pagePath,
+                image: mediaPathForMetadata(pageConfig.media),
+                imageAlt: pageConfig.title
+            });
             schemas.push(generateBreadcrumbSchema(siteData.seo.site_url, page.id, pageConfig.title, pagePath));
 
             // 2. Primary Page Entities
@@ -477,6 +528,7 @@ async function render() {
                 current_page_id: page.id,
                 page_path: pagePath,
                 page_robots: pageConfig.robots,
+                page_metadata: pageMetadata,
                 global_schema: pageSchema,
                 current_year: new Date().getFullYear()
             });
@@ -498,11 +550,23 @@ async function render() {
 
             // Targeted Schema for Stories
             const storyPath = route.prettyPath;
+            const storyMetadataImagePath = resolvedMetadataMediaPath(story.cover);
+            const storyImage = absoluteSiteUrl(siteData, storyMetadataImagePath);
+            const storyImageAlt = story.cover_alt || story.title;
+            const storyMetadata = buildPageMetadata(siteData, {
+                title: story.title,
+                description: story.summary,
+                pagePath: storyPath,
+                ogType: 'article',
+                image: storyMetadataImagePath,
+                imageAlt: storyImageAlt
+            });
             const breadcrumbs = generateBreadcrumbSchema(siteData.seo.site_url, 'stories', story.title, storyPath);
             const article = {
                 "@type": "Article",
                 "headline": story.title,
                 "description": story.summary,
+                "datePublished": story.date,
                 "author": {
                     "@type": "Organization",
                     "name": siteData.identity.name
@@ -520,6 +584,17 @@ async function render() {
                     "@id": `${siteData.seo.site_url}${storyPath}`
                 }
             };
+
+            if (storyImage) {
+                article.image = {
+                    "@type": "ImageObject",
+                    "url": storyImage,
+                    "caption": storyImageAlt
+                };
+            }
+            if (story.updated_at) {
+                article.dateModified = story.updated_at;
+            }
 
             if (story.answer_summary) {
                 article.abstract = story.answer_summary;
@@ -548,6 +623,7 @@ async function render() {
                 slug: route.htmlPath,
                 page_path: storyPath,
                 page_robots: story.robots,
+                page_metadata: storyMetadata,
                 global_schema: pageSchema,
                 current_year: new Date().getFullYear()
             });
