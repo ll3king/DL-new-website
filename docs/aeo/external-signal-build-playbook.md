@@ -1,6 +1,6 @@
 # External Signal Build Playbook
 
-Last updated: 2026-06-22
+Last updated: 2026-07-19
 
 ## Purpose
 
@@ -228,6 +228,46 @@ Check whether the signal remains live and whether AI / search / business metrics
 
 8. `Reviewer Audit`
 Strict Reviewer decides whether the signal counts.
+
+## Campaign Closeout Contract
+
+Apply this after a governed campaign is published across one or more owned or
+affiliated surfaces. It records the signal graph; it does not manufacture a
+reciprocal-link pattern.
+
+1. At publish time, capture the canonical URL, media URL where applicable,
+   post permalink or platform resource, CTA destination, and the observable
+   link direction for every surface.
+2. Classify each surface as `owned canonical`, `affiliated official signal`,
+   `independent third-party proof`, or `community signal`. Owned and
+   affiliated posts may reinforce freshness and entity consistency, but do not
+   count as independent proof.
+3. Store a sanitized URL/permalink plus the date, readable excerpt or
+   platform-limitation note, source class, and reviewer decision. Do not infer
+   a public link from a credentialed readback alone.
+4. Recheck public/indexed state after 3-7 days. Confirm that the canonical,
+   CTA destination, media, and permalink still resolve, and record any
+   platform rendering limitation separately from an absent link.
+5. After 14-21 days, rerun the exact AI-answer prompts for the campaign's
+   product and local-intent target. Record the engine, prompt, date, answer,
+   and cited or implied sources.
+6. Where data exists, review product movement and GBP/social measurements.
+   Treat no movement as an observation, not a reason to invent a performance
+   claim.
+7. Route follow-up toward independent reviews, listings, and natural community
+   recognition. Do not add campaign-specific reverse links from the Website to
+   GBP, Facebook, or Instagram merely to complete a loop.
+
+Public reciprocal-link rule:
+
+- Website stories may link naturally to helpful Website hubs such as Menu and
+  Location.
+- A campaign-specific link back to an official social post is allowed only
+  when it gives a direct guest benefit that cannot be met by an existing
+  canonical or stable identity link.
+- Do not add an official-post link to visible content or schema solely for
+  AEO/GEO signalling. That is an artificial reciprocal link ring, not
+  independent proof.
 
 ## External Signal Asset Library
 

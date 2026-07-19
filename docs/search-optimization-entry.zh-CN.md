@@ -1,6 +1,6 @@
 # Search Optimization Entry
 
-Last updated: 2026-06-24
+Last updated: 2026-07-19
 
 ## Purpose
 
@@ -139,6 +139,7 @@ Detailed tracking:
 - [aeo/external-proof-evidence-log.md](./aeo/external-proof-evidence-log.md)
 - [aeo/geo-agent-swarm-control-plan.md](./aeo/geo-agent-swarm-control-plan.md)
 - [aeo/external-signal-build-playbook.md](./aeo/external-signal-build-playbook.md)
+- [aeo/luxury-hot-chocolate-signal-graph-and-closeout-2026-07-19.md](./aeo/luxury-hot-chocolate-signal-graph-and-closeout-2026-07-19.md)
 - [aeo/geo-sprint-1-swarm-brief.md](./aeo/geo-sprint-1-swarm-brief.md)
 - [aeo/operator-chatgpt-answer-comparison-2026-06-24.md](./aeo/operator-chatgpt-answer-comparison-2026-06-24.md)
 
