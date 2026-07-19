@@ -176,7 +176,7 @@ aeo:
       meta_text: "Current rating on Google Maps"
       verify_label: "View our current Google rating"
       hero_text: "See current Google Maps rating"
-      url: "https://www.google.com/maps/search/?api=1&query=Dandy%20Lane%20Cafe%2C%20Unit%2010%2F138%20Collins%20Street%2C%20Hobart%20TAS%207000"
+      url: "https://www.google.com/maps?cid=953242008535282366"
       evidence_status: "numeric_claim_softened"
 
 booking:

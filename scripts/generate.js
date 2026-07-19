@@ -10,6 +10,7 @@ const LAYOUTS_DIR = path.join(__dirname, '../src/layouts');
 const BLOCKS_DIR = path.join(__dirname, '../src/blocks');
 const PUBLIC_DIR = path.join(__dirname, '../public');
 const SRC_ASSETS_DIR = path.join(__dirname, '../src/assets');
+const DEFAULT_SOCIAL_IMAGE = 'assets/media/home_hero-poster.jpg';
 
 // Asset Pipeline: Copy and Optimize src/assets -> public/assets
 async function syncAssets(src, dest) {
@@ -142,20 +143,33 @@ function absoluteSiteUrl(siteData, urlPath) {
 }
 
 function mediaPathForMetadata(mediaPath) {
-    if (!mediaPath) return 'assets/media/home_hero-poster.jpg';
+    if (!mediaPath) return DEFAULT_SOCIAL_IMAGE;
     if (/\.(mp4|mov|webm)$/i.test(mediaPath)) {
         return mediaPath.replace(/\.[^.]+$/, '-poster.jpg');
     }
     return mediaPath;
 }
 
-function resolvedMetadataMediaPath(mediaPath) {
-    const candidatePath = mediaPathForMetadata(mediaPath);
-    const outputPath = path.join(PUBLIC_DIR, candidatePath.replace(/^\/+/, ''));
+function generatedPublicPathForMetadata(siteData, mediaPath) {
+    const url = new URL(String(mediaPath).replace(/^\/+/, ''), `${siteData.seo.site_url.replace(/\/+$/, '')}/`);
+    return url.pathname.replace(/^\/+/, '');
+}
 
-    return fs.existsSync(outputPath)
-        ? candidatePath
-        : 'assets/media/home_hero-poster.jpg';
+function resolvedMetadataMedia(siteData, mediaPath, preferredAlt, fallbackAlt) {
+    const candidatePath = mediaPathForMetadata(mediaPath);
+    const outputPath = path.join(PUBLIC_DIR, generatedPublicPathForMetadata(siteData, candidatePath));
+
+    if (fs.existsSync(outputPath)) {
+        return {
+            path: candidatePath,
+            alt: preferredAlt
+        };
+    }
+
+    return {
+        path: DEFAULT_SOCIAL_IMAGE,
+        alt: fallbackAlt || siteData.identity.name
+    };
 }
 
 function buildPageMetadata(siteData, {
@@ -487,12 +501,18 @@ async function render() {
             
             // 1. Breadcrumbs (Global)
             const pagePath = page.id === 'index' ? '/' : `/${page.id}`;
+            const pageMetadataImage = resolvedMetadataMedia(
+                siteData,
+                pageConfig.media,
+                pageConfig.title,
+                siteData.identity.name
+            );
             const pageMetadata = buildPageMetadata(siteData, {
                 title: pageConfig.title,
                 description: pageConfig.emphasis,
                 pagePath,
-                image: mediaPathForMetadata(pageConfig.media),
-                imageAlt: pageConfig.title
+                image: pageMetadataImage.path,
+                imageAlt: pageMetadataImage.alt
             });
             schemas.push(generateBreadcrumbSchema(siteData.seo.site_url, page.id, pageConfig.title, pagePath));
 
@@ -550,15 +570,20 @@ async function render() {
 
             // Targeted Schema for Stories
             const storyPath = route.prettyPath;
-            const storyMetadataImagePath = resolvedMetadataMediaPath(story.cover);
-            const storyImage = absoluteSiteUrl(siteData, storyMetadataImagePath);
-            const storyImageAlt = story.cover_alt || story.title;
+            const storyMetadataImage = resolvedMetadataMedia(
+                siteData,
+                story.cover,
+                story.cover_alt || story.title,
+                `${siteData.identity.name} social image`
+            );
+            const storyImage = absoluteSiteUrl(siteData, storyMetadataImage.path);
+            const storyImageAlt = storyMetadataImage.alt;
             const storyMetadata = buildPageMetadata(siteData, {
                 title: story.title,
                 description: story.summary,
                 pagePath: storyPath,
                 ogType: 'article',
-                image: storyMetadataImagePath,
+                image: storyMetadataImage.path,
                 imageAlt: storyImageAlt
             });
             const breadcrumbs = generateBreadcrumbSchema(siteData.seo.site_url, 'stories', story.title, storyPath);
