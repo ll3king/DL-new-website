@@ -47,6 +47,30 @@ stories:
     cover_alt: "Bacon Benedict with hollandaise at Dandy Lane Cafe in Hobart"
     tags: ["Brunch", "Benedict", "Hobart Cafe"]
 
+  - slug: "luxury-hot-chocolate-hobart-winter"
+    url_path: "/stories-luxury-hot-chocolate-hobart-winter"
+    title: "Luxury Hot Chocolate for Hobart winter"
+    date: "2026-07-19"
+    author: "Dandy Lane Cafe"
+    summary: "A warm Dandy Lane stop for cold Hobart mornings: dark chocolate steamed in milk, topped with whipped cream and hand-shaved chocolate."
+    answer_summary: "Dandy Lane Cafe serves Luxury Hot Chocolate in Hobart CBD, made with dark chocolate steamed in milk and topped with whipped cream and hand-shaved chocolate."
+    related_menu_item: "Luxury Hot Chocolate"
+    related_links:
+      - label: "View the menu"
+        href: "/menu"
+      - label: "Find us in Collins Court"
+        href: "/location"
+    content: |-
+      Cold Hobart mornings call for something warm.
+
+      Our Luxury Hot Chocolate is dark chocolate steamed in milk, topped with whipped cream and hand-shaved chocolate. It is part of the Dandy Signature drinks at Dandy Lane Cafe in Collins Court.
+
+      Find us down the lane in Hobart CBD for a warm stop before work, between errands, or alongside brunch.
+    featured: false
+    include_in_sitemap: true
+    cover: "assets/media/luxury-hot-chocolate-approved-20260717.jpg"
+    cover_alt: "Luxury Hot Chocolate topped with whipped cream and hand-shaved chocolate at Dandy Lane Cafe"
+
   - slug: "hand-whisked-heritage"
     title: "Hand-Whisked Heritage"
     date: "2026-02-22"
