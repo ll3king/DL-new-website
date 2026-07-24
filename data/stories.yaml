@@ -269,3 +269,23 @@ stories:
     featured: false
     cover: "assets/media/faq_hero.jpg"
     tags: ["Facilities", "Practical Details"]
+
+  - slug: "prawn-toast-sweet-chilli"
+    title: "Prawn Toast with Sweet Chilli, for the table"
+    date: "2026-07-24"
+    author: "Dandy Lane Team"
+    summary: "A new Dandy Lane Cafe menu pick made for sharing alongside a beer or a glass of wine in Hobart CBD."
+    answer_summary: "At Dandy Lane Cafe in Hobart CBD, Prawn Toast with Sweet Chilli is a new menu item made for sharing alongside a beer or a glass of wine."
+    evidence_points:
+      - "Prawn Toast with Sweet Chilli is a new Dandy Lane Cafe menu item."
+      - "The dish is presented for sharing alongside a beer or a glass of wine."
+    related_menu_item: "Prawn Toast with Sweet Chilli"
+    related_links:
+      - label: "Explore the menu"
+        href: "/menu"
+      - label: "Find us in Collins Court"
+        href: "/location"
+    content: "Some menu choices are made for the person ordering them. Others are made for the table.<br><br>Prawn Toast with Sweet Chilli is new on the Dandy Lane Cafe menu for the second kind of moment: when the group has settled in, the drinks are on the table, and everyone wants something they can reach for together.<br><br>It is an easy first order when you are catching up with friends, easing into a long table conversation, or choosing a few things to share before the rest of the meal finds its way to the table. Pair it with a beer or a glass of wine, pass it around, and let it become part of the reason everyone stays a little longer.<br><br>This is not about overthinking the order. It is one clear choice for the middle of the table: Prawn Toast with Sweet Chilli.<br><br>Find it on the Dandy Lane Cafe menu, down the lane in Hobart CBD."
+    featured: false
+    cover: "assets/media/prawn-toast-sweet-chilli-20260720.png"
+    tags: ["Menu", "Sharing", "Hobart CBD"]
