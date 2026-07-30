@@ -270,6 +270,7 @@ stories:
     cover: "assets/media/faq_hero.jpg"
     tags: ["Facilities", "Practical Details"]
 
+
   - slug: "prawn-toast-sweet-chilli"
     title: "Prawn Toast with Sweet Chilli, for the table"
     date: "2026-07-24"
@@ -285,7 +286,28 @@ stories:
         href: "/menu"
       - label: "Find us in Collins Court"
         href: "/location"
-    content: "Some menu choices are made for the person ordering them. Others are made for the table.<br><br>Prawn Toast with Sweet Chilli is new on the Dandy Lane Cafe menu for the second kind of moment: when the group has settled in, the drinks are on the table, and everyone wants something they can reach for together.<br><br>It is an easy first order when you are catching up with friends, easing into a long table conversation, or choosing a few things to share before the rest of the meal finds its way to the table. Pair it with a beer or a glass of wine, pass it around, and let it become part of the reason everyone stays a little longer.<br><br>This is not about overthinking the order. It is one clear choice for the middle of the table: Prawn Toast with Sweet Chilli.<br><br>Find it on the Dandy Lane Cafe menu, down the lane in Hobart CBD."
+    content: "Some menu choices are made for the person ordering them. Others are made for the table.<br><br>Prawn Toast with Sweet Chilli is new on the Dandy Lane Cafe menu for the second kind of moment: when the group has settled in, the drinks are on the table, and everyone wants something they can reach for together.<br><br>It is an easy first order when you are catching up with friends, easing into a long table conversation, or choosing a few things to share before the rest of the meal finds its way to the table. Pair it with a beer or a glass of wine, pass it around, and let it become part of the reason everyone stays a little longer.<br><br>This is not about overthinking the order. It is one clear choice for the middle of the table: Prawn Toast with Sweet Chilli.<br><br>Find it on the Dandy Lane Cafe menu, down the lane in Collins Court, Hobart CBD."
     featured: false
     cover: "assets/media/prawn-toast-sweet-chilli-20260720.png"
     tags: ["Menu", "Sharing", "Hobart CBD"]
+
+  - slug: "dandy-fried-chicken-hobart-cbd"
+    url_path: "/stories-dandy-fried-chicken-hobart-cbd"
+    date: "2026-07-31"
+    author: "Dandy Lane Team"
+    title: "Dandy Fried Chicken in Hobart CBD"
+    summary: "Dandy Fried Chicken with chipotle mayo, pickles, cheese and lettuce on brioche, from Dandy Lane Cafe in Hobart CBD."
+    answer_summary: "At Dandy Lane Cafe in Hobart CBD, Dandy Fried Chicken is a hot egg-and-bread choice with chipotle mayo, pickles, cheese and lettuce on brioche."
+    robots: "noindex, follow"
+    include_in_sitemap: false
+    related_menu_item: "Dandy Fried Chicken"
+    related_links:
+      - label: "Explore the menu"
+        href: "/menu"
+      - label: "Find Dandy Lane"
+        href: "/location"
+    content: "Dandy Fried Chicken brings chipotle mayo, pickles, cheese and lettuce together on brioche.<br><br>Planning a savoury lunch stop? Explore the current menu, then find Dandy Lane Cafe down the lane in Collins Court, Hobart CBD."
+    cover: "assets/media/dandy-fried-chicken-20260731-4x5.png"
+    cover_alt: "Dandy Fried Chicken with chipotle mayo, pickles, cheese and lettuce on brioche."
+    featured: false
+    tags: ["Chicken", "Lunch", "Campaign"]
