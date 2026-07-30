@@ -6,7 +6,7 @@
         </p>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 3rem;">
             {% for item in stories.stories %}
-            {% if item.index_group != 'facilities' %}
+            {% if item.index_group != 'facilities' and item.include_in_story_list != false %}
             <article class="story-card"
                 style="border: 1px solid #eee; border-radius: 8px; overflow: hidden; transition: transform 0.3s ease;">
                 <div style="height: 240px; background: #ddd; overflow: hidden;">
@@ -41,7 +41,7 @@
             </p>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 3rem;">
                 {% for item in stories.stories %}
-                {% if item.index_group == 'facilities' %}
+                {% if item.index_group == 'facilities' and item.include_in_story_list != false %}
                 <article class="story-card"
                     style="border: 1px solid #eee; border-radius: 8px; overflow: hidden; transition: transform 0.3s ease; background: #fcfcfc;">
                     <div style="height: 240px; background: #ddd; overflow: hidden;">
