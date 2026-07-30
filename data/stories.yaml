@@ -198,3 +198,24 @@ stories:
     featured: false
     cover: "assets/media/faq_hero.jpg"
     tags: ["Facilities", "Practical Details"]
+
+  - slug: "dandy-fried-chicken-hobart-cbd"
+    url_path: "/stories-dandy-fried-chicken-hobart-cbd"
+    date: "2026-07-31"
+    author: "Dandy Lane Team"
+    title: "Dandy Fried Chicken in Hobart CBD"
+    summary: "Dandy Fried Chicken with chipotle mayo, pickles, cheese and lettuce on brioche, from Dandy Lane Cafe in Hobart CBD."
+    answer_summary: "At Dandy Lane Cafe in Hobart CBD, Dandy Fried Chicken is a hot egg-and-bread choice with chipotle mayo, pickles, cheese and lettuce on brioche."
+    robots: "noindex, follow"
+    include_in_sitemap: false
+    related_menu_item: "Dandy Fried Chicken"
+    related_links:
+      - label: "Explore the menu"
+        href: "/menu"
+      - label: "Find Dandy Lane"
+        href: "/location"
+    content: "Dandy Fried Chicken brings chipotle mayo, pickles, cheese and lettuce together on brioche.<br><br>Planning a savoury lunch stop? Explore the current menu, then find Dandy Lane Cafe down the lane in Collins Court, Hobart CBD."
+    cover: "assets/media/dandy-fried-chicken-20260731-4x5.png"
+    cover_alt: "Dandy Fried Chicken with chipotle mayo, pickles, cheese and lettuce on brioche."
+    featured: false
+    tags: ["Chicken", "Lunch", "Campaign"]
