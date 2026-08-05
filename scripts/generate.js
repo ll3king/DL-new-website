@@ -134,16 +134,6 @@ function storyRoute(story) {
     };
 }
 
-function updateRoute(update) {
-    const prettyPath = normalizePrettyPath(update.url_path, `updates-${update.slug}`);
-    const htmlPath = `${prettyPath}.html`;
-
-    return {
-        prettyPath,
-        htmlPath
-    };
-}
-
 function absoluteSiteUrl(siteData, urlPath) {
     const siteUrl = siteData.seo.site_url.replace(/\/+$/, '');
     if (!urlPath || urlPath === '/') return `${siteUrl}/`;
@@ -215,18 +205,6 @@ function prepareStoriesData(rawStoriesData) {
     };
 }
 
-function prepareUpdatesData(rawUpdatesData) {
-    const updates = Array.isArray(rawUpdatesData.updates) ? rawUpdatesData.updates : [];
-
-    return {
-        ...rawUpdatesData,
-        updates: updates.map(update => ({
-            ...update,
-            display_date: formatDisplayDate(update.date)
-        }))
-    };
-}
-
 function prepareMenuHighlightsData(rawMenuData) {
     const categories = Array.isArray(rawMenuData.categories) ? rawMenuData.categories : [];
     const highlightOrder = [
@@ -270,15 +248,13 @@ async function render() {
         const menuHighlightsData = prepareMenuHighlightsData(menuData);
         const faqData = yaml.load(fs.readFileSync(path.join(__dirname, '../data/faq.yaml'), 'utf8'));
         const storiesData = prepareStoriesData(yaml.load(fs.readFileSync(path.join(__dirname, '../data/stories.yaml'), 'utf8')));
-        const updatesData = prepareUpdatesData(yaml.load(fs.readFileSync(path.join(__dirname, '../data/updates.yaml'), 'utf8')));
 
         const context = {
             site: siteData,
             menu: menuData,
             menu_highlights: menuHighlightsData,
             faq: faqData,
-            stories: storiesData,
-            updates: updatesData
+            stories: storiesData
         };
 
         // 2. Define Page Compositions (L4 definition in L3 generator)
@@ -657,80 +633,7 @@ async function render() {
             fs.writeFileSync(outputPath, finalHtml);
         });
 
-        // 6. Render Dynamic Website Update Detail Pages
-        updatesData.updates.forEach(update => {
-            const route = updateRoute(update);
-            generatedPages.push(route.prettyPath);
-            console.log(`[L3] Rendering Update: ${route.htmlPath}`);
-
-            const pageBody = nunjucks.render('update-detail.html', {
-                ...context,
-                active_update: update
-            });
-
-            const updatePath = route.prettyPath;
-            const breadcrumbs = generateBreadcrumbSchema(siteData.seo.site_url, 'updates', update.title, updatePath);
-            const article = {
-                "@type": "Article",
-                "headline": update.title,
-                "description": update.summary,
-                "datePublished": update.date,
-                "author": {
-                    "@type": "Organization",
-                    "name": update.author || siteData.identity.name
-                },
-                "publisher": {
-                    "@type": "Organization",
-                    "name": siteData.identity.name,
-                    "logo": {
-                        "@type": "ImageObject",
-                        "url": siteData.seo.site_url + "/assets/media/logo.png"
-                    }
-                },
-                "image": `${siteData.seo.site_url}/${update.cover}`,
-                "mainEntityOfPage": {
-                    "@type": "WebPage",
-                    "@id": `${siteData.seo.site_url}${updatePath}`
-                }
-            };
-
-            if (update.answer_summary) {
-                article.abstract = update.answer_summary;
-            }
-            if (update.related_menu_item) {
-                article.about = {
-                    "@type": "Thing",
-                    "name": update.related_menu_item
-                };
-            }
-            if (update.evidence_points && update.evidence_points.length) {
-                article.keywords = update.evidence_points.join(', ');
-            }
-
-            const pageSchema = `<!-- AEO: Website Update Schema -->\n<script type="application/ld+json">\n${JSON.stringify({
-                "@context": "https://schema.org",
-                "@graph": [breadcrumbs, article]
-            }, null, 2)}\n</script>`;
-
-            const finalHtml = nunjucks.render('base.html', {
-                ...context,
-                content: pageBody,
-                page_title: update.title,
-                page_description: update.summary,
-                current_page_id: 'updates',
-                slug: route.htmlPath,
-                page_path: updatePath,
-                page_robots: update.robots,
-                global_schema: pageSchema,
-                current_year: new Date().getFullYear()
-            });
-
-            const outputPath = path.join(PUBLIC_DIR, route.htmlPath.replace(/^\//, ''));
-            fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-            fs.writeFileSync(outputPath, finalHtml);
-        });
-
-        // 7. Generate AEO Artifacts & Infrastructure (L3 logic to L4 output)
+        // 6. Generate AEO Artifacts & Infrastructure (L3 logic to L4 output)
         console.log("[L3] Generating AEO Artifacts: sitemap.xml, robots.txt, _redirects");
         
         // Sitemap - Standardize URLs (Pretty URLs)
@@ -743,12 +646,6 @@ async function render() {
         storiesData.stories.forEach(story => {
             if (!shouldIncludeInSitemap(story)) return;
             const route = storyRoute(story);
-            sitemapEntries.push(`  <url><loc>${siteData.seo.site_url}${route.prettyPath}</loc></url>`);
-        });
-
-        updatesData.updates.forEach(update => {
-            if (!shouldIncludeInSitemap(update)) return;
-            const route = updateRoute(update);
             sitemapEntries.push(`  <url><loc>${siteData.seo.site_url}${route.prettyPath}</loc></url>`);
         });
 
