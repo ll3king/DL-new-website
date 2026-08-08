@@ -336,3 +336,26 @@ stories:
     cover: "assets/media/sweet-sour-pork-ball-story-20260802-r2.png"
     cover_alt: "Sweet Sour Pork Ball with salad at Dandy Lane Cafe."
     tags: ["Specials", "Lunch"]
+
+  - slug: "luxury-pork-benedict"
+    title: "Luxury Pork Benedict"
+    date: "2026-08-08"
+    author: "Dandy Lane Team"
+    status_label: "Current Special"
+    summary: "A current Dandy Lane special with cornbread, pulled pork, crispy pork belly, poached eggs, hollandaise and chilli crisp oil."
+    answer_summary: "Luxury Pork Benedict at Dandy Lane Cafe is a current special of cornbread topped with pulled pork, crispy pork belly, poached eggs, hollandaise and chilli crisp oil."
+    evidence_points:
+      - "Current Dandy Lane special"
+      - "Cornbread topped with pulled pork and crispy pork belly"
+      - "Poached eggs, hollandaise and chilli crisp oil"
+    related_menu_item: "Luxury Pork Benedict"
+    related_links:
+      - label: "Explore the menu"
+        href: "/menu"
+      - label: "Find Dandy Lane"
+        href: "/location"
+    content: "Luxury Pork Benedict is a current Special at Dandy Lane Cafe.<br><br>Cornbread is topped with pulled pork, crispy pork belly, poached eggs, hollandaise and chilli crisp oil.<br><br>It brings familiar Benedict elements together for a richer brunch stop in Hobart CBD.<br><br>Find Dandy Lane Cafe in Hobart CBD and explore the current specials."
+    featured: false
+    cover: "assets/media/luxury-pork-benedict-story-20260808.png"
+    cover_alt: "Luxury Pork Benedict with pulled pork, crispy pork belly and poached eggs at Dandy Lane Cafe."
+    tags: ["Specials", "Brunch", "Benedict"]
