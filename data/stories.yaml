@@ -359,3 +359,25 @@ stories:
     cover: "assets/media/luxury-pork-benedict-story-20260808.png"
     cover_alt: "Luxury Pork Benedict with pulled pork, crispy pork belly and poached eggs at Dandy Lane Cafe."
     tags: ["Specials", "Brunch", "Benedict"]
+
+  - slug: "bow-shiu-roasted-pork"
+    title: "Bow Shiu Roasted Pork"
+    date: "2026-08-12"
+    author: "Dandy Lane Team"
+    summary: "Roasted pork belly and scrambled eggs with onion, dried chilli, spring onion and lettuce, finished with Malaysian Bow Shiu sauce on a pancake."
+    answer_summary: "Bow Shiu Roasted Pork at Dandy Lane Cafe is roasted pork belly and scrambled eggs with onion, dried chilli, spring onion and lettuce, finished with Malaysian Bow Shiu sauce on a pancake."
+    evidence_points:
+      - "Roasted pork belly and scrambled eggs"
+      - "Onion, dried chilli, spring onion and lettuce"
+      - "Malaysian Bow Shiu sauce on a pancake"
+    related_menu_item: "Bow Shiu Roasted Pork"
+    related_links:
+      - label: "Explore the menu"
+        href: "/menu"
+      - label: "Find Dandy Lane"
+        href: "/location"
+    content: "Bow Shiu Roasted Pork brings roasted pork belly and scrambled eggs together with onion, dried chilli, spring onion and lettuce.<br><br>It is finished with Malaysian Bow Shiu sauce on a pancake."
+    featured: false
+    cover: "assets/media/bow-shiu-roasted-pork-story-20260811.png"
+    cover_alt: "Bow Shiu Roasted Pork with roasted pork belly, scrambled eggs and Malaysian Bow Shiu sauce on a pancake."
+    tags: ["Menu"]
