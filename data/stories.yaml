@@ -381,3 +381,25 @@ stories:
     cover: "assets/media/bow-shiu-roasted-pork-story-20260811.png"
     cover_alt: "Bow Shiu Roasted Pork with roasted pork belly, scrambled eggs and Malaysian Bow Shiu sauce on a pancake."
     tags: ["Menu"]
+
+  - slug: "breakfast-bruschetta"
+    title: "Breakfast Bruschetta"
+    date: "2026-08-23"
+    author: "Dandy Lane Team"
+    summary: "A late-winter Hobart morning pause, with beetroot hummus bringing colour and crispy chilli oil adding a lively edge."
+    answer_summary: "Breakfast Bruschetta at Dandy Lane Cafe brings beetroot hummus and crispy chilli oil together for a colourful Hobart breakfast moment."
+    evidence_points:
+      - "Breakfast Bruschetta at Dandy Lane Cafe"
+      - "Beetroot hummus"
+      - "Crispy chilli oil"
+    related_menu_item: "Breakfast Bruschetta"
+    related_links:
+      - label: "Explore the menu"
+        href: "/menu"
+      - label: "Find Dandy Lane"
+        href: "/location"
+    content: "Late-winter mornings in Hobart have a way of asking us to slow down. The light comes in gently, the air outside holds its edge, and a good breakfast becomes more than the first thing on the table. It can be the reason to linger, to put the phone down, and to make a little space for the person across from you. Breakfast Bruschetta belongs in that sort of pause: unhurried, colourful and made for a moment that does not need to be rushed.<br><br>At the centre is beetroot hummus, bringing a deep colour to the plate, with crispy chilli oil adding a lively edge. Those two notes give Breakfast Bruschetta a clear visual character, keeping the plate bright while letting the morning stay simple. It is a breakfast for noticing the small details: the colour, the contrast, the pause before the first bite, and the easy conversation that follows naturally.<br><br>On a late-winter Hobart morning, a proper catch-up can begin with a shared table. Whether it is a quiet moment alone or a long-overdue conversation, Breakfast Bruschetta is about the small cafe moments that make a morning feel warmer and a little more connected. Take your time, share the table, and see where the conversation goes next."
+    featured: false
+    cover: "assets/media/breakfast-bruschetta-20260811.png"
+    cover_alt: "Breakfast Bruschetta with beetroot hummus and crispy chilli oil at Dandy Lane Cafe."
+    tags: ["Breakfast", "Hobart"]
