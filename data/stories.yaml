@@ -403,3 +403,25 @@ stories:
     cover: "assets/media/breakfast-bruschetta-20260811.png"
     cover_alt: "Breakfast Bruschetta with beetroot hummus and crispy chilli oil at Dandy Lane Cafe."
     tags: ["Breakfast", "Hobart"]
+
+  - slug: "dirty-burger"
+    title: "Dirty Burger"
+    date: "2026-08-24"
+    author: "Dandy Lane Team"
+    summary: "On a late-winter Hobart morning, Dirty Burger turns a simple brunch pause into an easy excuse to stay at the table a little longer."
+    answer_summary: "Dirty Burger at Dandy Lane Cafe brings a crispy hash brown and fried egg to a late-winter Hobart brunch pause."
+    evidence_points:
+      - "Dirty Burger at Dandy Lane Cafe"
+      - "Crispy hash brown"
+      - "Fried egg"
+    related_menu_item: "Dirty Burger"
+    related_links:
+      - label: "Explore the menu"
+        href: "/menu"
+      - label: "Find Dandy Lane"
+        href: "/location"
+    content: "Late-winter mornings in Hobart make their own kind of invitation. The air outside may still have an edge, but inside a cafe there is room to slow down, warm your hands around the moment and let the day begin without rushing. Dirty Burger belongs to that in-between space: the part of the morning when a quick bite becomes a reason to sit down, look up and make time for whoever has joined you.<br><br>At its centre, a crispy hash brown brings the contrast, while a fried egg makes the choice feel gloriously undecided. It is not about racing through breakfast or turning a meal into a checklist. It is about the small pleasure of ordering something that meets the morning where it is: hungry, a little unplanned and open to conversation. One person may start with the crisp edge; another may argue for the egg. Either way, the table has something to say.<br><br>That is the kind of late-winter pause Dandy Lane is made for: a familiar table, an unhurried catch-up and enough time to find out what everyone has been thinking about. Come in for the conversation as much as the brunch, then let it go where it wants. Dirty Burger is simply the starting point. Take your time, share the table and see which bite you reach for first."
+    featured: false
+    cover: "assets/media/dirty-burger-story-20260824.jpg"
+    cover_alt: "Dirty Burger with a crispy hash brown and fried egg at Dandy Lane Cafe."
+    tags: ["Brunch", "Hobart"]
