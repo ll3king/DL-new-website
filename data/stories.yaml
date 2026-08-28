@@ -425,3 +425,24 @@ stories:
     cover: "assets/media/dirty-burger-story-20260824.jpg"
     cover_alt: "Dirty Burger with a crispy hash brown and fried egg at Dandy Lane Cafe."
     tags: ["Brunch", "Hobart"]
+
+  - slug: "brown-cheese-caramel-coffee"
+    title: "Brown Cheese Caramel Coffee"
+    date: "2026-08-28"
+    author: "Dandy Lane Team"
+    summary: "Cold brew with caramel syrup, topped with whipped cream and shaved brown cheese, for a coffee pause at Dandy Lane Cafe."
+    answer_summary: "Brown Cheese Caramel Coffee at Dandy Lane Cafe is cold brew with caramel syrup, topped with whipped cream and shaved brown cheese."
+    evidence_points:
+      - "Cold brew with caramel syrup"
+      - "Whipped cream and shaved brown cheese"
+    related_menu_item: "Brown Cheese Caramel Coffee"
+    related_links:
+      - label: "Explore the menu"
+        href: "/menu"
+      - label: "Find Dandy Lane"
+        href: "/location"
+    content: "Some coffee moments call for a little more time at the table. Brown Cheese Caramel Coffee starts with cold brew and caramel syrup, then adds whipped cream and shaved brown cheese for a layered coffee pause at Dandy Lane Cafe.<br><br>The cold brew keeps the coffee at the centre, while caramel syrup brings a familiar note. Whipped cream and shaved brown cheese add the finish, giving the drink a clear character without asking the moment to be anything more complicated.<br><br>Take the coffee slowly, find a seat in the lane and let the conversation settle in. Brown Cheese Caramel Coffee is a simple place to start."
+    featured: false
+    cover: "assets/media/brown-cheese-caramel-coffee-story-20260825.jpg"
+    cover_alt: "Brown Cheese Caramel Coffee with whipped cream and shaved brown cheese at Dandy Lane Cafe."
+    tags: ["Coffee", "Hobart"]
