@@ -446,3 +446,25 @@ stories:
     cover: "assets/media/brown-cheese-caramel-coffee-story-20260825.jpg"
     cover_alt: "Brown Cheese Caramel Coffee with whipped cream and shaved brown cheese at Dandy Lane Cafe."
     tags: ["Coffee", "Hobart"]
+
+  - slug: "curry-beef-benny"
+    title: "Curry Beef Benny"
+    date: "2026-09-06"
+    author: "Dandy Lane Team"
+    summary: "A Father's Day table with Malaysian-style beef curry, poached eggs and hollandaise, made for a slower Hobart morning."
+    answer_summary: "Curry Beef Benny at Dandy Lane Cafe brings Malaysian-style beef curry with potato and coconut to sourdough, with poached eggs, hollandaise and pickled onion."
+    evidence_points:
+      - "Malaysian-style beef curry with potato and coconut"
+      - "Poached eggs, hollandaise and pickled onion"
+      - "Sourdough"
+    related_menu_item: "Curry Beef Benny"
+    related_links:
+      - label: "Explore the menu"
+        href: "/menu"
+      - label: "Find Dandy Lane"
+        href: "/location"
+    content: "Father's Day can be less about a big plan and more about making time for the table. A slower Hobart morning, a proper catch-up and something warm in front of you can be enough to turn breakfast into the part of the day that stays with you.<br><br>Curry Beef Benny brings Malaysian-style beef curry with potato and coconut to sourdough, with poached eggs, hollandaise and pickled onion. It is a plate built around warmth and contrast: curry and hollandaise, soft eggs and sourdough, with pickled onion cutting through the richer notes.<br><br>For Father's Day, the hero is the time shared around it. Bring the conversation, take the morning slowly and leave room for the stories that only seem to come out when nobody is rushing to leave the table."
+    featured: false
+    cover: "assets/media/curry-beef-benny-story-20260906.jpg"
+    cover_alt: "Curry Beef Benny with Malaysian-style beef curry, poached eggs and hollandaise at Dandy Lane Cafe."
+    tags: ["Brunch", "Father's Day", "Hobart"]
