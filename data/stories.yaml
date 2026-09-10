@@ -468,3 +468,24 @@ stories:
     cover: "assets/media/curry-beef-benny-story-20260906.jpg"
     cover_alt: "Curry Beef Benny with Malaysian-style beef curry, poached eggs and hollandaise at Dandy Lane Cafe."
     tags: ["Brunch", "Father's Day", "Hobart"]
+
+  - slug: "kimchi-pulled-pork-rosti"
+    title: "Kimchi Pulled Pork Rosti"
+    date: "2026-09-10"
+    author: "Dandy Lane Team"
+    summary: "A Hobart morning inside Collins Court, a table worth lingering over, and Kimchi Pulled Pork Rosti at the centre of it."
+    answer_summary: "Kimchi Pulled Pork Rosti at Dandy Lane Cafe is a rosti topped with pulled pork, kimchi and a poached egg, finished with hollandaise and chilli oil."
+    evidence_points:
+      - "Rosti topped with pulled pork, kimchi and a poached egg"
+      - "Finished with hollandaise and chilli oil"
+    related_menu_item: "Kimchi Pulled Pork Rosti"
+    related_links:
+      - label: "Explore the menu"
+        href: "/menu"
+      - label: "Find Dandy Lane"
+        href: "/location"
+    content: "Some cafe stories begin with a big announcement. This one begins with a quieter Hobart moment: walking into Collins Court, finding Dandy Lane, and deciding that the next part of the morning does not need to be rushed. A table opens up, coffee arrives, and a quick catch-up becomes the kind of conversation that deserves a little more time.<br><br>Kimchi Pulled Pork Rosti sits naturally in the middle of that scene. The rosti is topped with pulled pork, kimchi and a poached egg, then finished with hollandaise and chilli oil. Each part has a clear place on the plate, bringing a familiar Dandy Lane brunch format together with a different combination. It is the sort of dish that gives everyone at the table something to talk about before the first forkful even begins.<br><br>That is what we like about mornings at Dandy Lane. The cafe may be tucked away from the main street, but the best moments here often feel open-ended: a breakfast before work, a late start with a friend, or an unplanned second coffee because nobody is ready to leave. Kimchi Pulled Pork Rosti joins that rhythm as our current Special, ready to sit at the centre of the table while the conversation takes its own direction.<br><br>Find us inside Collins Court in Hobart and read more about the dish, the setting and the small cafe moments that turn an ordinary morning into something worth remembering."
+    featured: false
+    cover: "assets/media/kimchi-pulled-pork-rosti-story-20260910.png"
+    cover_alt: "Overhead photograph of Kimchi Pulled Pork Rosti on a grey ceramic plate."
+    tags: ["Specials", "Brunch", "Hobart"]
