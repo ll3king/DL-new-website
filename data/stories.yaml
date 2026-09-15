@@ -489,3 +489,25 @@ stories:
     cover: "assets/media/kimchi-pulled-pork-rosti-story-20260910.png"
     cover_alt: "Overhead photograph of Kimchi Pulled Pork Rosti on a grey ceramic plate."
     tags: ["Specials", "Brunch", "Hobart"]
+
+  - slug: "duck-rosti-benedict"
+    title: "Duck Rosti Benedict"
+    date: "2026-09-15"
+    author: "Dandy Lane Team"
+    summary: "A familiar brunch idea takes a different turn at Dandy Lane, with pulled duck, parmesan-dill rosti and a Benedict finish."
+    answer_summary: "Duck Rosti Benedict at Dandy Lane Cafe brings pulled duck, parmesan-dill rosti, a poached egg and hollandaise together with pear, lettuce and pickled red onion salad."
+    evidence_points:
+      - "Pulled duck and parmesan-dill rosti"
+      - "Poached egg and hollandaise"
+      - "Pear, lettuce and pickled red onion salad"
+    related_menu_item: "Duck Rosti Benedict"
+    related_links:
+      - label: "Explore the menu"
+        href: "/menu"
+      - label: "Find Dandy Lane"
+        href: "/location"
+    content: 'Sometimes the hardest part of brunch is answering a simple question: "What are you having?" The menu is open, someone has spotted something different, and suddenly there is more to talk about than the plans for the day. At Dandy Lane, Duck Rosti Benedict offers a different answer to a familiar breakfast choice, with a plate that deserves a moment before the conversation moves on.<br><br>Pulled duck, parmesan-dill rosti, a poached egg and hollandaise sit alongside a pear, lettuce and pickled red onion salad. On the plate, the Benedict takes one side and the salad the other, leaving a choice with every forkful. There is plenty to look at before the first forkful, and more than one way to begin. You might head straight for the centre, or bring a little of each side together.<br><br>That is the kind of food conversation we like making room for in our Hobart cafe: not a lesson, just a dish that gives you something to notice and talk about. Breakfast with a friend can start with choosing what to order and turn into the catch-up you meant to have weeks ago. Or it can simply be a table to yourself and a little time with your meal. However your morning unfolds, Duck Rosti Benedict gives it a place to start.'
+    featured: false
+    cover: "assets/media/duck-rosti-benedict-story-20260915.jpg"
+    cover_alt: "Duck Rosti Benedict on a ceramic plate with a poached egg, hollandaise and salad."
+    tags: ["Brunch", "Hobart"]
