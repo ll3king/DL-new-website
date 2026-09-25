@@ -511,3 +511,25 @@ stories:
     cover: "assets/media/duck-rosti-benedict-story-20260915.jpg"
     cover_alt: "Duck Rosti Benedict on a ceramic plate with a poached egg, hollandaise and salad."
     tags: ["Brunch", "Hobart"]
+
+  - slug: "pork-katsu-sando"
+    title: "Pork Katsu Sando"
+    date: "2026-09-25"
+    author: "Dandy Lane Team"
+    summary: "A proper cafe-table lunch built around champagne-marinated pork katsu, bright layers and the kind of catch-up that stays a little longer."
+    answer_summary: "Pork Katsu Sando at Dandy Lane Cafe brings champagne-marinated pork katsu, Swiss cheese, tomato, lettuce, aioli and tonkatsu sauce together in brioche with fries."
+    evidence_points:
+      - "Champagne-marinated pork katsu in brioche"
+      - "Swiss cheese, tomato, lettuce, aioli and tonkatsu sauce"
+      - "Fries included"
+    related_menu_item: "Pork Katsu Sando"
+    related_links:
+      - label: "Explore the menu"
+        href: "/menu"
+      - label: "Find Dandy Lane"
+        href: "/location"
+    content: 'The best sandwich photographs make the first decision look impossible: start with the half where the pork katsu is front and centre, or go straight for the layers tucked into the other side. Pork Katsu Sando arrives cut through the middle, all brioche, colour and texture on the plate, with fries alongside. It is the sort of lunch that earns both hands before anyone has settled on the first bite.<br><br>At the centre is champagne-marinated pork katsu in brioche, with Swiss cheese, tomato and lettuce. Aioli and tonkatsu sauce run through the layers, while the fries make the plate feel ready for a proper lunch rather than a quick snack. Everything is visible in the cut: the pork, the bright tomato, the greens and the sauces holding the sandwich together. There is no need to over-explain it. The photo does the inviting; the menu facts tell you what you are looking at.<br><br>At Dandy Lane Cafe, Pork Katsu Sando is for the person who wants lunch to have a little ceremony: choose a half, reach for a fry, then decide whether the next bite should be brioche, pork katsu or the saucy edge. Bring someone who will have an opinion about the order. The only question is which bite gets taken first.'
+    featured: false
+    cover: "assets/media/pork-katsu-sando-story-20260925.png"
+    cover_alt: "Pork Katsu Sando in brioche with fries on a ceramic plate."
+    tags: ["Lunch", "Hobart"]
