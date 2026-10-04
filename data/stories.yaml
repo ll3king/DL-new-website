@@ -533,3 +533,26 @@ stories:
     cover: "assets/media/pork-katsu-sando-story-20260925.png"
     cover_alt: "Pork Katsu Sando in brioche with fries on a ceramic plate."
     tags: ["Lunch", "Hobart"]
+
+  - slug: "dubai-chocolate"
+    title: "Dubai Chocolate"
+    date: "2026-10-04"
+    author: "Dandy Lane Team"
+    summary: "A first look at our upcoming Special drink: hot chocolate beneath pistachio foam, finished with crushed pistachio."
+    answer_summary: "Dubai Chocolate is an upcoming Special drink at Dandy Lane Cafe: hot chocolate beneath pistachio foam, finished with crushed pistachio."
+    evidence_points:
+      - "Upcoming Special drink preview"
+      - "Hot chocolate beneath pistachio foam"
+      - "Finished with crushed pistachio"
+    related_menu_item: "Dubai Chocolate"
+    related_links:
+      - label: "Explore the menu"
+        href: "/menu"
+      - label: "Find Dandy Lane"
+        href: "/location"
+    content: >-
+      Would you reach for a spoon first, or go straight for a sip? That is the little debate we can imagine starting across a Dandy Lane table with Dubai Chocolate. We are getting ready to introduce this Special drink, and wanted to share a first look before it joins the menu. Hot chocolate sits beneath a layer of pistachio foam, with crushed pistachio scattered on top. For now, this is a preview: something to look forward to, and perhaps a reason to start planning your next cafe catch-up.<br><br>The idea is easy to see in the glass: chocolate below, pistachio above, and a crushed-pistachio finish that brings the two into focus. There is a small choice to make before that first taste. Do you explore the foam, sip through the layers, or bring them together with a gentle stir? We like that a drink can leave room for a little curiosity without needing a long explanation. Sometimes the conversation starts with nothing more complicated than, 'Have a look at this.'<br><br>At Dandy Lane Cafe in Hobart, that is the sort of moment we want to make space for: a familiar table, a friend with news to share, and something a little different to talk about. Dubai Chocolate is coming soon, and we will share the launch details when it is ready. Until then, consider this your first look. Who would you invite to join the spoon-or-sip debate?
+    featured: false
+    cover: "assets/media/dubai-chocolate-story-20261004.jpg"
+    cover_alt: "Dubai Chocolate with pistachio foam and crushed pistachio at Dandy Lane Cafe."
+    tags: ["Drinks", "Preview", "Hobart"]
