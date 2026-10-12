@@ -556,3 +556,26 @@ stories:
     cover: "assets/media/dubai-chocolate-story-20261004.jpg"
     cover_alt: "Dubai Chocolate with pistachio foam and crushed pistachio at Dandy Lane Cafe."
     tags: ["Drinks", "Preview", "Hobart"]
+
+  - slug: "grilled-cornbread"
+    title: "Grilled Cornbread"
+    date: "2026-10-12"
+    author: "Dandy Lane Team"
+    summary: "House-baked cornbread, bright tomato and avocado salsa, and a little room for a longer catch-up at Dandy Lane."
+    answer_summary: "Grilled Cornbread at Dandy Lane Cafe brings house-baked cornbread, mozzarella, tomato and avocado salsa, poached eggs, chipotle mayo and lemon together."
+    evidence_points:
+      - "House-baked cornbread with mozzarella"
+      - "Tomato and avocado salsa with poached eggs"
+      - "Chipotle mayo and lemon"
+    related_menu_item: "Grilled Cornbread"
+    related_links:
+      - label: "Explore the menu"
+        href: "/menu"
+      - label: "Find Dandy Lane"
+        href: "/location"
+    content: >-
+      Not every breakfast needs to be the start of a busy day. Sometimes it is the pause in the middle: a chance to sit across from someone, put the phone away and pick up a conversation that has waited too long. That is the cafe moment we have in mind with Grilled Cornbread at Dandy Lane. There is nothing complicated about the invitation. A table, a plate with plenty going on, and a little time that belongs to you rather than the next thing on the list.<br><br>The combination starts with house-baked cornbread and mozzarella, alongside tomato and avocado salsa, poached eggs, chipotle mayo and lemon. Tomato and avocado bring colour to the plate; the eggs and mozzarella sit alongside the livelier notes of chipotle and lemon. It is a combination that gives each forkful a different balance without needing a long explanation. A little salsa with the cornbread, then a bite with egg, then a squeeze of lemon: the way you put those elements together is part of the pleasure.<br><br>For us, that is a lovely way to think about a Hobart cafe breakfast. The food gives the conversation somewhere to begin, but it does not need to be the whole story. Perhaps the best part is the person opposite you, or the quiet of a table to yourself. Grilled Cornbread is our invitation to picture that pause. Who would you make a little extra time for?
+    featured: false
+    cover: "assets/media/grilled-cornbread-story-20261012.jpg"
+    cover_alt: "Grilled Cornbread with poached eggs, tomato and avocado salsa, and lemon at Dandy Lane Cafe."
+    tags: ["Breakfast", "Hobart"]
