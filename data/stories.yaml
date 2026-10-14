@@ -579,3 +579,27 @@ stories:
     cover: "assets/media/grilled-cornbread-story-20261012.jpg"
     cover_alt: "Grilled Cornbread with poached eggs, tomato and avocado salsa, and lemon at Dandy Lane Cafe."
     tags: ["Breakfast", "Hobart"]
+
+  - slug: "cornbread-pulled-pork-benny"
+    title: "Cornbread Pulled Pork Benny"
+    date: "2026-10-14"
+    author: "Dandy Lane Team"
+    summary: "Pulled pork, poached eggs and cornbread, with hollandaise, chilli crisp oil and pickled onions: a different Dandy Lane breakfast conversation."
+    answer_summary: "Pulled pork, spinach and poached eggs sit on cornbread, with chipotle mayo, hollandaise, chilli crisp oil and pickled onions."
+    evidence_points:
+      - "Pulled pork, spinach and poached eggs on cornbread"
+      - "Chipotle mayo, hollandaise and chilli crisp oil"
+      - "Pickled onions"
+    related_menu_item: "Cornbread Pulled Pork Benny"
+    related_links:
+      - label: "Explore the menu"
+        href: "/menu"
+      - label: "Find Dandy Lane"
+        href: "/location"
+    content: >-
+      There is a moment in a cafe catch-up when the conversation stops being about the week ahead and starts being about the plate in front of you. Someone notices the sauce, someone goes straight for the egg, and the next few minutes belong to breakfast. Cornbread Pulled Pork Benny is our Dandy Lane take on that moment: familiar brunch ingredients brought together in a combination with its own character. It is a reason to look up from the phone and give the table a little attention.<br><br>Pulled pork, spinach and poached eggs sit on cornbread, with chipotle mayo, hollandaise, chilli crisp oil and pickled onions. The cornbread gives the combination its starting point, while the sauces, chilli and onions bring different notes to each bite. There is room to go straight for the pork and egg, or to bring a little of everything together on the fork. The full name tells you where the plate begins; the rest is in how those components meet.<br><br>We like the idea that a cafe can make space for both familiar habits and a small change of plan. Maybe you usually make the same breakfast choice. Maybe the person across from you has already spotted something different. That small conversation is part of the Dandy Lane story too: food as a starting point, rather than something to hurry through. Cornbread Pulled Pork Benny gives us another plate to talk about. Take a moment to imagine the first bite, then decide who you would share the conversation with.
+    featured: false
+    include_in_sitemap: true
+    cover: "assets/media/cornbread-pulled-pork-benny-story-20261014.png"
+    cover_alt: "Cornbread Pulled Pork Benny at Dandy Lane Cafe."
+    tags: ["Breakfast", "Hobart"]
