@@ -603,3 +603,22 @@ stories:
     cover: "assets/media/cornbread-pulled-pork-benny-story-20261014.png"
     cover_alt: "Cornbread Pulled Pork Benny at Dandy Lane Cafe."
     tags: ["Breakfast", "Hobart"]
+
+  - slug: "dubai-chocolate-baby-dutch-pancake"
+    title: "Dubai Chocolate Baby Dutch Pancake"
+    date: "2026-10-17"
+    author: "Dandy Lane Team"
+    summary: "A returning Baby Dutch Pancake takes a new turn, with warm pancake, strawberries, pistachio cream, coconut and chocolate ice cream."
+    related_menu_item: "Dubai Chocolate Baby Dutch Pancake"
+    related_links:
+      - label: "Explore the menu"
+        href: "/menu"
+      - label: "Find Dandy Lane"
+        href: "/location"
+    content: >-
+      Some dishes leave the menu but stay in the conversation. Our Baby Dutch Pancake was one of them. Guests kept asking when it would return, and those conversations stayed with us. So we are bringing it back with a new flavour direction: Dubai Chocolate Baby Dutch Pancake.<br><br>The inspiration reaches beyond Hobart to the Dubai chocolate phenomenon. A bar from Dubai-based FIX Dessert Chocolatier paired milk chocolate with pistachio and crisp strands of kadayif pastry, drawing on the textures of knafeh. A TikTok video in December 2023 helped take it to a much wider audience. Suddenly, a chocolate bar being broken open was a story people wanted to watch, share and taste.<br><br>For us, the interesting part is the contrast. Chocolate brings depth and sweetness; pistachio brings a rounded, nutty flavour. In the bar, crisp pastry interrupts the creamy filling, making each bite feel a little different. It is an inviting idea to explore beyond a chocolate wrapper, and a starting point for our own interpretation at Dandy Lane.<br><br>Our version takes that inspiration to the brunch table. A freshly baked Baby Dutch Pancake comes with chocolate ice cream, strawberries, pistachio cream and coconut. The warm pancake and cool chocolate ice cream meet in the middle, while the fruit brings a bright counterpoint to the richness. Pistachio cream ties the new flavour direction together, with coconut adding another detail to discover.<br><br>We wanted the return to feel familiar without simply repeating the old dish. There is still the pleasure of a pancake in its skillet, a spoon poised over the chocolate ice cream and a table worth settling into. Now there is another flavour story to talk about, too.<br><br>Whether you remember the earlier version or are meeting it for the first time, this is an invitation to make a little room for something sweet. Come for a catch-up, bring the person who remembers it with you, or enjoy a quiet moment of your own. An old Dandy Lane conversation has found a new chapter.<br><br><em>Baked to order. Please allow approximately 15 minutes.</em>
+    featured: false
+    include_in_sitemap: true
+    cover: "assets/media/dubai-chocolate-baby-dutch-pancake-story-20261017.jpg"
+    cover_alt: "A dark skillet on a wooden board holding a Baby Dutch Pancake with strawberries, coconut and a scoop of chocolate ice cream, while pistachio cream is poured from a small jug."
+    tags: ["Brunch", "Hobart"]
