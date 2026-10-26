@@ -642,3 +642,22 @@ stories:
     cover: "assets/media/breakfast-bruschetta-revised-20261023-3b0a0ba569b7.png"
     cover_alt: "Breakfast Bruschetta on a plate, photographed from above."
     tags: ["Breakfast", "Hobart"]
+
+  - slug: "apple-danish"
+    title: "Apple Danish"
+    date: "2026-10-26"
+    author: "Dandy Lane Team"
+    summary: "A small golden pastry can be enough reason to slow the morning down and make room for a proper cafe pause."
+    answer_summary: "Apple Danish at Dandy Lane Cafe: a golden layered pastry with an apple centre."
+    related_menu_item: "Apple Danish"
+    related_links:
+      - label: "Explore the menu"
+        href: "/menu"
+      - label: "Find Dandy Lane"
+        href: "/location"
+    content: >-
+      There are mornings when the best plan is not much of a plan at all. A coffee, a corner of the table, and a little time before the day gathers pace can be enough. At Dandy Lane, an Apple Danish fits naturally into that kind of pause: something golden on the table, a familiar name, and a reason not to rush straight back out the door. It is the sort of choice that works just as well beside a quiet moment alone as it does in the middle of a catch-up that has been waiting too long.<br><br>The pastry arrives with a layered square shape and an apple centre, giving the table a little colour before the conversation has even found its rhythm. There is no need for a big occasion or a long explanation. Sometimes the smallest things set the tone: a warm drink nearby, a shared glance at the counter, or the easy question of whether to order one thing each or put something in the middle. An Apple Danish makes room for that decision without making too much of it.<br><br>That is part of the pleasure of a cafe morning in Hobart. The city can be moving quickly outside, while the table gives you permission to stay put for another few minutes. Drop in before work, meet someone who has been hard to pin down, or take a breather on your own. Apple Danish is a simple invitation to take the gentler option: sit down, look up, and let the morning unfold at its own pace.<br><br>One person might settle at a cafe table with a notebook or a story from the week, while another takes a few minutes before moving on. The point is not to make the morning more complicated. It is to leave a little room for it to feel like your own.
+    featured: false
+    cover: "assets/media/apple-danish-story-20261026-03f170421821.png"
+    cover_alt: "A golden layered Apple Danish with an apple centre on a light stone surface."
+    tags: ["Cafe Moments", "Hobart"]
